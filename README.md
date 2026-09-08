@@ -1,0 +1,83 @@
+# Solar System Explorer
+
+Solar System Explorer is an interactive browser prototype for exploring the Sun, Moon, and eight planets. It combines a playable 3D scene with assisted travel, manual flight controls, sourced astronomy facts, distance comparisons, and a curated offline guide.
+
+The current stable baseline is **V1.1**. It is deployed privately through ChatGPT Sites at [solar-system-explorer-gabor.gabortardos.chatgpt.site](https://solar-system-explorer-gabor.gabortardos.chatgpt.site).
+
+## What works
+
+- Select any of ten modeled worlds from the scene, search, or destination strip.
+- Travel with an assisted curved approach, or fly with keyboard, mouse, and touch controls.
+- Inspect physical facts and compare modeled center-to-center distances.
+- Switch between an exploration scale and relatively accurate orbital distances.
+- Show orbital paths and labels, pause or accelerate simulation time, and reduce motion.
+- Ask a curated astronomy guide common questions without sending data to an external service.
+- Save visited-world progress in the current browser on the current device.
+- Fall back to a reduced-detail Canvas renderer when WebGL is unavailable.
+
+## Technology
+
+- React 19 and TypeScript
+- Vinext and Vite
+- Three.js/WebGL, with a Canvas 2D compatibility renderer
+- Tailwind CSS and Shadcn-derived interface primitives
+- Cloudflare Workers packaging through ChatGPT Sites
+
+## Repository map
+
+| Path | Responsibility |
+| --- | --- |
+| `app/page.tsx` | Main interface, interaction state, panels, and local progress persistence |
+| `app/scene.ts` | Three.js scene, renderer lifecycle, selection, flight, travel, and camera behavior |
+| `app/software-renderer.ts` | Reduced-detail Canvas fallback for devices without WebGL |
+| `app/astronomy.ts` | Body catalogue, JPL orbital elements, positions, and physical distance calculations |
+| `app/guide.ts` | Curated offline astronomy answers and source selection |
+| `app/globals.css` | Responsive desktop, touch, and mobile presentation |
+| `public/textures/` | Planet, Moon, Sun, cloud, and ring imagery |
+| `tests/` | Astronomy invariants and user-interface behavior checks |
+| `.openai/hosting.json` | Identity and resource bindings for the existing Sites deployment |
+
+For more detail, see [Architecture](docs/ARCHITECTURE.md) and [Deployment](docs/DEPLOYMENT.md).
+
+## Local development
+
+Prerequisite: Node.js 22.13 or newer.
+
+```bash
+npm ci
+npm run dev
+```
+
+Useful checks:
+
+```bash
+npm test
+npm run lint
+```
+
+`npm test` performs a production build before running the automated test suite.
+
+## Scientific scope
+
+Planet positions use JPL approximate Keplerian elements for 1800–2050, evaluated at the displayed UTC time. The Moon uses a simplified circular orbit, not a current lunar ephemeris. Physical distances are calculated from model coordinates before visual compression.
+
+Body sizes, assisted-travel paths, surface rotations, atmospheres, lighting, and stars are illustrative. The application is an educational experience, not a spacecraft-navigation or research tool. Full assumptions and boundaries are documented in [Architecture](docs/ARCHITECTURE.md).
+
+## Data, privacy, and secrets
+
+The prototype has no account system, analytics, paid API, or third-party runtime data request. Exploration progress is stored only in browser `localStorage` under `solar-explorer-progress-v1`.
+
+No secret is required to run the application. Environment files, private keys, build output, and local tooling state are ignored by Git. If a future service needs credentials, keep them in the hosting provider's encrypted environment settings and never in browser code, commits, issues, or documentation.
+
+## Sources and assets
+
+- [JPL approximate positions](https://ssd.jpl.nasa.gov/planets/approx_pos.html)
+- [JPL planetary physical parameters](https://ssd.jpl.nasa.gov/planets/phys_par.html)
+- Individual [NASA Science](https://science.nasa.gov/solar-system/) pages linked from each information panel
+- Planetary maps by [Solar System Scope / INOVE](https://www.solarsystemscope.com/textures/), licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) and based on NASA imagery
+
+The texture license does not determine the license for the application source code. No source-code license has been selected yet.
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the branch, review, test, and release workflow. Security guidance is in [SECURITY.md](SECURITY.md).
