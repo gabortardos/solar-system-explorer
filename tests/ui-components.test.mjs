@@ -94,3 +94,20 @@ test("answers expanded astronomy-guide topics without a network service", async 
   assert.match(answerGuide(saturn, "Which missions explored it?", Date.UTC(2026, 8, 8)).answer, /Cassini/);
   assert.match(answerGuide(mars, "How far is it from Earth?", Date.UTC(2026, 8, 8)).source, /jpl\.nasa\.gov/);
 });
+
+test("keeps a complete, recoverable flight-control contract", async () => {
+  const [page, scene] = await Promise.all([
+    readFile(path.join(root, "app/page.tsx"), "utf8"),
+    readFile(path.join(root, "app/scene.ts"), "utf8"),
+  ]);
+
+  assert.match(page, /Return to Earth/);
+  assert.match(page, /Cancel assisted travel/);
+  assert.match(page, /Flight speed/);
+  assert.match(page, /Lock \{b\.name\}/);
+  assert.match(scene, /velocity\.addScaledVector/);
+  assert.match(scene, /const brake=/);
+  assert.match(scene, /const lock=/);
+  assert.match(scene, /const cancelTravel=/);
+  assert.match(scene, /angularVelocity/);
+});

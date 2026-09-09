@@ -55,3 +55,24 @@
  .world-button{min-width:88px;min-height:66px;height:66px}
  .bottom-bar{margin-top:10px;gap:7px}.scale-note{line-height:1.4}.time-controls{gap:8px}
 }
+
+/* Forgiving flight telemetry and always-visible recovery controls. */
+.view-tools>.eyebrow{margin-bottom:4px;color:#77949e}
+.view-tools .earth-return{color:#b9e6d9}
+.status-copy{min-width:190px}
+.telemetry{display:block;margin-top:5px;color:#78909d;font-size:11px}
+.flight-speed-picker{display:flex;align-items:center;gap:7px;color:#8fa9b0;margin-left:12px}
+.flight-speed-picker [data-slot=select-trigger]{height:31px;min-width:92px;border-color:#ffffff20;background:#101e29;font-size:12px}
+.flight-status[data-mode=assisted] .status-icon,.flight-status[data-mode=braking] .status-icon{background:#9cdcca18;box-shadow:0 0 24px #8cd2bd25}
+.flight-status>button.cancel-travel{color:#cdece4;border:1px solid #8ed2bd42;border-radius:5px;padding:7px 9px}
+
+@media(max-width:1050px){.status-copy{min-width:155px}.flight-speed-picker{display:none}}
+@media(max-width:760px){
+ .view-tools{top:205px;right:20px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:8px;row-gap:2px}
+ .view-tools>.eyebrow{grid-column:1/-1}
+ .view-tools button{justify-content:center;border:1px solid #ffffff18;border-radius:5px;padding:8px 6px;text-align:center;background:#0b1823a8}
+ .view-tools button svg{display:none}
+ .flight-status{top:355px;left:155px;right:18px;align-items:flex-start;gap:8px}
+ .status-copy{min-width:0;flex:1}.flight-status strong{line-height:1.35}.telemetry{font-size:10px}
+ .flight-status>button.cancel-travel{display:flex;margin:0;padding:7px;color:#d7f4ec}.flight-status>button.cancel-travel kbd{display:none}
+}

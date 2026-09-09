@@ -7,7 +7,8 @@ The current stable baseline is **V1.1**. It is deployed privately through ChatGP
 ## What works
 
 - Select any of ten modeled worlds from the scene, search, or destination strip.
-- Travel with an assisted curved approach, or fly with keyboard, mouse, and touch controls.
+- Travel with a cancellable assisted approach, or fly with smooth acceleration, braking, rotation, speed presets, keyboard, mouse, and touch controls.
+- Recover at any time with target lock, a full-system view, and a guided return to Earth.
 - Inspect physical facts and compare modeled center-to-center distances.
 - Switch between an exploration scale and relatively accurate orbital distances.
 - Show orbital paths and labels, pause or accelerate simulation time, and reduce motion.
