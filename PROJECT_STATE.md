@@ -4,9 +4,9 @@ Last verified: 2026-09-09 UTC
 
 Stable working product version: V1.1
 
-Application-code baseline entering VISUAL PASS #1: `c17e84a` on the Site source repository
+Stable source checkpoint before the mobile HUD pass: `9e565cc` on the Site source repository.
 
-Current development state: VISUAL PASS #1 is complete in source; the stable checkpoint is the commit containing this file.
+Current development state: VISUAL PASS #1, the SCALE ARCHITECTURE PASS, and the MOBILE HUD PASS are complete; the stable checkpoint is the commit containing this file.
 
 Production: `https://solar-system-explorer-gabor.gabortardos.chatgpt.site`
 
@@ -26,18 +26,19 @@ The repository and deployed application are the source of truth. Do not rebuild 
 
 ## Current state
 
-V1.1 is a deployed, playable prototype covering the Sun, Moon, and eight planets. It opens near Earth and supports the core loop: select a world, travel or fly, inspect it, compare distances, and ask the offline astronomy guide. VISUAL PASS #1 is complete in the Site source repository but has not been deployed.
+V1.1 is a public, playable prototype covering the Sun, Moon, and eight planets. It opens near Earth and supports the core loop: select a world, travel or fly, inspect it, compare distances, and ask the offline astronomy guide. The current public release includes VISUAL PASS #1, the two-scale architecture, and the compact mobile HUD.
 
-VISUAL PASS #1 verification on 2026-09-09:
+Latest source verification on 2026-09-09:
 
-- The production Site remains active on deployed version 4, sourced from `acf79e7`.
-- The updated Site source built successfully.
-- Lint passed.
-- All 9 tests passed, including a rendering-treatment contract.
+- The production Site is active with public link access and is published from the checkpoint containing this file.
+- The updated Site source built successfully and lint passed.
+- All 17 tests passed, including scientific-scale ratios, exploration compression, satellite hierarchy, camera-relative precision, clipping, rendering treatment, the compact-mobile-HUD contract, and a synthetic million-record coordinate conversion.
 - Rendered desktop compatibility-mode inspection covered Earth, the Sun, Saturn, system overview, assisted transitions, labels, orbit context, loading, and layout overflow.
 - Inspection found and corrected cropped overview framing and visibly faceted Saturn rings.
 - No console error attributable to the application was present.
-- Full WebGL and physical-device mobile visual QA remain validation gaps because the supervised browser used the Canvas compatibility renderer.
+- Compatibility-mode gameplay inspection passed repeated scale switching, unchanged displayed measurements, Moon travel/arrival, visited progress, Saturn travel/braking, system overview, manual flight, and focus recovery.
+- A rendered 390 × 844 responsive check passed for the compact HUD, unified menu, optional flight cluster, hide/restore mode, and overflow. Desktop compatibility rendering remained intact.
+- Full WebGL and physical-device mobile visual QA remain validation gaps because the supervised browser used the Canvas compatibility renderer inside a phone-sized frame.
 
 ## Working features
 
@@ -45,10 +46,10 @@ VISUAL PASS #1 verification on 2026-09-09:
 - Starts focused near Earth.
 - Assisted curved travel with progress, braking/cancellation, arrival focus, and visited-state updates.
 - Desktop free flight: W/S, A/D, Q/E, arrows, Shift boost, Space/Escape brake.
-- Mouse orbit/approach and touch drag/pinch plus on-screen mobile flight controls.
+- Mouse orbit/approach and touch drag/pinch. On mobile, flight controls are revealed only when requested.
 - Search dialog, destination strip, system view, focus target, labels, and fullscreen.
 - Details sheet with physical facts, atmosphere, curated fact, source links, and modeled distance comparison.
-- Exploration and scientific-distance display modes.
+- Exploration Scale and Scientific Scale modes; all displayed measurements remain based on the uncompressed astronomy model.
 - Optional orbit paths and simulation rates: paused, real time, 1,000×, one day/second.
 - Offline curated astronomy guide tied to the selected world.
 - Device-local visited-world persistence and reset.
@@ -61,8 +62,10 @@ VISUAL PASS #1 verification on 2026-09-09:
 - Vite 8 build and Cloudflare Worker-compatible output.
 - Imperative Three.js engine in `app/scene.ts`; React state and panels in `app/page.tsx`.
 - Pure astronomical catalogue/calculations in `app/astronomy.ts`.
+- Central presentation-scale policy in `app/scale.ts` and camera-relative GPU projection in `app/render-space.ts`.
 - Curated offline knowledge routing in `app/guide.ts`.
 - Custom fallback in `app/software-renderer.ts`.
+- Progressive mobile HUD state remains in React/CSS; it does not alter the scene-engine API.
 - Tailwind CSS 4 and existing Shadcn-derived primitives.
 - No active application database, authentication, analytics, paid API, or server-side product API.
 
@@ -73,6 +76,8 @@ VISUAL PASS #1 verification on 2026-09-09:
 - Moon: simplified circular 384,400 km orbit with fixed inclination and arbitrary phase.
 - Physical data and copy: compiled catalogue with NASA/JPL source links.
 - Distances: center-to-center calculations from uncompressed model coordinates.
+- Scientific Scale: linear 100 visual units/AU center positions; body sizes remain visibly enlarged.
+- Exploration Scale: continuous radial compression with parent-local satellite placement.
 - Guide: deterministic local topic matching, not an LLM.
 - Progress: browser `localStorage` key `solar-explorer-progress-v1`.
 
@@ -89,11 +94,12 @@ VISUAL PASS #1 verification on 2026-09-09:
 - DOM world labels projected from 3D positions.
 - Canvas fallback approximating the same visual language with a graded space background, improved terminators/night lights, smoother rings, restrained glows, material-aware orbit opacity, and corrected overview framing.
 - Assisted travel and system overview use quintic easing with a subtle temporary field-of-view expansion; reduced motion remains instant.
+- Mobile presentation defaults to a slim header, icon-only view tools, and a compact destination dock. One bottom sheet groups deeper actions and scale selection; flight controls and the full HUD can be shown/hidden independently.
 
 ## Current navigation and flight
 
 - `OrbitControls` handles mouse/touch orbit, zoom, damping, and pan.
-- Assisted travel uses a quadratic Bézier-like curve and smoothstep interpolation.
+- Assisted travel uses a quadratic Bézier-like curve and quintic easing.
 - Travel duration is based on visual scene span and clamped to approximately 2.6–6.5 seconds.
 - Manual translation speed scales with target size and camera-to-target distance.
 - Manual inputs are immediate/binary; smooth acceleration, inertia, and configurable sensitivity are not implemented.
@@ -105,17 +111,17 @@ VISUAL PASS #1 verification on 2026-09-09:
 - Stable production source: the ChatGPT Sites source repository identified by `.openai/hosting.json`.
 - Persistent external mirror: private GitHub repository `gabortardos/solar-system-explorer`.
 - Hosting: ChatGPT Sites with Cloudflare Worker runtime.
-- Site status: active; deployed Site version 4, sourced from commit `acf79e7`.
+- Site status: active; the current public release contains the visual, scale, and mobile HUD passes.
 - Access at last inspection: public link access.
 - `.openai/hosting.json` preserves the existing project identity; `d1` and `r2` are `null`.
 - GitHub CI validates pushes/PRs but does not deploy.
-- Repository divergence remains explicit: the Site source repository contains the verified VISUAL PASS #1 implementation, while GitHub `main` contains the earlier independent rendering experiment (`e8ec19d`) and continuity-document history. GitHub application code is not the production source and must not be merged or overwritten casually.
+- Repository separation remains explicit: the Site source repository is the production source. The private GitHub repository is a continuity/document mirror unless a future owner-approved consolidation is performed; its application code must not overwrite production casually.
 - Runtime makes no external astronomy, AI, analytics, or authentication request.
 - Static sources/assets: NASA/JPL references and Solar System Scope/INOVE textures.
 
 ## Known limitations
 
-- Full WebGL and physical-device mobile QA remain incomplete.
+- Full WebGL—including logarithmic depth, custom atmosphere shaders, and camera-relative rendering—and physical-device mobile QA remain incomplete. Phone-sized responsive rendering has been verified in the supervised compatibility renderer.
 - At least one production chunk exceeds 500 kB after minification.
 - WebGL shadow cost has not been profiled on physical low/mid-range devices.
 - Saturn ring/planet shadows are enabled in WebGL but the Canvas renderer uses a visual approximation rather than physical shadow projection.
@@ -128,10 +134,10 @@ See [KNOWN_ISSUES.md](KNOWN_ISSUES.md) for tracked status and fixes.
 
 ## Current milestone and unfinished work
 
-**VISUAL PASS #1 is complete in source and awaiting product-owner review.** It improved lighting, Sun appearance, star field, planet materials, Earth atmosphere and night side, Saturn rings, orbit lines, shadows, and camera transitions without changing the astronomy model, React/scene boundary, scale system, navigation model, guide, or persistence.
+**VISUAL PASS #1, the SCALE ARCHITECTURE PASS, and the MOBILE HUD PASS are complete and published.** Mobile now uses progressive disclosure so the scene remains visible: compact dock by default, one organized action sheet, optional flight controls, and a hide/restore mode.
 
 The next planned engineering milestone is **V1.2 — Flight and navigation quality**. Smooth non-gamer flight, broader navigation regression coverage, WebGL/physical-device mobile QA, and measured bundle optimization remain unfinished.
 
 ## Next recommended task
 
-Review VISUAL PASS #1 with the product owner. If approved, publish the checkpoint to the existing public Site. Do not deploy automatically. After approval/deployment, begin V1.2 with navigation regression coverage and smoother non-gamer flight.
+Begin V1.2 with navigation regression coverage and smoother non-gamer flight, then complete full WebGL and physical-device mobile validation.

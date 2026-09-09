@@ -28,6 +28,7 @@ flowchart TD
 - selected body;
 - readiness, renderer compatibility, status, errors, and displayed time;
 - active sheet/search state;
+- compact mobile HUD, flight-control visibility, and distraction-free visibility state;
 - view/simulation options;
 - distance-comparison selection;
 - guide question/answer state;
@@ -36,6 +37,8 @@ flowchart TD
 It creates the scene engine once after mounting the canvas host and communicates through method calls and callbacks. High-frequency frame state stays outside React.
 
 Existing Shadcn-derived primitives provide sheets, command search, selects, and switches. `app/globals.css` provides the product-specific HUD and responsive behavior.
+
+At widths up to 760 px, React keeps the same selection/options/scene state but presents it through progressive disclosure: a compact destination dock, an optional touch-flight cluster, and a bottom `Sheet` containing the deeper actions and the same scale controls. Hiding the mobile HUD is presentation-only and never pauses or rewrites the engine.
 
 ### Scene adapter boundary
 
@@ -47,7 +50,7 @@ It returns an imperative API: `focus`, `preload`, `overview`, `brake`, `setMovem
 
 ### WebGL path
 
-The engine attempts WebGL2, then WebGL. When successful it creates a `THREE.WebGLRenderer` with antialiasing, capped device pixel ratio, sRGB output, ACES Filmic tone mapping, a point light at the Sun, and low ambient light.
+The engine attempts WebGL2, then WebGL. When successful it creates a `THREE.WebGLRenderer` with logarithmic depth, antialiasing, capped device pixel ratio, sRGB output, ACES Filmic tone mapping, a point light at the Sun, and low ambient light.
 
 Each body uses a `THREE.Group` positioned by the astronomy model. Its visible mesh is a textured sphere. Earth adds a cloud sphere and atmosphere shader; Saturn adds a ring mesh. A separate group holds orbit lines. World labels are DOM buttons projected into screen space.
 
@@ -55,7 +58,7 @@ Each body uses a `THREE.Group` positioned by the astronomy model. Its visible me
 
 ### Canvas compatibility path
 
-If WebGL cannot be created, `app/software-renderer.ts` uses the same Three.js scene graph and camera but draws into Canvas 2D. It projects deterministic stars, traverses body/orbit geometry, samples textures, and approximates lighting, clouds, Earth/Sun glow, and Saturn rings. Rendering is throttled and unchanged camera poses are cached.
+If WebGL cannot be created, `app/software-renderer.ts` uses the same camera-relative Three.js scene graph but draws into Canvas 2D. It projects deterministic stars, traverses body/orbit geometry, samples textures, and approximates lighting, clouds, Earth/Sun glow, and Saturn rings. Rendering is throttled and unchanged camera poses are cached.
 
 This path preserves basic interaction and perspective, not WebGL parity.
 
@@ -71,21 +74,37 @@ This path preserves basic interaction and perspective, not WebGL parity.
 
 `app/astronomy.ts` returns Cartesian positions in AU for planets. The Moon is derived from the Earth model position plus a simplified local orbit.
 
-`app/scene.ts` converts model positions into visual positions:
+`app/scale.ts` is the only presentation-scale policy. `app/scene.ts` supplies model positions to it:
 
-- **Scientific distances:** model vector × 100 visual units. Relative center positions are preserved.
-- **Exploration scale:** direction is preserved while radius becomes `24 + 38 × log(1 + AU distance)`.
-- **Moon in exploration scale:** placed 5 visual units from Earth along its model-relative direction.
+- **Scientific Scale:** each Cartesian AU component is multiplied by 100, preserving every modeled center-distance ratio.
+- **Exploration Scale:** direction is preserved while heliocentric radius becomes `24 × (1 − exp(−r / 0.05)) + 38 × ln(1 + r)`. The function is finite, continuous at the Sun, and monotonic.
+- **Satellite placement:** parent position and parent-local offset are transformed separately. The Moon retains its modeled offset in Scientific Scale and a 5-unit local separation in Exploration Scale.
 
-Body display radius is separate: Sun is fixed at 5 units; other bodies use a square-root radius formula with a minimum. Scientific mode further scales body groups to 5% of those already enlarged visual sizes. Neither mode is literal size-and-distance scale.
+Body display radius is a separate presentation rule in `app/scale.ts`: the Sun is fixed at 5 exploration units; other bodies use a square-root enlargement with a minimum. Scientific Scale uses 5% of those display radii. Neither mode is a literal diameter-and-distance scale.
 
 Physical distance calculations never use visual scene positions.
+
+### Coordinate precision and render origin
+
+- Authoritative astronomy and navigation coordinates remain JavaScript numbers (IEEE-754 doubles).
+- `app/render-space.ts` subtracts the camera origin in double precision immediately before each render and restores the authoritative scene afterward.
+- Orbit and route vertices retain `Float64Array` source coordinates; only the camera-relative snapshot is written to GPU `Float32Array` buffers.
+- Raycasting, labels, travel, collision checks, and focus-following use the restored navigation frame.
+- Sun-relative custom shaders receive the rebased Sun position, so day/night meaning survives the origin shift.
+
+This avoids the loss of local detail that occurs when large absolute coordinates are converted directly to GPU floats. It also allows future travel far from the Sun without continuously mutating the scientific model.
+
+### Camera clipping and large catalogues
+
+Camera near/far planes are recalculated from the nearest surface clearance and farthest active object, with a finite render horizon. WebGL uses logarithmic depth; the Canvas renderer applies the same near/far visibility bounds.
+
+Future thousands/millions-body support must keep catalogue storage and rendering separate. Positions remain double-precision model data; spatially selected active tiles are transformed in bounded batches, instanced or point-rendered by importance/zoom, and culled outside the active horizon. The million-record test validates coordinate conversion, not simultaneous million-mesh rendering.
 
 ## Navigation and camera
 
 ### Assisted travel
 
-`focus()` computes an approach point offset from the selected body's visual position. Non-instant travel follows a quadratic curve from the camera through a raised/outward control point to the approach point. Smoothstep interpolation controls progress. Duration is logarithmically related to visual span and clamped to about 2.6–6.5 seconds.
+`focus()` computes an approach point offset from the selected body's visual position. Non-instant travel follows a quadratic curve from the camera through a raised/outward control point to the approach point. Quintic easing controls progress. Duration is logarithmically related to visual span and clamped to about 2.6–6.5 seconds.
 
 A temporary dashed route line is shown. Arrival enables focused-body following and updates visited progress. Reduced-motion mode travels instantly.
 
@@ -142,6 +161,8 @@ See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for the release procedure.
 - Preserve `.openai/hosting.json` and the existing Site identity.
 - Keep calculations separate from rendering and UI.
 - Never derive scientific distances from compressed scene coordinates.
+- Route every body/orbit presentation position through `app/scale.ts`; do not duplicate scale formulas.
+- Keep absolute catalogue/navigation coordinates in doubles and rebase only the active render snapshot.
 - Preserve WebGL and Canvas paths unless a replacement is proven across supported devices.
 - Preserve reduced motion, touch controls, source links, and local progress.
 - Do not expose secrets in browser code.
@@ -153,8 +174,8 @@ See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for the release procedure.
 - Three.js provides mature browser 3D capability and controls.
 - Imperative rendering avoids React work on every frame.
 - Pure model functions keep scientific logic testable and presentation-independent.
-- Two scales reconcile astronomical magnitude with playable exploration.
+- A centralized two-scale policy reconciles astronomical magnitude with playable exploration while retaining real measurements.
+- Camera-relative rendering and adaptive clipping preserve local precision across large coordinate ranges.
 - Compatibility rendering improves reach without blocking the WebGL experience.
 - Offline knowledge and local progress keep V1.1 private, inexpensive, and reliable.
 - Sites/Worker packaging provides managed deployment without client-side credentials.
-

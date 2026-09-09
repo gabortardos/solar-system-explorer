@@ -25,7 +25,7 @@ Future agents should preserve these decisions unless new evidence or a product d
 
 ## D004 — Two scale modes
 
-- **Decision:** Exploration and scientific-distance modes both enlarge bodies.
+- **Decision:** Exploration Scale and Scientific Scale both enlarge bodies.
 - **Reason:** Literal astronomical scale is unusable; relative distance remains educational.
 - **Impact:** Visual geometry is explicitly illustrative.
 - **Preserve:** Do not present compressed positions/enlarged radii as physical scale.
@@ -134,3 +134,17 @@ Future agents should preserve these decisions unless new evidence or a product d
 - **Reason:** The implemented product, roadmap, and written continuity system must remain synchronized so work can safely move between Work chats.
 - **Impact:** A milestone is not considered fully closed until the relevant documentation and checkpoint are current. The closeout report names the changed documents, next milestone, and new-chat readiness.
 - **Preserve:** Do not skip milestone maintenance, erase historical decisions, rewrite unaffected documents, or mark an issue resolved without verification.
+
+## D020 — Scientific coordinates, presentation scales, and render coordinates are separate
+
+- **Decision:** Keep scientific/model and navigation positions in double precision; transform them through the centralized `app/scale.ts` policy; subtract the camera origin only for the active render snapshot. Scientific Scale preserves modeled center-distance ratios at 100 units/AU. Exploration Scale applies the documented continuous radial compression. Body display size remains independent and enlarged.
+- **Reason:** A single scale policy prevents visual formulas from drifting, while camera-relative GPU coordinates preserve nearby detail during long-distance travel and future large-catalogue use.
+- **Impact:** Orbits, routes, satellites, camera clipping, custom lighting shaders, and both renderers follow the same coordinate boundary. Future catalogue growth uses indexed/streamed active sets and instancing or points rather than one mesh/label per stored object.
+- **Preserve:** Never calculate scientific values from presentation coordinates, upload huge absolute positions directly as GPU floats, duplicate scale formulas, or interpret the synthetic million-record conversion test as proof that a million detailed meshes can render simultaneously.
+
+## D021 — Mobile HUD uses progressive disclosure
+
+- **Decision:** Phones default to a compact exploration HUD. Deeper actions live in one bottom sheet, touch flight controls are optional, and the full HUD can be hidden/restored.
+- **Reason:** The former independent mobile overlays covered the Solar System and competed with the product's primary exploration surface.
+- **Impact:** Mobile and desktop share the same React selection/options state and scene-engine API, but CSS and small UI state choose different presentation density. Search replaces the always-visible mobile destination strip; core actions remain one or two taps away.
+- **Preserve:** Do not restore permanent stacked mobile cards, a permanent arrow pad, or a large intro over the scene. Do not turn the mobile menu into a new application architecture or alter scientific values/navigation to solve layout concerns.

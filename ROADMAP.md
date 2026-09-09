@@ -45,7 +45,7 @@ Status: completed through `2582807`, `acf79e7`, `89d24cd`, and the permanent-doc
 
 ### VISUAL PASS #1
 
-Status: completed in source on 2026-09-09; awaiting owner review and deployment approval.
+Status: completed and published on 2026-09-09.
 
 - Physically based planet materials, stronger directional light-dark separation, restrained ambient fill, and soft WebGL shadows.
 - Layered Sun corona, varied deterministic stars, Earth night lights/day-weighted atmosphere, and improved Saturn rings.
@@ -54,6 +54,29 @@ Status: completed in source on 2026-09-09; awaiting owner review and deployment 
 - Production build, lint, and 9 tests passed.
 - Desktop compatibility rendering inspected for Earth, Sun, Saturn, system overview, travel, and layout; cropped overview and ring faceting were corrected.
 - WebGL and physical-device mobile inspection remain required before release confidence is complete.
+
+### SCALE ARCHITECTURE PASS
+
+Status: completed and published on 2026-09-09.
+
+- Centralized Scientific Scale and Exploration Scale presentation transforms.
+- Preserved uncompressed astronomy values independently of rendering.
+- Added parent-local satellite placement, camera-relative rendering, double-precision orbit/route sources, adaptive clipping, and logarithmic WebGL depth.
+- Defined bounded spatial streaming/instancing as the path to thousands or millions of catalogue objects.
+- Build and lint passed; all 16 tests passed, including a synthetic million-record coordinate conversion.
+- Compatibility gameplay inspection passed scale switching, invariant measurements, travel/arrival, braking, overview, manual flight, and recovery.
+- WebGL validation remains part of V1.2 QA.
+
+### MOBILE HUD PASS
+
+Status: completed and published on 2026-09-09.
+
+- Replaced the obstructive mobile overlay stack with a compact header, icon-only view tools, and selected-world dock.
+- Added one unified bottom action sheet with travel, details, flight, overview, focus, guide, settings, and scale selection.
+- Made touch flight controls optional and added a distraction-free hide/restore mode.
+- Preserved the desktop HUD, React/scene boundary, navigation system, and scientific data/scale rules.
+- Build/lint and all 17 tests passed; rendered compatibility QA covered 390 × 844 closed/open/flight/hidden states and desktop preservation.
+- Physical-device and full-WebGL validation remain in V1.2.
 
 ## Current milestone
 

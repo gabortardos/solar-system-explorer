@@ -55,7 +55,7 @@ Current desktop composition:
 - Flight status and control hints near the lower left.
 - Destination strip, guide entry, scale note, and time controls along the bottom.
 
-Keep the center open. Avoid new persistent panels without strong value. Show one clear travel action. Use sheets for details, guide, settings, and help. Keep status labels specific. Never imply exploration scale or curved travel is scientifically literal.
+Keep the center open. Avoid new persistent panels without strong value. Show one clear travel action. Use sheets for details, guide, settings, and help. Keep status labels specific. Name the modes **Exploration Scale** and **Scientific Scale**. State that body sizes remain enlarged and that assisted travel is visual. Every numerical scientific value must come from the uncompressed astronomy model in both modes.
 
 ## Navigation behavior
 
@@ -107,8 +107,13 @@ Planned improvement: smooth acceleration/deceleration, constrained distance-awar
 
 ## Responsive behavior
 
-- Desktop is the initial priority.
-- At narrow widths, simplify the destination card, hide nonessential header text, horizontally scroll/snap the world strip, show touch flight controls, and respect safe areas.
+- Preserve the established desktop HUD.
+- At widths up to 760 px, default to a slim brand/search/menu/hide header, two icon-only recovery/view controls, and one compact selected-world dock.
+- Remove the large invitation, full destination card, permanent destination strip, time footer, and permanent arrow cluster from the mobile scene. Their capabilities remain available through search, the menu, settings, or the optional flight mode.
+- The mobile menu is one bottom sheet, not several floating cards. It groups travel, details, flight, system view, focus, guide, settings, and the Exploration/Scientific scale choice.
+- Touch flight controls appear only after the user selects Fly/Flight controls and collapse after assisted travel begins. Flight status appears with them.
+- A hide-interface action removes all mobile HUD layers except a clear Show controls restore button.
+- Respect safe areas and keep the scene full-bleed behind the compact HUD.
 - Avoid horizontal page scrolling and text overlap.
 - Preserve travel, details, search, guide, settings/help, and time/scale meaning.
 
@@ -132,6 +137,13 @@ Planned improvement: smooth acceleration/deceleration, constrained distance-awar
 - Assisted travel and system overview use quintic easing plus a small temporary field-of-view expansion. This is cinematic framing, not physical acceleration or an orbital trajectory.
 - The Canvas compatibility renderer shares the same visual hierarchy through approximations: graded near-black space, strong terminators, restrained glows, night-light blending, smooth rings, and quiet orbits.
 - Preserve the established HUD. Visual effects must not compete with worlds, reduce text contrast, or add decorative interface chrome.
+
+## MOBILE HUD PASS implementation
+
+- Mobile uses progressive disclosure because permanent controls were covering the Solar System on physical phones.
+- The default state keeps most of the viewport unobstructed; the selected destination and primary Travel action remain one tap away.
+- The open state uses a single translucent bottom sheet and gently lets the scene recede behind it.
+- Phone-sized QA must check closed, menu-open, flight-open, hidden, and restored states. Desktop layout must be checked after every mobile HUD change.
 
 ## Future visual QA rules
 

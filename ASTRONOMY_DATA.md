@@ -89,21 +89,32 @@ These are straight-line separations at the displayed date, not surface distances
 
 Scientific values and scene positions are intentionally separate.
 
-### Scientific-distance view
+### Scientific Scale
 
-- Model position vector × 100 visual units.
-- Relative center distances are preserved.
+- Each Cartesian model component × 100 visual units/AU.
+- All modeled center-to-center distance ratios are preserved.
 - Body radii remain enlarged; body groups use 5% of exploration display size.
 - This is not a literal scale model of both distance and diameter.
 
-### Exploration view
+### Exploration Scale
 
 - Direction from the Sun is preserved.
-- Radius is compressed to `24 + 38 × log(1 + distanceAU)`.
-- The Moon is placed 5 visual units from Earth along its model-relative direction.
+- Heliocentric radius is compressed to `24 × (1 − exp(−r / 0.05)) + 38 × ln(1 + r)` visual units. This is continuous at zero and monotonic for nonnegative distances.
+- Parent and satellite offsets are handled separately; the Moon is placed 5 visual units from Earth along its model-relative direction.
 - Body radii use a separate square-root enlargement rule with a minimum; the Sun uses a fixed visual radius.
 
 Never calculate displayed scientific distance from either scene representation.
+
+The mobile bottom-sheet scale selector and desktop settings switch both update the same `SceneOptions.scientific` state. They are alternate controls for the same presentation policy; neither changes catalogue values, modeled positions, or displayed physical measurements.
+
+### Precision and catalogue growth
+
+- Model positions, physical calculations, navigation positions, and future catalogue tiles use IEEE-754 double precision.
+- Rendering subtracts the camera origin before writing bounded active geometry to GPU float buffers.
+- Orbit/route source vertices remain double precision and are regenerated relative to the current camera for rendering.
+- Large catalogues must be spatially indexed and streamed by region, zoom, proximity, and importance. The renderer must not create one textured mesh or DOM label for every stored minor body.
+- Nearby satellites use parent-local coordinates so small separations survive when their parent is far from the global origin.
+- A finite active render horizon is a visibility/performance rule, not a limit on scientific coordinates or travel.
 
 ## Physical data currently displayed
 
@@ -137,8 +148,7 @@ Values are compiled from the cited source family; per-field provenance/version m
 
 1. **Strengthen current catalogue:** field-level provenance/units; separate physical, orbital, editorial, and rendering data; schema validation/versioning; parent relationships.
 2. **High-value expansion:** Pluto/Charon, Ceres, Galilean moons, Titan, Enceladus, and appropriate position models/aliases/panels.
-3. **Scalable catalogues:** authoritative ingestion/cache pipelines; load by region, size/importance, zoom, proximity, search, and performance.
+3. **Scalable catalogues:** authoritative ingestion/cache pipelines; double-precision spatial indexes; bounded tiles loaded by region, size/importance, zoom, proximity, search, and performance; instancing/point rendering plus label budgets.
 4. **Higher-fidelity time:** evaluate JPL Horizons or equivalent behind a server/cache boundary; selectable dates, appropriate time standards, and spacecraft trajectories.
 
 External integrations must be costed, cached, rate-limited, and server-side where credentials or provider limits apply.
-

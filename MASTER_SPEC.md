@@ -136,6 +136,7 @@ Detailed data rules are in [ASTRONOMY_DATA.md](ASTRONOMY_DATA.md).
 - Realistic materials, lighting, shadows, atmospheric glow, night sides, rings, orbit visualization, and smooth camera motion.
 - Use LOD, culling, streaming, optimized textures, and procedural systems to sustain performance.
 - Support readable/scalable typography, keyboard navigation, contrast, reduced motion, and alternatives to color-only meaning.
+- On phones, preserve the exploration view through progressive disclosure: a compact default HUD, one organized action sheet, optional flight controls, and a distraction-free hide/restore mode.
 - Sound may later include interface, spacecraft-interior, alarm, or music elements. Do not imply that sound propagates through space. Sound must be optional and mutable.
 
 Detailed interaction rules are in [DESIGN_UX.md](DESIGN_UX.md).
@@ -195,4 +196,3 @@ Work iteratively:
 `PLAN → BUILD → RUN → INSPECT → TEST → FIX → SHOW → FEEDBACK → IMPROVE`
 
 The product owner steers product and creative decisions in normal language. Development agents own technical implementation, debugging, validation, and safe deployment.
-
