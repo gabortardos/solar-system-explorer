@@ -111,3 +111,17 @@ test("keeps a complete, recoverable flight-control contract", async () => {
   assert.match(scene, /const cancelTravel=/);
   assert.match(scene, /angularVelocity/);
 });
+
+test("keeps the cinematic solar-system rendering treatment", async () => {
+  const [scene, fallback] = await Promise.all([
+    readFile(path.join(root, "app/scene.ts"), "utf8"),
+    readFile(path.join(root, "app/software-renderer.ts"), "utf8"),
+  ]);
+
+  assert.match(scene, /PCFSoftShadowMap/);
+  assert.match(scene, /MeshStandardMaterial/);
+  assert.match(scene, /BackSide/);
+  assert.match(scene, /t\*t\*t\*\(t\*\(t\*6-15\)\+10\)/);
+  assert.match(fallback, /createRadialGradient/);
+  assert.match(fallback, /front\?\.78:\.55/);
+});
