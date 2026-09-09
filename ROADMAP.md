@@ -7,6 +7,16 @@
 - Each visual/control milestone requires rendered inspection, relevant tests, and explicit deployment approval.
 - Deferred vision items are not commitments for the next release.
 
+### Milestone-close protocol
+
+Before work begins on the next substantial milestone:
+
+1. Review the implementation, tests, and rendered behavior changed by the completed milestone.
+2. Update only the affected permanent project documents; preserve history and unresolved issues.
+3. Keep `PROJECT_STATE.md` concise and current, and point this roadmap at the next milestone.
+4. Create and push a stable repository checkpoint when repository access is available.
+5. Report which documents changed, the next milestone, and whether a fresh Work chat can continue safely.
+
 ## Completed milestones
 
 ### V1 — First playable prototype
