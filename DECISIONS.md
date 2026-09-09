@@ -127,3 +127,10 @@ Future agents should preserve these decisions unless new evidence or a product d
 - **Reason:** Local effects preserve scientific legibility, keep dark hemispheres meaningful, limit performance cost, and translate more honestly to the Canvas compatibility renderer.
 - **Impact:** WebGL and Canvas are not pixel-identical, but both preserve the same visual hierarchy and restrained scientific tone.
 - **Preserve:** Do not introduce global bloom, lens flares, saturated neon, fake holographic overlays, or effects that erase terminators without explicit product and performance review.
+
+## D019 — A milestone closes with continuity maintenance
+
+- **Decision:** After every substantial roadmap milestone, review what changed, update only the relevant permanent project documents, and create a stable repository checkpoint before starting the next milestone.
+- **Reason:** The implemented product, roadmap, and written continuity system must remain synchronized so work can safely move between Work chats.
+- **Impact:** A milestone is not considered fully closed until the relevant documentation and checkpoint are current. The closeout report names the changed documents, next milestone, and new-chat readiness.
+- **Preserve:** Do not skip milestone maintenance, erase historical decisions, rewrite unaffected documents, or mark an issue resolved without verification.
