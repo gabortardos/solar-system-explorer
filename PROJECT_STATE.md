@@ -4,9 +4,9 @@ Last verified: 2026-09-09 UTC
 
 Stable working product version: V1.1
 
-Application-code baseline: `acf79e7` on the Site source repository
+Application-code baseline entering VISUAL PASS #1: `c17e84a` on the Site source repository
 
-Documentation baseline entering this checkpoint: `c667ce1` on `main`; the stable checkpoint is the documentation-only commit containing this file.
+Current development state: VISUAL PASS #1 is complete in source; the stable checkpoint is the commit containing this file.
 
 Production: `https://solar-system-explorer-gabor.gabortardos.chatgpt.site`
 
@@ -26,17 +26,18 @@ The repository and deployed application are the source of truth. Do not rebuild 
 
 ## Current state
 
-V1.1 is a deployed, playable prototype covering the Sun, Moon, and eight planets. It opens near Earth and supports the core loop: select a world, travel or fly, inspect it, compare distances, and ask the offline astronomy guide.
+V1.1 is a deployed, playable prototype covering the Sun, Moon, and eight planets. It opens near Earth and supports the core loop: select a world, travel or fly, inspect it, compare distances, and ask the offline astronomy guide. VISUAL PASS #1 is complete in the Site source repository but has not been deployed.
 
-Checkpoint verification on 2026-09-09:
+VISUAL PASS #1 verification on 2026-09-09:
 
 - The production Site remains active on deployed version 4, sourced from `acf79e7`.
-- A clean recovered checkout of the Site source built successfully.
+- The updated Site source built successfully.
 - Lint passed.
-- All 8 tests passed.
-- No feature source was changed while creating this checkpoint.
-- An earlier runnable compatibility-mode inspection exercised system view, world selection, assisted travel to Saturn, arrival, details, and distance comparison.
-- Full WebGL visual QA was unavailable in the supervised browser and remains a validation gap.
+- All 9 tests passed, including a rendering-treatment contract.
+- Rendered desktop compatibility-mode inspection covered Earth, the Sun, Saturn, system overview, assisted transitions, labels, orbit context, loading, and layout overflow.
+- Inspection found and corrected cropped overview framing and visibly faceted Saturn rings.
+- No console error attributable to the application was present.
+- Full WebGL and physical-device mobile visual QA remain validation gaps because the supervised browser used the Canvas compatibility renderer.
 
 ## Working features
 
@@ -78,14 +79,16 @@ Checkpoint verification on 2026-09-09:
 ## Current visual systems
 
 - Textured sphere bodies with mobile geometry reduction.
-- Point light at the Sun, low ambient light, and ACES Filmic tone mapping.
-- Earth cloud layer and additive atmosphere rim shader.
-- Saturn ring mesh with alpha texture.
-- Deterministic procedural decorative star field.
-- Optional 256-segment planetary orbit lines.
+- Physically based non-solar materials, a warm point light at the Sun, restrained ambient fill, soft WebGL shadows, and ACES Filmic tone mapping.
+- Earth cloud layer, night-lights map gated to the unlit hemisphere, and a day-weighted atmospheric limb shader.
+- Saturn ring mesh with alpha texture, improved material response, body-aware arrival distance, and WebGL shadow participation.
+- Layered Sun treatment: self-lit textured surface plus a restrained additive corona without global bloom.
+- Deterministic decorative star field with subtle brightness and temperature variation.
+- Optional 256-segment planetary orbit lines with quiet default styling and selected-orbit emphasis.
 - Axial tilts for selected bodies and time-driven surface rotation.
 - DOM world labels projected from 3D positions.
-- Canvas fallback approximating spheres, lighting, rings, atmosphere, stars, and orbits.
+- Canvas fallback approximating the same visual language with a graded space background, improved terminators/night lights, smoother rings, restrained glows, material-aware orbit opacity, and corrected overview framing.
+- Assisted travel and system overview use quintic easing with a subtle temporary field-of-view expansion; reduced motion remains instant.
 
 ## Current navigation and flight
 
@@ -103,20 +106,19 @@ Checkpoint verification on 2026-09-09:
 - Persistent external mirror: private GitHub repository `gabortardos/solar-system-explorer`.
 - Hosting: ChatGPT Sites with Cloudflare Worker runtime.
 - Site status: active; deployed Site version 4, sourced from commit `acf79e7`.
-- Access at last inspection: custom/owner-only.
+- Access at last inspection: public link access.
 - `.openai/hosting.json` preserves the existing project identity; `d1` and `r2` are `null`.
 - GitHub CI validates pushes/PRs but does not deploy.
-- Repository divergence is currently explicit: GitHub `main` contains undeployed rendering work (`e8ec19d`) and the permanent-document commit (`16e4d3a`), while production remains on the verified Site-source V1.1 baseline. VISUAL PASS #1 must review and reconcile that work deliberately; do not overwrite either history or assume the GitHub rendering work is approved production state.
+- Repository divergence remains explicit: the Site source repository contains the verified VISUAL PASS #1 implementation, while GitHub `main` contains the earlier independent rendering experiment (`e8ec19d`) and continuity-document history. GitHub application code is not the production source and must not be merged or overwritten casually.
 - Runtime makes no external astronomy, AI, analytics, or authentication request.
 - Static sources/assets: NASA/JPL references and Solar System Scope/INOVE textures.
 
 ## Known limitations
 
-- Canvas compatibility overview framing behaved inconsistently during supervised inspection.
 - Full WebGL and physical-device mobile QA remain incomplete.
 - At least one production chunk exceeds 500 kB after minification.
-- Earth night-map asset is present but unused.
-- Sun corona/glow, material response, ring shadows, orbit styling, and cinematic camera choreography are basic.
+- WebGL shadow cost has not been profiled on physical low/mid-range devices.
+- Saturn ring/planet shadows are enabled in WebGL but the Canvas renderer uses a visual approximation rather than physical shadow projection.
 - Labels lack overlap/occlusion management.
 - Search covers only the ten current bodies.
 - Guide supports curated topics rather than open-ended AI conversation.
@@ -126,14 +128,10 @@ See [KNOWN_ISSUES.md](KNOWN_ISSUES.md) for tracked status and fixes.
 
 ## Current milestone and unfinished work
 
-V1.1 is complete as the stable baseline. The next development milestone is **VISUAL PASS #1**. Implementation has not begun on the stable Site-source checkpoint.
+**VISUAL PASS #1 is complete in source and awaiting product-owner review.** It improved lighting, Sun appearance, star field, planet materials, Earth atmosphere and night side, Saturn rings, orbit lines, shadows, and camera transitions without changing the astronomy model, React/scene boundary, scale system, navigation model, guide, or persistence.
 
-VISUAL PASS #1 covers lighting, Sun appearance, star field, planet materials, Earth atmosphere and night side, Saturn rings, orbit lines, shadows, and camera transitions. It must preserve the current architecture, scientific calculations, flight behavior, fallback renderer, and restrained visual language.
-
-Before implementing it, inspect the undeployed GitHub rendering work in `e8ec19d` as a work-in-progress. Reuse only changes that pass source review, build/tests, WebGL and Canvas inspection, and product-owner feedback.
-
-Smooth non-gamer flight, broader navigation regression coverage, mobile/device QA, and measured bundle optimization remain unfinished work after or alongside the visual milestone, as ROADMAP.md specifies.
+The next planned engineering milestone is **V1.2 — Flight and navigation quality**. Smooth non-gamer flight, broader navigation regression coverage, WebGL/physical-device mobile QA, and measured bundle optimization remain unfinished.
 
 ## Next recommended task
 
-Begin **VISUAL PASS #1** from this stable checkpoint. First compare the production Site-source renderer with the undeployed GitHub rendering work, then plan and implement a controlled visual pass. Preserve `app/astronomy.ts` as the source for scientific positions/distances and do not deploy until the product owner approves the completed milestone.
+Review VISUAL PASS #1 with the product owner. If approved, publish the checkpoint to the existing public Site. Do not deploy automatically. After approval/deployment, begin V1.2 with navigation regression coverage and smoother non-gamer flight.

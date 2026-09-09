@@ -120,3 +120,10 @@ Future agents should preserve these decisions unless new evidence or a product d
 - **Reason:** Project continuity must not depend on one conversation's history or context window.
 - **Impact:** A new Work chat reads `PROJECT_STATE.md` first, then the specialized documents relevant to its task, and verifies their claims against the repository and runnable application.
 - **Preserve:** Update these documents when milestones, architecture, scientific rules, deployment state, or important decisions change. Do not replace them with chat-only handoffs or allow duplicate copies to drift silently.
+
+## D018 — Layered physical cues instead of global spectacle
+
+- **Decision:** Build the cinematic look from local, explainable layers—physically based planet materials, Sun-centered lighting, day-gated Earth atmosphere/night lights, textured rings, quiet orbits, deterministic stars, and eased camera framing—without global bloom or decorative post-processing.
+- **Reason:** Local effects preserve scientific legibility, keep dark hemispheres meaningful, limit performance cost, and translate more honestly to the Canvas compatibility renderer.
+- **Impact:** WebGL and Canvas are not pixel-identical, but both preserve the same visual hierarchy and restrained scientific tone.
+- **Preserve:** Do not introduce global bloom, lens flares, saturated neon, fake holographic overlays, or effects that erase terminators without explicit product and performance review.

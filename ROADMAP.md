@@ -33,38 +33,39 @@ Status: completed through `2582807`, `acf79e7`, `89d24cd`, and the permanent-doc
 - CI and durable project documentation.
 - Build, lint, and 8 tests verified on 2026-09-09.
 
+### VISUAL PASS #1
+
+Status: completed in source on 2026-09-09; awaiting owner review and deployment approval.
+
+- Physically based planet materials, stronger directional light-dark separation, restrained ambient fill, and soft WebGL shadows.
+- Layered Sun corona, varied deterministic stars, Earth night lights/day-weighted atmosphere, and improved Saturn rings.
+- Muted contextual orbit lines and eased assisted/system-view camera transitions.
+- Canvas parity improvements for background, terminators, night lights, rings, glows, and overview framing.
+- Production build, lint, and 9 tests passed.
+- Desktop compatibility rendering inspected for Earth, Sun, Saturn, system overview, travel, and layout; cropped overview and ring faceting were corrected.
+- WebGL and physical-device mobile inspection remain required before release confidence is complete.
+
 ## Current milestone
 
-### VISUAL PASS #1
+### V1.2 — Flight and navigation quality
 
 Status: planned; implementation has not begun.
 
-1. Establish rendered baselines for the current WebGL and Canvas paths.
-2. Review the undeployed GitHub rendering work in `e8ec19d`; treat it as a work-in-progress, not an accepted milestone.
-3. Improve lighting and shadows without obscuring scientifically meaningful day/night orientation.
-4. Improve the Sun, star field, planet materials, Earth atmosphere/night side, Saturn rings, and orbit lines.
-5. Improve camera transitions and arrival framing without changing the product's flight model.
-6. Inspect desktop and mobile layouts plus both rendering paths; fix regressions before requesting owner feedback.
-7. Keep production unchanged until explicit owner approval.
+1. Add navigation regression coverage for focus, overview, travel, braking, cancellation, and reduced motion.
+2. Add smooth non-gamer-friendly acceleration, deceleration, and steering without removing direct control.
+3. Refine body-aware assisted arrival framing where VISUAL PASS #1 QA shows a need.
+4. Complete WebGL and physical-device mobile visual/interaction QA.
+5. Measure bundle/startup and WebGL shadow cost; optimize only where evidence supports it.
 
 ```mermaid
 flowchart TD
-  Baseline["Rendered baseline"] --> Review["Review existing visual work"]
-  Review --> Visuals["Controlled visual improvements"]
-  Visuals --> QA["WebGL, Canvas, mobile QA"]
+  Tests["Navigation regression checks"] --> Flight["Smooth manual flight"]
+  Flight --> Camera["Arrival framing refinement"]
+  Camera --> QA["WebGL and mobile QA"]
   QA --> Release["Owner-approved deployment"]
 ```
 
 ## Next milestones
-
-### V1.2 — Flight and navigation quality
-
-Provisional; follows VISUAL PASS #1 unless a visual change requires a tightly scoped control/camera correction.
-
-- Navigation regression baseline.
-- Smooth non-gamer-friendly manual movement and steering.
-- Better assisted-travel choreography and arrival framing.
-- Measured bundle/startup optimization where useful.
 
 ### V1.3 — Close-approach depth and selected worlds
 

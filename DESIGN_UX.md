@@ -120,11 +120,22 @@ Planned improvement: smooth acceleration/deceleration, constrained distance-awar
 - Do not encode state only by hue.
 - Future audio requires mute and captions/transcripts where relevant.
 
-## Visual upgrade rules for V1.2
+## VISUAL PASS #1 implementation
 
-- Improve lighting, Sun, stars, materials, Earth atmosphere/night side, Saturn rings, orbit lines, shadows, and transitions incrementally.
-- Inspect rendering after each material camera/lighting group of changes.
-- Protect performance on modern consumer hardware.
+- Use a warm Sun point light, very restrained cool ambient fill, ACES Filmic tone mapping, and soft WebGL shadows. Night hemispheres must remain visibly dark.
+- Use physically based materials for planets while keeping the Sun self-lit. Material roughness may vary by broad body type; do not imply measured surface BRDFs.
+- Render the Sun as a textured emissive-looking sphere with a restrained layered corona. Do not add global bloom, lens flares, or pulsing effects.
+- Earth night lights appear only on the unlit hemisphere. The atmosphere is strongest on the day-facing limb and remains subtle on the night limb. Clouds sit above the surface without flattening the terminator.
+- Stars are deterministic decorative context, not a real star catalogue. Vary brightness and warm/cool tint subtly; avoid dense glitter or oversized points.
+- Saturn rings use the existing alpha texture, physically based response, and shadow participation in WebGL. Compatibility rings prioritize smooth silhouettes and band structure over physical parity.
+- Orbit lines stay thin, muted, and optional. The focused orbit may be clearer; nonfocused paths should recede. System overview must keep all ten bodies inside the useful scene area and away from the details panel.
+- Assisted travel and system overview use quintic easing plus a small temporary field-of-view expansion. This is cinematic framing, not physical acceleration or an orbital trajectory.
+- The Canvas compatibility renderer shares the same visual hierarchy through approximations: graded near-black space, strong terminators, restrained glows, night-light blending, smooth rings, and quiet orbits.
+- Preserve the established HUD. Visual effects must not compete with worlds, reduce text contrast, or add decorative interface chrome.
+
+## Future visual QA rules
+
+- Protect performance on modern consumer hardware, especially when WebGL shadows are enabled.
+- Verify Earth, Sun, Saturn, overview, assisted arrival, scientific scale, and reduced motion in both rendering paths before release.
+- Perform physical-device mobile checks before treating responsive visual QA as complete.
 - Keep effects scientifically honest and document illustrative behavior.
-- Preserve the established HUD unless a verified conflict requires adjustment.
-

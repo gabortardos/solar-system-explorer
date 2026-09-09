@@ -8,15 +8,11 @@ Severity: **High** blocks a core path/risks serious regression; **Medium** mater
 
 | ID | Description | Severity | Status | System | Workaround | Recommended fix |
 | --- | --- | --- | --- | --- | --- | --- |
-| KI-001 | Canvas system overview showed inconsistent/oversized Earth framing in supervised inspection. | Medium | Open; environment-specific so far | Canvas, camera | Use focus/travel; prefer WebGL. | Reproduce; invalidate render cache on scene/focus changes; verify camera/matrices. |
 | KI-002 | Full WebGL appearance was not verified because the supervised browser lacked WebGL. | Medium | Validation gap | WebGL visuals | Test in a capable browser. | Record desktop/mobile WebGL QA before V1.2 release. |
 | KI-003 | A minified production chunk exceeds 500 kB. | Medium | Open | Startup | Current build works. | Measure transfer/parse time; refine lazy loading/chunking only with evidence. |
 | KI-004 | Manual input has no acceleration, inertia, or sensitivity control. | Medium | V1.2 planned | Flight | Use assisted travel/brake/refocus. | Add smooth velocity/acceleration/deceleration and tests. |
-| KI-005 | Assisted arrival framing is not consistently cinematic across body sizes/rings. | Medium | V1.2 planned | Camera | Refocus after arrival. | Body-aware approach/framing; test Sun, Earth, Saturn, outer planets, reduced motion. |
-| KI-006 | `earth_nightmap.jpg` is unused. | Low | Open | Earth material | Ordinary shaded night side. | Restrained unlit-side night blend with honest labeling. |
-| KI-007 | WebGL Sun has no dedicated corona/glow. | Low | V1.2 planned | Sun | Current texture works. | Performance-conscious layered/shader glow without excessive bloom. |
-| KI-008 | Saturn lacks meaningful ring/planet shadows. | Medium | V1.2 planned | Saturn | Current ring remains visible. | Depth-safe shader/approximation; test transparency and Canvas. |
-| KI-009 | Orbit lines are uniform and may clutter. | Low | V1.2 planned | Orbits | Toggle off. | Restrained target/context emphasis and distance-aware opacity. |
+| KI-005 | Assisted arrival framing has only been visually checked for Earth, Saturn, and the Sun in compatibility mode. | Medium | Partially improved | Camera | Refocus after arrival. | Verify all body sizes, WebGL, reduced motion, and mobile during V1.2. |
+| KI-008 | Saturn ring/planet shadows are enabled in WebGL, but Canvas uses lighting/occlusion approximations rather than physical shadow projection. | Low | Intentional parity limit | Saturn, Canvas | Use WebGL for full treatment. | Verify WebGL transparency/shadow quality; keep Canvas approximation unless evidence justifies more cost. |
 | KI-010 | Labels can overlap and lack body occlusion. | Low | Open | Labels | Toggle off/use search. | Crowding priority, distance/selection rules, occlusion checks. |
 | KI-011 | Automated coverage omits camera feel, WebGL visuals, touch, and responsive layout. | Medium | Open | QA | Manual testing. | Focused engine tests plus repeatable browser/device checklist. |
 | KI-012 | Search/guide cover ten bodies; guide is keyword-based, not AI. | Low | Intentional V1.1 | Search/guide | Use suggested topics. | Generalize data/search before grounded AI. |
@@ -24,6 +20,7 @@ Severity: **High** blocks a core path/risks serious regression; **Medium** mater
 | KI-014 | Moon and Earth positions are simplified. | Medium | Documented | Astronomy | UI discloses limits. | Verified ephemeris strategy for higher-accuracy mode. |
 | KI-015 | `Body` mixes science, editorial, and rendering fields. | Medium | Debt before expansion | Data | Fine for ten bodies. | Validated/versioned schemas with units, provenance, parents, type fields. |
 | KI-016 | No source-code license selected. | Low | Open decision | Legal/repo | Repository stays private. | Owner selects license before public/open-source distribution. |
+| KI-017 | WebGL soft-shadow cost has not been measured on physical low/mid-range devices. | Medium | Open validation | Performance, WebGL | Mobile uses a smaller shadow map. | Profile frame time/memory on representative devices and reduce shadow scope/resolution if needed. |
 
 ## Deferred capabilities, not current bugs
 
@@ -35,6 +32,11 @@ Severity: **High** blocks a core path/risks serious regression; **Medium** mater
 - Controls/fallback stabilization: `fa6a107`.
 - Mobile/persistence/guide/build improvements: `2582807`.
 - Repository/CI/documentation baseline: `acf79e7`, `89d24cd`.
+- Canvas overview framing: corrected in VISUAL PASS #1 with renderer cache invalidation, a wider overview, and left-biased composition; all ten labels were visible in desktop inspection.
+- Earth night map: activated only on the unlit hemisphere in WebGL and Canvas.
+- Sun corona: added as a restrained local layer without global bloom.
+- Orbit styling: muted nonfocused paths and clearer focused context added in both renderers.
+- Saturn compatibility rings: segmentation increased and faceting reduced during rendered inspection.
 
 ## Maintenance rules
 
@@ -43,4 +45,3 @@ Severity: **High** blocks a core path/risks serious regression; **Medium** mater
 - Rendering fixes check both paths where applicable.
 - Scientific fixes update [ASTRONOMY_DATA.md](ASTRONOMY_DATA.md).
 - Decision changes update [DECISIONS.md](DECISIONS.md).
-
