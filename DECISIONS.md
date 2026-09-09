@@ -114,3 +114,9 @@ Future agents should preserve these decisions unless new evidence or a product d
 - **Impact:** Starter scaffolding stays dormant.
 - **Preserve:** Never commit credentials or activate services casually.
 
+## D017 — Repository documents are the official continuity system
+
+- **Decision:** `MASTER_SPEC.md`, `PROJECT_STATE.md`, `ARCHITECTURE.md`, `DESIGN_UX.md`, `ASTRONOMY_DATA.md`, `ROADMAP.md`, `DECISIONS.md`, and `KNOWN_ISSUES.md` are the official continuity system for future Work chats.
+- **Reason:** Project continuity must not depend on one conversation's history or context window.
+- **Impact:** A new Work chat reads `PROJECT_STATE.md` first, then the specialized documents relevant to its task, and verifies their claims against the repository and runnable application.
+- **Preserve:** Update these documents when milestones, architecture, scientific rules, deployment state, or important decisions change. Do not replace them with chat-only handoffs or allow duplicate copies to drift silently.

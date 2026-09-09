@@ -2,9 +2,11 @@
 
 Last verified: 2026-09-09 UTC
 
-Stable product version: V1.1
+Stable working product version: V1.1
 
-Repository baseline inspected: `89d24cd` on `main`
+Application-code baseline: `acf79e7` on the Site source repository
+
+Documentation baseline entering this checkpoint: `c667ce1` on `main`; the stable checkpoint is the documentation-only commit containing this file.
 
 Production: `https://solar-system-explorer-gabor.gabortardos.chatgpt.site`
 
@@ -26,12 +28,14 @@ The repository and deployed application are the source of truth. Do not rebuild 
 
 V1.1 is a deployed, playable prototype covering the Sun, Moon, and eight planets. It opens near Earth and supports the core loop: select a world, travel or fly, inspect it, compare distances, and ask the offline astronomy guide.
 
-Automated verification on 2026-09-09:
+Checkpoint verification on 2026-09-09:
 
-- Production build passed.
+- The production Site remains active on deployed version 4, sourced from `acf79e7`.
+- A clean recovered checkout of the Site source built successfully.
 - Lint passed.
 - All 8 tests passed.
-- A runnable compatibility-mode inspection exercised system view, world selection, assisted travel to Saturn, arrival, details, and distance comparison.
+- No feature source was changed while creating this checkpoint.
+- An earlier runnable compatibility-mode inspection exercised system view, world selection, assisted travel to Saturn, arrival, details, and distance comparison.
 - Full WebGL visual QA was unavailable in the supervised browser and remains a validation gap.
 
 ## Working features
@@ -93,14 +97,16 @@ Automated verification on 2026-09-09:
 - Camera collision protection keeps it outside enlarged visible body spheres.
 - Focused-body following compensates for orbital movement after arrival.
 
-## Deployment and external services
+## Deployment, repositories, and external services
 
-- Canonical source: private GitHub repository `gabortardos/solar-system-explorer`.
+- Stable production source: the ChatGPT Sites source repository identified by `.openai/hosting.json`.
+- Persistent external mirror: private GitHub repository `gabortardos/solar-system-explorer`.
 - Hosting: ChatGPT Sites with Cloudflare Worker runtime.
 - Site status: active; deployed Site version 4, sourced from commit `acf79e7`.
 - Access at last inspection: custom/owner-only.
 - `.openai/hosting.json` preserves the existing project identity; `d1` and `r2` are `null`.
 - GitHub CI validates pushes/PRs but does not deploy.
+- Repository divergence is currently explicit: GitHub `main` contains undeployed rendering work (`e8ec19d`) and the permanent-document commit (`16e4d3a`), while production remains on the verified Site-source V1.1 baseline. VISUAL PASS #1 must review and reconcile that work deliberately; do not overwrite either history or assume the GitHub rendering work is approved production state.
 - Runtime makes no external astronomy, AI, analytics, or authentication request.
 - Static sources/assets: NASA/JPL references and Solar System Scope/INOVE textures.
 
@@ -120,15 +126,14 @@ See [KNOWN_ISSUES.md](KNOWN_ISSUES.md) for tracked status and fixes.
 
 ## Current milestone and unfinished work
 
-V1.1 is complete as the stable baseline. The active planned milestone is **V1.2 — Flight and Visual Quality**:
+V1.1 is complete as the stable baseline. The next development milestone is **VISUAL PASS #1**. Implementation has not begun on the stable Site-source checkpoint.
 
-1. Add regression coverage for focus, overview, travel, braking, reduced motion, and compatibility framing.
-2. Make manual movement and steering smoother for non-gamers.
-3. Improve assisted-travel camera choreography and arrival framing.
-4. Upgrade lighting, Sun, stars, planet materials, Earth atmosphere/night side, Saturn rings/shadows, orbit lines, and shadows.
-5. Visually test WebGL and Canvas on desktop and mobile before deployment.
-6. Measure startup/bundle cost and optimize where evidence supports it.
+VISUAL PASS #1 covers lighting, Sun appearance, star field, planet materials, Earth atmosphere and night side, Saturn rings, orbit lines, shadows, and camera transitions. It must preserve the current architecture, scientific calculations, flight behavior, fallback renderer, and restrained visual language.
+
+Before implementing it, inspect the undeployed GitHub rendering work in `e8ec19d` as a work-in-progress. Reuse only changes that pass source review, build/tests, WebGL and Canvas inspection, and product-owner feedback.
+
+Smooth non-gamer flight, broader navigation regression coverage, mobile/device QA, and measured bundle optimization remain unfinished work after or alongside the visual milestone, as ROADMAP.md specifies.
 
 ## Next recommended task
 
-Begin V1.2 with the navigation regression baseline and smooth manual flight, then perform the cinematic rendering pass. Preserve `app/astronomy.ts` as the source for scientific positions/distances and do not deploy until the product owner approves the completed milestone.
+Begin **VISUAL PASS #1** from this stable checkpoint. First compare the production Site-source renderer with the undeployed GitHub rendering work, then plan and implement a controlled visual pass. Preserve `app/astronomy.ts` as the source for scientific positions/distances and do not deploy until the product owner approves the completed milestone.

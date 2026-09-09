@@ -25,7 +25,7 @@ Status: completed in `fa6a107`.
 
 ### V1.1 — Mobile, persistence, and repository baseline
 
-Status: completed through `2582807`, `acf79e7`, and `89d24cd`.
+Status: completed through `2582807`, `acf79e7`, `89d24cd`, and the permanent-document/checkpoint commits that follow them.
 
 - Mobile touch controls and responsive improvements.
 - Visited-world persistence/reset and expanded offline guide.
@@ -35,27 +35,36 @@ Status: completed through `2582807`, `acf79e7`, and `89d24cd`.
 
 ## Current milestone
 
-### V1.2 — Flight and visual quality
+### VISUAL PASS #1
 
 Status: planned; implementation has not begun.
 
-1. Navigation regression baseline.
-2. Smooth non-gamer-friendly manual movement and steering.
-3. Better assisted-travel choreography and arrival framing.
-4. Cinematic, restrained improvements to lighting/shadows, Sun, stars, planet materials/night sides, Earth, Saturn rings, orbit lines, and transitions.
-5. WebGL/Canvas desktop and mobile QA.
-6. Measured bundle/startup optimization where useful.
+1. Establish rendered baselines for the current WebGL and Canvas paths.
+2. Review the undeployed GitHub rendering work in `e8ec19d`; treat it as a work-in-progress, not an accepted milestone.
+3. Improve lighting and shadows without obscuring scientifically meaningful day/night orientation.
+4. Improve the Sun, star field, planet materials, Earth atmosphere/night side, Saturn rings, and orbit lines.
+5. Improve camera transitions and arrival framing without changing the product's flight model.
+6. Inspect desktop and mobile layouts plus both rendering paths; fix regressions before requesting owner feedback.
+7. Keep production unchanged until explicit owner approval.
 
 ```mermaid
 flowchart TD
-  Tests["Navigation regression checks"] --> Flight["Smooth manual flight"]
-  Flight --> Camera["Assisted camera pass"]
-  Camera --> Visuals["Rendering pass"]
+  Baseline["Rendered baseline"] --> Review["Review existing visual work"]
+  Review --> Visuals["Controlled visual improvements"]
   Visuals --> QA["WebGL, Canvas, mobile QA"]
   QA --> Release["Owner-approved deployment"]
 ```
 
 ## Next milestones
+
+### V1.2 — Flight and navigation quality
+
+Provisional; follows VISUAL PASS #1 unless a visual change requires a tightly scoped control/camera correction.
+
+- Navigation regression baseline.
+- Smooth non-gamer-friendly manual movement and steering.
+- Better assisted-travel choreography and arrival framing.
+- Measured bundle/startup optimization where useful.
 
 ### V1.3 — Close-approach depth and selected worlds
 
@@ -102,4 +111,3 @@ Provisional; depends on trustworthy structured data and approved cost/privacy de
 - High-detail worlds depend on performance budgets, LOD, streaming, and device tests.
 - Wider date accuracy depends on a verified ephemeris/time-standard strategy.
 - Deployment depends on build/tests, relevant visual QA, and owner approval.
-
