@@ -114,6 +114,12 @@ Keyboard/touch movement writes active codes into a set. Each frame calculates fo
 
 Collision correction keeps the camera outside enlarged visible spheres. It is not spacecraft physics.
 
+### Simulation clock and orbital updates
+
+`app/simulation-clock.ts` is the single clock policy. It anchors simulation milliseconds to `performance.now()` and computes `anchor + elapsed × rate`, so frame duration does not accumulate rounding drift. Changing among pause, 1×, 10×, 100× and 1,000× first settles the old rate, then re-anchors at the same instant; the scene never jumps solely because speed changed. It clamps at the data model's `[1800, 2050)` interval and defaults to real time.
+
+`app/scene.ts` reads the clock and recalculates the ten active body transforms on every animation frame. Camera following uses the focused body's before/after positions so orbit motion does not leave the camera behind. Orbit paths remain static 256-segment approximations and are not rebuilt per frame. React receives time notifications at most twice per second, keeping high-frequency work outside component state. This is inexpensive for ten bodies; future catalogue growth must update only a spatially selected active set, not every stored record.
+
 ## State management and data flow
 
 ```mermaid
@@ -131,6 +137,7 @@ sequenceDiagram
 
 - React `useState` is sufficient for current single-route UI state.
 - Scene-local mutable state holds animation, camera, controls, input, textures, and flight.
+- The scene-local `SimulationClock` owns authoritative running time; React stores only the displayed snapshot and selected rate.
 - `localStorage` stores visited IDs/update time under `solar-explorer-progress-v1`.
 - Dynamic imports defer `app/scene.ts` and `app/guide.ts` until needed.
 
