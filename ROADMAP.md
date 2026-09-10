@@ -90,6 +90,16 @@ Status: initial data layer completed and published on 2026-09-10 (public Site ve
 - No runtime astronomy API, paid usage or new dependency.
 - Production build, lint and 23 tests pass. Standalone typecheck issues outside the new modules are recorded as KI-021; prior WebGL/device QA gaps remain open.
 
+### REAL ORBITAL POSITIONS
+
+Status: completed and published on 2026-09-10 (checkpoint `7c719ab`, public Site version 7).
+
+- Added a monotonic UTC simulation clock with pause, real time, 10×, 100× and 1,000×.
+- Existing JPL 1800–2050 planet elements now drive continuous per-frame positions; focused-body following remains stable as worlds move.
+- Added JPL's published nominal fit-error metadata and in-product disclosure. The Sun remains the heliocentric origin; the Moon remains illustrative rather than falsely upgraded.
+- Kept orbit polylines static and React time updates at 2 Hz while positions animate per frame.
+- Production build, lint and all 28 tests pass. Automated clock/orbit integration checks were added; current-environment rendered browser inspection was unavailable, so physical-device and full-WebGL QA remain open.
+
 ## Current milestone
 
 ### V1.2 — Flight and navigation quality
