@@ -61,6 +61,7 @@ All data needed by the app ships locally. No external astronomy API, paid servic
 `calculatePosition(id, utcMs)` returns available coordinates with unit, frame, time, model, quality, sources and caveat, or `unavailable` with `value: null` and a reason. Unknown IDs, unsupported models, invalid times and out-of-range dates fail explicitly. The legacy ten-body adapter throws for invalid requests rather than inventing positions.
 
 - Planet model: Table 1, J2000 TDB coefficients; UTC is still substituted for TDB and disclosed. Twelve Newton iterations solve Kepler's equation.
+- For the 1800–2050 fit, position results also expose JPL's published nominal longitude/latitude/radial errors per planet. Radial figures range from 1,000 km (Mercury) to 1,500,000 km (Saturn); they are model guidance, not per-frame uncertainty calculations.
 - Public calculation interval: `[1800-01-01, 2050-01-01)`; UI still stops at the end of 2049.
 - Returned scientific axes: heliocentric ecliptic/equinox J2000 `[X,Y,Z]` in AU. Scene mapping is explicitly `[X,Z,-Y]`, with no scale change.
 - Sun: origin of the chosen heliocentric frame, not a computed barycentric solar trajectory.
@@ -69,6 +70,8 @@ All data needed by the app ships locally. No external astronomy API, paid servic
 - Ceres/Pluto: physical properties and reference orbital periods are imported; a positional element set is not yet imported. The current JPL approximate-positions page explicitly excludes Pluto. No remembered or guessed Pluto/Ceres coefficients are used.
 
 `calculateDistance()` uses simultaneous uncompressed model coordinates, converted by the defined AU. Results carry time, sources and approximate/illustrative quality. `dynamicValues()` separates these calculations from `observations`, which is explicitly unavailable. Light time is geometric distance/c, not observed retarded-time astrometry or a spacecraft travel duration.
+
+The simulation clock starts at the current UTC instant, advances from a monotonic browser-time anchor, and offers pause, 1×, 10×, 100× and 1,000×. It does not improve ephemeris accuracy: UTC still substitutes for TDB, coordinates are geometric simultaneous positions, Earth is the Earth–Moon barycenter, and the lunar model omits perturbations/precession. Rates alter only the evaluation time, never the source coefficients or displayed physical units.
 
 ## Visualization scale and compression
 
@@ -141,4 +144,4 @@ The current panels consume canonical numerical records and expose field-level so
 
 Numerical rows are a reviewed local source snapshot, not a live scraper. To update: retrieve the authoritative table, preserve its epoch/frame/reference/uncertainty, edit only the corresponding row, bump `DATASET_VERSION`, record the review here or in DECISIONS, and run the catalogue and astronomy/scale regressions. Never claim `retrievedAt` is the measurement epoch or that a recently retrieved compilation is newly measured data.
 
-`tests/data-layer.test.mjs` verifies 32-body scope, referential integrity, units/provenance, missing-value behavior, independent Kepler/axis cases, time boundaries, deterministic offline calculations and scene/guide integration. Existing scale tests still verify scientific ratios and double-to-float conversion. No higher-precision ephemeris accuracy is claimed by these tests.
+`tests/data-layer.test.mjs` verifies 32-body scope, referential integrity, units/provenance, missing-value behavior, independent Kepler/axis cases, time boundaries, deterministic offline calculations and scene/guide integration. `tests/simulation-clock.test.mjs` verifies exact rates, monotonic continuity, clamping, UTC output, a bounded nonzero orbital step and attached JPL error metadata. Existing scale tests still verify scientific ratios and double-to-float conversion. No higher-precision ephemeris accuracy is claimed by these tests.
