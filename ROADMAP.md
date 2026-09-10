@@ -78,6 +78,18 @@ Status: completed and published on 2026-09-09.
 - Build/lint and all 17 tests passed; rendered compatibility QA covered 390 × 844 closed/open/flight/hidden states and desktop preservation.
 - Physical-device and full-WebGL validation remain in V1.2.
 
+### Step 8 — AUTHORITATIVE ASTRONOMICAL DATA
+
+Status: initial data layer completed and published on 2026-09-10 (public Site version 6).
+
+- Local versioned 32-body catalogue: Sun, eight planets, 21 selected major moons, Ceres and Pluto.
+- Separate scientific quantities, orbital elements, calculated positions, dynamic observations, editorial content and presentation metadata.
+- JPL/NASA/IAU sources, field-level units/provenance/uncertainty, explicit missing values and source/reliability UI.
+- Existing ten destinations read canonical data; the Moon now has a sourced mean starting ellipse and an explicit illustrative accuracy limit.
+- New-body rendering, precision lunar ephemerides and unimported Ceres/Pluto positions remain future work, not silently completed features.
+- No runtime astronomy API, paid usage or new dependency.
+- Production build, lint and 23 tests pass. Standalone typecheck issues outside the new modules are recorded as KI-021; prior WebGL/device QA gaps remain open.
+
 ## Current milestone
 
 ### V1.2 — Flight and navigation quality
@@ -102,7 +114,7 @@ flowchart TD
 
 ### V1.3 — Close-approach depth and selected worlds
 
-Provisional; depends on V1.2 quality/performance.
+Provisional; depends on V1.2 quality/performance and validated local position models for the now-catalogued bodies.
 
 - Explicit LOD strategy.
 - Selected objects: Pluto/Charon, Ceres, Galilean moons, Titan, Enceladus.
@@ -139,7 +151,7 @@ Provisional; depends on trustworthy structured data and approved cost/privacy de
 
 ## Dependency notes
 
-- Catalogue growth depends on separating scientific, editorial, and rendering schemas.
+- Step 8 completed the initial schema separation. Catalogue/rendering growth now depends on validated ephemerides, frame conversions, source review and bounded ingestion/streaming.
 - Natural-language search/AI depend on source-provenance metadata.
 - Cloud progress/accounts depend on identity, privacy, database, and cost decisions.
 - High-detail worlds depend on performance budgets, LOD, streaming, and device tests.

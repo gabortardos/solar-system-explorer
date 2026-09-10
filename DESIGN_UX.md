@@ -151,3 +151,11 @@ Planned improvement: smooth acceleration/deceleration, constrained distance-awar
 - Verify Earth, Sun, Saturn, overview, assisted arrival, scientific scale, and reduced motion in both rendering paths before release.
 - Perform physical-device mobile checks before treating responsive visual QA as complete.
 - Keep effects scientifically honest and document illustrative behavior.
+
+## Scientific data presentation (Step 8)
+
+- Keep provenance secondary in a collapsible “Data sources and reliability” section within the existing details sheet; preserve the compact mobile HUD.
+- Label solar radius/diameter as nominal and solar rotation as an approximate equatorial period; never imply rigid solar rotation.
+- Distinguish reference gravity from a derived spherical estimate and disclose approximation limits next to distance comparisons.
+- Unavailable scientific values render as unavailable/—, never zero, an invented default, or a loading value that resembles a measurement.
+- Educational summaries, calculated positions and live observations must remain visibly distinct. Current lunar positions are illustrative; existing descriptions are curated educational copy.

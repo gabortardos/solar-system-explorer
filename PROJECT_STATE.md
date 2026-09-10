@@ -1,12 +1,12 @@
 # Solar System Explorer — Current Project State
 
-Last verified: 2026-09-09 UTC
+Last verified: 2026-09-10 UTC
 
 Stable working product version: V1.1
 
-Stable source checkpoint before the mobile HUD pass: `9e565cc` on the Site source repository.
+Previous published application checkpoint: `5bc749b` (public Site version 5, mobile HUD).
 
-Current development state: VISUAL PASS #1, the SCALE ARCHITECTURE PASS, and the MOBILE HUD PASS are complete; the stable checkpoint is the commit containing this file.
+Current development state: Step 8 AUTHORITATIVE ASTRONOMICAL DATA implemented and published; dataset `2026.09.10-1`. The earlier visual, scale and mobile passes remain intact.
 
 Production: `https://solar-system-explorer-gabor.gabortardos.chatgpt.site`
 
@@ -26,19 +26,15 @@ The repository and deployed application are the source of truth. Do not rebuild 
 
 ## Current state
 
-V1.1 is a public, playable prototype covering the Sun, Moon, and eight planets. It opens near Earth and supports the core loop: select a world, travel or fly, inspect it, compare distances, and ask the offline astronomy guide. The current public release includes VISUAL PASS #1, the two-scale architecture, and the compact mobile HUD.
+V1.1 is a public, playable prototype covering the Sun, Moon, and eight planets. It opens near Earth and supports the core loop: select a world, travel or fly, inspect it, compare distances, and ask the offline astronomy guide. The current public release includes VISUAL PASS #1, the two-scale architecture, the compact mobile HUD and the Step 8 local astronomy layer.
 
-Latest source verification on 2026-09-09:
+Latest source verification (2026-09-10):
 
-- The production Site is active with public link access and is published from the checkpoint containing this file.
-- The updated Site source built successfully and lint passed.
-- All 17 tests passed, including scientific-scale ratios, exploration compression, satellite hierarchy, camera-relative precision, clipping, rendering treatment, the compact-mobile-HUD contract, and a synthetic million-record coordinate conversion.
-- Rendered desktop compatibility-mode inspection covered Earth, the Sun, Saturn, system overview, assisted transitions, labels, orbit context, loading, and layout overflow.
-- Inspection found and corrected cropped overview framing and visibly faceted Saturn rings.
-- No console error attributable to the application was present.
-- Compatibility-mode gameplay inspection passed repeated scale switching, unchanged displayed measurements, Moon travel/arrival, visited progress, Saturn travel/braking, system overview, manual flight, and focus recovery.
-- A rendered 390 × 844 responsive check passed for the compact HUD, unified menu, optional flight cluster, hide/restore mode, and overflow. Desktop compatibility rendering remained intact.
-- Full WebGL and physical-device mobile visual QA remain validation gaps because the supervised browser used the Canvas compatibility renderer inside a phone-sized frame.
+- Public Site version 6 deployed successfully on 2026-09-10 from application commit `46a2202d072826a3ff8b541c2741f3b09f858d19`. Public link access is preserved. The current commit may add continuity-only release notes after that application revision.
+- Production build, lint and all 23 tests passed, including six new catalogue/source/missing-value/model tests and all existing astronomy/scale/UI regressions.
+- No render/navigation/scale policy changes were made. Existing desktop and 390 × 844 compatibility-mode visual/gameplay QA belongs to the previous published milestone, not this data pass.
+- Standalone TypeScript check reports existing flight-nullability and Worker ambient-type errors outside the new data modules (KI-021).
+- Full WebGL and physical-device mobile QA remain open.
 
 ## Working features
 
@@ -61,9 +57,10 @@ Latest source verification on 2026-09-09:
 - React 19 + TypeScript UI in a Vinext/Next-compatible app structure.
 - Vite 8 build and Cloudflare Worker-compatible output.
 - Imperative Three.js engine in `app/scene.ts`; React state and panels in `app/page.tsx`.
-- Pure astronomical catalogue/calculations in `app/astronomy.ts`.
+- Canonical versioned data in `app/data/`; `app/astronomy.ts` is the existing ten-destination compatibility adapter.
+- Physical/orbital/calculated/dynamic/editorial modules are separate; visual metadata lives in `app/body-presentation.ts`.
 - Central presentation-scale policy in `app/scale.ts` and camera-relative GPU projection in `app/render-space.ts`.
-- Curated offline knowledge routing in `app/guide.ts`.
+- Curated offline routing in `app/guide.ts`, with authored topic content in `app/data/guide-education.ts`.
 - Custom fallback in `app/software-renderer.ts`.
 - Progressive mobile HUD state remains in React/CSS; it does not alter the scene-engine API.
 - Tailwind CSS 4 and existing Shadcn-derived primitives.
@@ -73,8 +70,11 @@ Latest source verification on 2026-09-09:
 
 - Planet positions: JPL approximate Keplerian elements for 1800–2050.
 - Earth entry: Earth–Moon barycenter approximation used by the JPL element set.
-- Moon: simplified circular 384,400 km orbit with fixed inclination and arbitrary phase.
-- Physical data and copy: compiled catalogue with NASA/JPL source links.
+- Moon: sourced J2000 mean ellipse, without precession/perturbations; explicitly illustrative with no validated error bound.
+- 32-body local catalogue: Sun, eight planets, 21 selected moons, Ceres and Pluto. JPL/NASA/IAU numerical provenance, units, reference locations, uncertainty and explicit missing reasons.
+- Additional 22 bodies are data-only: no scene travel/assets yet. Ceres/Pluto positional elements are not imported; other moons lack validated propagation/frame transforms. Unsupported positions return unavailable.
+- Existing descriptions are legacy-curated; new-body descriptions are not imported. Live observation values are explicitly unavailable.
+- Physical values in panels/guide derive from canonical records. A details disclosure exposes sources and reliability.
 - Distances: center-to-center calculations from uncompressed model coordinates.
 - Scientific Scale: linear 100 visual units/AU center positions; body sizes remain visibly enlarged.
 - Exploration Scale: continuous radial compression with parent-local satellite placement.
@@ -111,7 +111,7 @@ Latest source verification on 2026-09-09:
 - Stable production source: the ChatGPT Sites source repository identified by `.openai/hosting.json`.
 - Persistent external mirror: private GitHub repository `gabortardos/solar-system-explorer`.
 - Hosting: ChatGPT Sites with Cloudflare Worker runtime.
-- Site status: active; the current public release contains the visual, scale, and mobile HUD passes.
+- Site status: active, public version 6; contains visual, scale, mobile HUD and Step 8 data passes.
 - Access at last inspection: public link access.
 - `.openai/hosting.json` preserves the existing project identity; `d1` and `r2` are `null`.
 - GitHub CI validates pushes/PRs but does not deploy.
@@ -134,10 +134,10 @@ See [KNOWN_ISSUES.md](KNOWN_ISSUES.md) for tracked status and fixes.
 
 ## Current milestone and unfinished work
 
-**VISUAL PASS #1, the SCALE ARCHITECTURE PASS, and the MOBILE HUD PASS are complete and published.** Mobile now uses progressive disclosure so the scene remains visible: compact dock by default, one organized action sheet, optional flight controls, and a hide/restore mode.
+**Step 8 — AUTHORITATIVE ASTRONOMICAL DATA is implemented and published.** Local numerical architecture and source/missing-value handling are complete; expanded world rendering and high-accuracy ephemerides are not claimed. Prior visual, scale and mobile passes remain published.
 
 The next planned engineering milestone is **V1.2 — Flight and navigation quality**. Smooth non-gamer flight, broader navigation regression coverage, WebGL/physical-device mobile QA, and measured bundle optimization remain unfinished.
 
 ## Next recommended task
 
-Begin V1.2 with navigation regression coverage and smoother non-gamer flight, then complete full WebGL and physical-device mobile validation.
+Begin V1.2 with navigation regression coverage and smoother non-gamer flight. Resolve KI-021 during tooling/navigation work; complete WebGL/mobile validation before expanded worlds. Do not start the next milestone without the owner’s direction.

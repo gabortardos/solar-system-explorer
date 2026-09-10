@@ -2,19 +2,19 @@
 
 Solar System Explorer is an interactive browser prototype for exploring the Sun, Moon, and eight planets. It combines a playable 3D scene with assisted travel, manual flight controls, sourced astronomy facts, distance comparisons, and a curated offline guide.
 
-The current stable baseline is **V1.1**. It is deployed privately through ChatGPT Sites at [solar-system-explorer-gabor.gabortardos.chatgpt.site](https://solar-system-explorer-gabor.gabortardos.chatgpt.site).
+The current stable baseline is **V1.1**. It is publicly available through ChatGPT Sites at [solar-system-explorer-gabor.gabortardos.chatgpt.site](https://solar-system-explorer-gabor.gabortardos.chatgpt.site).
 
 ## What works
 
 - Select any of ten modeled worlds from the scene, search, or destination strip.
-- Travel with a cancellable assisted approach, or fly with smooth acceleration, braking, rotation, speed presets, keyboard, mouse, and touch controls.
-- Recover at any time with target lock, a full-system view, and a guided return to Earth.
+- Travel with an assisted curved approach, or fly with keyboard, mouse, and touch controls.
 - Inspect physical facts and compare modeled center-to-center distances.
 - Switch between an exploration scale and relatively accurate orbital distances.
 - Show orbital paths and labels, pause or accelerate simulation time, and reduce motion.
 - Ask a curated astronomy guide common questions without sending data to an external service.
 - Save visited-world progress in the current browser on the current device.
 - Fall back to a reduced-detail Canvas renderer when WebGL is unavailable.
+- Use a compact mobile HUD with one action sheet, optional flight controls, and a distraction-free hide/restore mode.
 
 ## Technology
 
@@ -31,14 +31,24 @@ The current stable baseline is **V1.1**. It is deployed privately through ChatGP
 | `app/page.tsx` | Main interface, interaction state, panels, and local progress persistence |
 | `app/scene.ts` | Three.js scene, renderer lifecycle, selection, flight, travel, and camera behavior |
 | `app/software-renderer.ts` | Reduced-detail Canvas fallback for devices without WebGL |
-| `app/astronomy.ts` | Body catalogue, JPL orbital elements, positions, and physical distance calculations |
+| `app/astronomy.ts` | Ten-destination adapter over the canonical science layer |
+| `app/data/` | Versioned 32-body science catalogue, sources, orbits, positions, dynamic results and educational content |
+| `app/body-presentation.ts` | Existing visual metadata, separate from scientific facts |
 | `app/guide.ts` | Curated offline astronomy answers and source selection |
 | `app/globals.css` | Responsive desktop, touch, and mobile presentation |
 | `public/textures/` | Planet, Moon, Sun, cloud, and ring imagery |
 | `tests/` | Astronomy invariants and user-interface behavior checks |
+| `PROJECT_STATE.md` | Current-state handoff and entry point to permanent project knowledge |
+| `MASTER_SPEC.md`, `ROADMAP.md` | Long-term requirements and milestone sequence |
+| `ARCHITECTURE.md`, `DESIGN_UX.md`, `ASTRONOMY_DATA.md` | Technical, design, and scientific operating rules |
+| `DECISIONS.md`, `KNOWN_ISSUES.md` | Decision rationale and tracked limitations/technical debt |
 | `.openai/hosting.json` | Identity and resource bindings for the existing Sites deployment |
 
-For more detail, see [Architecture](docs/ARCHITECTURE.md) and [Deployment](docs/DEPLOYMENT.md).
+For more detail, see [Architecture](ARCHITECTURE.md) and [Deployment](docs/DEPLOYMENT.md).
+
+## Permanent project knowledge
+
+Future development sessions should begin with [PROJECT_STATE.md](PROJECT_STATE.md). It links to the master specification, architecture, design/UX rules, astronomy/data model, roadmap, decisions, and known-issues register. These files are the durable project handoff and should be updated with meaningful changes.
 
 ## Local development
 
@@ -60,9 +70,9 @@ npm run lint
 
 ## Scientific scope
 
-Planet positions use JPL approximate Keplerian elements for 1800–2050, evaluated at the displayed UTC time. The Moon uses a simplified circular orbit, not a current lunar ephemeris. Physical distances are calculated from model coordinates before visual compression.
+Planet positions use JPL approximate Keplerian elements for 1800–2050, evaluated at the displayed UTC time. The Moon uses a sourced fixed mean ellipse with no validated positional error bound, not a current lunar ephemeris. The local catalogue includes 32 bodies, while ten are selectable; missing/unvalidated positions for additional objects return unavailable. Physical distances are calculated from model coordinates before visual compression.
 
-Body sizes, assisted-travel paths, surface rotations, atmospheres, lighting, and stars are illustrative. The application is an educational experience, not a spacecraft-navigation or research tool. Full assumptions and boundaries are documented in [Architecture](docs/ARCHITECTURE.md).
+Body sizes, assisted-travel paths, surface rotations, atmospheres, lighting, and stars are illustrative. The application is an educational experience, not a spacecraft-navigation or research tool. Full assumptions and boundaries are documented in [Architecture](ARCHITECTURE.md) and [Astronomy and Data](ASTRONOMY_DATA.md).
 
 ## Data, privacy, and secrets
 
@@ -74,6 +84,8 @@ No secret is required to run the application. Environment files, private keys, b
 
 - [JPL approximate positions](https://ssd.jpl.nasa.gov/planets/approx_pos.html)
 - [JPL planetary physical parameters](https://ssd.jpl.nasa.gov/planets/phys_par.html)
+- [JPL satellite physical parameters](https://ssd.jpl.nasa.gov/sats/phys_par/sep.html) and [mean elements](https://ssd.jpl.nasa.gov/sats/elem/)
+- [IAU nominal solar constants](https://iauarchive.eso.org/static/resolutions/IAU2015_English.pdf)
 - Individual [NASA Science](https://science.nasa.gov/solar-system/) pages linked from each information panel
 - Planetary maps by [Solar System Scope / INOVE](https://www.solarsystemscope.com/textures/), licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) and based on NASA imagery
 

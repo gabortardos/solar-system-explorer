@@ -1,6 +1,6 @@
 # Solar System Explorer — Known Issues and Technical Debt
 
-Last reviewed: 2026-09-09 UTC
+Last reviewed: 2026-09-10 UTC
 
 Severity: **High** blocks a core path/risks serious regression; **Medium** materially affects quality/access/performance; **Low** is contained polish or deferred capability.
 
@@ -17,10 +17,14 @@ Severity: **High** blocks a core path/risks serious regression; **Medium** mater
 | KI-011 | Automated coverage omits camera feel, WebGL visuals, and physical touch-device behavior. A source contract and 390 × 844 rendered compatibility check now cover the responsive HUD structure. | Medium | Partially improved | QA | Manual/supervised testing. | Focused engine tests plus repeatable WebGL and physical-device checklist. |
 | KI-012 | Search/guide cover ten bodies; guide is keyword-based, not AI. | Low | Intentional V1.1 | Search/guide | Use suggested topics. | Generalize data/search before grounded AI. |
 | KI-013 | Time only advances and clamps at end of 2049. | Low | Deferred | Time | Pause/use forward rates. | Date/reverse UI with model-validity semantics. |
-| KI-014 | Moon and Earth positions are simplified. | Medium | Documented | Astronomy | UI discloses limits. | Verified ephemeris strategy for higher-accuracy mode. |
-| KI-015 | `Body` mixes science, editorial, and rendering fields. | Medium | Debt before expansion | Data | Fine for ten bodies. | Validated/versioned schemas with units, provenance, parents, type fields. |
+| KI-014 | Earth still uses the Earth–Moon barycenter; the Moon now uses sourced mean elements but fixed-ellipse propagation omits precession/perturbations and has no validated error bound. | Medium | Partially improved in Step 8 | Astronomy | UI/result metadata marks lunar positions illustrative. | Validated local ephemerides and time/frame conversion. |
+
 | KI-016 | No source-code license selected. | Low | Open decision | Legal/repo | Repository stays private. | Owner selects license before public/open-source distribution. |
 | KI-017 | WebGL soft-shadow cost has not been measured on physical low/mid-range devices. | Medium | Open validation | Performance, WebGL | Mobile uses a smaller shadow map. | Profile frame time/memory on representative devices and reduce shadow scope/resolution if needed. |
+| KI-018 | 22 additional catalogue records are not scene destinations; Ceres/Pluto positional elements are not imported and other moon propagation is unvalidated. | Medium | Explicitly deferred integration | Data/scene | Existing ten destinations work; unsupported position queries return unavailable. | Import validated local ephemerides, reference-plane transforms and assets before enabling travel. |
+| KI-019 | Existing educational descriptions/topic prose remains legacy-curated; new-body descriptions are absent. | Low | Editorial review pending | Knowledge | Review flags and UI distinguish educational summaries from reference science/live values. | Re-review NASA sources and add dated summaries for new records. |
+| KI-020 | Derived satellite/solar gravity has no propagated uncertainty and ignores shape/rotation. | Low | Documented approximation | Physical data | Quality/notes are exposed with sources. | Propagate uncertainties where useful; model irregular-body gravity only when required. |
+| KI-021 | Standalone TypeScript check reports nullable flight state and missing Worker ambient types (`cloudflare:workers`, `Fetcher`, `D1Database`). | Medium | Existing check gap identified | Development tooling | Verified production build, lint and runtime tests pass; no errors reported in new data modules. | Correct flight narrowing and configure Worker type generation without changing gameplay. |
 
 ## Deferred capabilities, not current bugs
 
@@ -28,6 +32,7 @@ Severity: **High** blocks a core path/risks serious regression; **Medium** mater
 
 ## Resolved/stabilized history
 
+- KI-015: canonical science/editorial/rendering data separated in Step 8; the combined ten-body `Body` shape remains only as a compatibility adapter. Versioned unit/provenance/missing-value and parent validation added.
 - Playable V1: `719e8cd`.
 - Controls/fallback stabilization: `fa6a107`.
 - Mobile/persistence/guide/build improvements: `2582807`.

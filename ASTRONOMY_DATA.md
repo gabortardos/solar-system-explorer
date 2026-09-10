@@ -4,86 +4,71 @@
 
 This records the current scientific model, its limitations, and the intended data-growth path. Update it whenever object schemas, sources, coordinate logic, scale transformations, or scientific assumptions change.
 
-## Current object catalogue
+## Local catalogue and source snapshot
 
-| Category | Objects |
+Dataset `2026.09.10-1`, schema version 1; numerical references retrieved 2026-09-09/10.
+
+| Category | Catalogue records |
 | --- | --- |
-| Star | Sun |
-| Terrestrial planets | Mercury, Venus, Earth, Mars |
-| Moon | Earth's Moon |
-| Gas giants | Jupiter, Saturn |
-| Ice giants | Uranus, Neptune |
+| Star and planets | Sun; Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, Neptune |
+| Dwarf planets | Ceres, Pluto |
+| Earth / Mars moons | Moon; Phobos, Deimos |
+| Jupiter moons | Io, Europa, Ganymede, Callisto |
+| Saturn moons | Mimas, Enceladus, Tethys, Dione, Rhea, Titan, Iapetus |
+| Uranus moons | Miranda, Ariel, Umbriel, Titania, Oberon |
+| Neptune / Pluto moons | Triton; Charon |
 
-No dwarf planets, additional moons, asteroids, comets, spacecraft, belts, or Lagrange points are active yet.
+**32 catalogue records, ten rendered/selectable destinations.** New records do not create meshes, labels or travel destinations. “Major moons” is this explicit initial scope, not a claim to catalogue every large satellite. Educational copy for newly catalogued bodies is not yet imported (`education: null`).
 
-## Current body schema
+## Scientific data boundaries
 
-`Body` in `app/astronomy.ts` contains:
-
-| Field | Current meaning |
+| Module | Responsibility |
 | --- | --- |
-| `id` | Stable lowercase application identifier. |
-| `name` | Display name. |
-| `kind` | Display classification. |
-| `radius` | Mean/reference radius in km. |
-| `gravity` | Surface/reference-level gravity in m/s². |
-| `day` | Sidereal rotation in hours; negative means retrograde. |
-| `year` | Orbital period in Earth years; Moon uses days/365.25. |
-| `au` | Reference orbital distance/semimajor-axis value. |
-| `color` | Fallback/display color. |
-| `texture` | Texture filename key. |
-| `description` | Curated short description. |
-| `fact` | Curated notable fact. |
-| `atmosphere` | Curated atmosphere statement. |
-| `source` | Per-body NASA Science URL. |
-| `elements` | Optional base orbital elements and rates per Julian century. |
+| `app/data/schema.ts` | Quantity values/units, source IDs, reference location, quality, uncertainty and missing reason |
+| `sources.ts` | Source registry, snapshot version and physical/unit constants |
+| `physical.ts` | Reference radii, masses or GM, gravity, signed rotation periods |
+| `planet-elements.ts`, `orbits.ts` | Orbital elements/rates, parent, epoch, reference plane and period |
+| `catalog.ts` | Identity, categories, indexed lookup and snapshot validation |
+| `positions.ts` | Time-dependent, double-precision geometric positions and model quality |
+| `dynamic.ts` | Timestamped modeled distances/light times; explicit absence of live observations |
+| `education.ts`, `guide-education.ts` | Retained educational summaries, explicitly marked legacy-curated |
+| `app/body-presentation.ts` | Existing ten-body colors, textures and display classifications |
+| `app/astronomy.ts` | Compatibility adapter for current UI/scene; no independent scientific literals |
 
-The current schema mixes scientific data, display metadata, and editorial content. Keep it stable for V1.2; separate these concerns before large-catalogue expansion.
+`Quantity.value` is a number or `null`. Missing values carry `missingReason`; they never become zero. `uncertainty: null` means no numerical uncertainty supplied/propagated, not exactness. `quality` distinguishes reference, nominal, approximate and derived quantities. Units are explicit (`km`, `kg`, `km3/s2`, `m/s2`, `h`, `d`, `au`, `deg`, `1`). Negative rotation means retrograde. The Sun has no heliocentric year (`null`).
 
-## Sources currently used
+An orbit identifies its parent, model, TDB epoch, plane and sourced quantities. Table 1 coefficient rows store `a (au), e, I, L, longitude of perihelion, node (degrees)` and rates per Julian century. Moon elements store argument of periapsis and mean anomaly, which must not be confused with planet longitude fields. Body GM and system GM are different quantities.
 
-- JPL approximate positions: `https://ssd.jpl.nasa.gov/planets/approx_pos.html`
-- JPL planetary physical parameters: `https://ssd.jpl.nasa.gov/planets/phys_par.html`
-- NASA Science Solar System/per-body pages: `https://science.nasa.gov/solar-system/`
-- Surface textures: Solar System Scope/INOVE, based on NASA imagery, CC BY 4.0: `https://www.solarsystemscope.com/textures/`
+## Sources and reliability
 
-The application ships numerical data and orbital elements in source. It does not fetch these services at runtime.
+| Data type | Preferred authority | Reliability / policy |
+| --- | --- | --- |
+| Planet/Ceres/Pluto properties | [JPL physical parameters](https://ssd.jpl.nasa.gov/planets/phys_par.html) | Field-level reference letters retained. Different quantities have different historical references. Do not replace values with rounded educational-page numbers. |
+| Satellite radius and GM | [JPL satellite physical parameters](https://ssd.jpl.nasa.gov/sats/phys_par/sep.html) | Quoted uncertainties retained; radii generally IAU WGCCRE 2015 / Archinal 2018; Charon radius Nimmo 2017. GM reference is recorded per moon. |
+| Solar radius | [IAU 2015 B3](https://iauarchive.eso.org/static/resolutions/IAU2015_English.pdf) | 695,700 km is a nominal conversion constant, not an exact measured radius. |
+| AU, light speed, solar GM | [JPL constants / DE440](https://ssd.jpl.nasa.gov/astro_par.html) | AU and time conversions are definitions. Solar GM is a fitted ephemeris parameter. |
+| Planet positions | [JPL approximate elements](https://ssd.jpl.nasa.gov/planets/approx_pos.html) | Eight planets, Table 1, 1800–2050; Earth row is the Earth–Moon barycenter. |
+| Satellite elements | [JPL mean elements](https://ssd.jpl.nasa.gov/sats/elem/) | Rounded epoch elements in different parent reference planes. These are not downloadable precision ephemerides. |
+| Solar rotation / lunar synchronism | [NASA Sun](https://science.nasa.gov/sun/facts/), [NASA Moon](https://science.nasa.gov/moon/facts/) | Educational approximations. Sun rotates differentially; the Moon's mean synchronous spin is explicitly derived using the stored JPL period. |
+| Educational summaries | Per-body NASA Science links | Retained author-written material is marked `legacy-curated`, not newly verified field-level science or a live feed. Full editorial re-review remains outstanding. |
 
-## Orbital data and calculations
+Gravity for planets is the JPL equatorial/reference-level value. Satellite gravity is explicitly computed as `GM / meanRadius² × 1000` in m/s²; it neglects shape and rotation and has no propagated uncertainty. Sun gravity uses DE440 GM and the nominal radius. No guessed mass is inserted when only GM is imported.
 
-### Planet model
+All data needed by the app ships locally. No external astronomy API, paid service, keys, background refresh or per-visit usage cost was added. JPL/Horizons is the recommended future ephemeris source; MPC is appropriate for future minor-body catalogue ingestion, not an unnecessary dependency for this small static dataset. ESA remains a useful mission/science reference; it was not needed to duplicate JPL's numerical tables.
 
-- Epoch: J2000 (`2000-01-01 12:00 UTC`).
-- Validity target: JPL approximate elements for 1800–2050.
-- Elements: semimajor axis, eccentricity, inclination, mean longitude, longitude of perihelion, longitude of ascending node, plus rates per Julian century.
-- Kepler's equation is solved with 12 Newton iterations.
-- Orbital-plane coordinates are rotated into the application's Cartesian frame.
-- UTC approximates dynamical time.
-- The Earth element set represents the Earth–Moon barycenter rather than a precise geocentric Earth ephemeris.
+## Calculated positions and time
 
-### Moon model
+`calculatePosition(id, utcMs)` returns available coordinates with unit, frame, time, model, quality, sources and caveat, or `unavailable` with `value: null` and a reason. Unknown IDs, unsupported models, invalid times and out-of-range dates fail explicitly. The legacy ten-body adapter throws for invalid requests rather than inventing positions.
 
-- Circular distance: 384,400 km.
-- Sidereal period: 27.3217 days.
-- Inclination: 5.145°.
-- Phase/orientation: arbitrary/simplified.
-- This is not a current lunar ephemeris.
+- Planet model: Table 1, J2000 TDB coefficients; UTC is still substituted for TDB and disclosed. Twelve Newton iterations solve Kepler's equation.
+- Public calculation interval: `[1800-01-01, 2050-01-01)`; UI still stops at the end of 2049.
+- Returned scientific axes: heliocentric ecliptic/equinox J2000 `[X,Y,Z]` in AU. Scene mapping is explicitly `[X,Z,-Y]`, with no scale change.
+- Sun: origin of the chosen heliocentric frame, not a computed barycentric solar trajectory.
+- Moon: the old arbitrary phase/circular path was replaced by the sourced J2000 mean ellipse (a=384,400 km, e=0.0554 and published angular elements/P). Its fixed-ellipse propagation omits precession and perturbations and adds the result to the approximate Earth–Moon barycenter. Quality is **illustrative**, with no validated error bound. The application date interval is not a claimed scientific validity interval for this lunar approximation.
+- Other moons: orbital parameters are stored, but propagation returns unavailable until parent-equatorial/Laplace-plane transformations and timing are validated. The catalogue preserves the source frame/pole rather than silently treating every orbit as ecliptic.
+- Ceres/Pluto: physical properties and reference orbital periods are imported; a positional element set is not yet imported. The current JPL approximate-positions page explicitly excludes Pluto. No remembered or guessed Pluto/Ceres coefficients are used.
 
-### Time limits
-
-The scene initializes from current time, supports forward rates, and clamps at the end of 2049. It has no arbitrary date entry or reverse time.
-
-## Coordinate system
-
-`position()` returns `[x, y, z]` in AU for the Sun/planets and a derived heliocentric-like Moon position. The orbital transformation is mapped directly into Three.js coordinates.
-
-The project does not currently declare compliance with ICRF/J2000 visualization axes, equatorial axes, ecliptic-north labeling, or a navigation-grade frame. Treat orientation as the implementation's approximate ecliptic-style scene frame unless formally verified later.
-
-## Physical distance logic
-
-`distance(a, b, time)` calculates both model positions, finds Euclidean center-to-center separation in AU, and multiplies by `149,597,870.7 km/AU`. The UI may express the result as AU and light-minutes using `299,792.458 km/s`.
-
-These are straight-line separations at the displayed date, not surface distances, spacecraft routes, transfer-orbit distances, or travel times.
+`calculateDistance()` uses simultaneous uncompressed model coordinates, converted by the defined AU. Results carry time, sources and approximate/illustrative quality. `dynamicValues()` separates these calculations from `observations`, which is explicitly unavailable. Light time is geometric distance/c, not observed retarded-time astrometry or a spacecraft travel duration.
 
 ## Visualization scale and compression
 
@@ -123,7 +108,7 @@ The mobile bottom-sheet scale selector and desktop settings switch both update t
 - Pairwise modeled distance, AU, and light-minutes.
 - Curated atmosphere, description, fact, temperature, water, companions, missions, and habitability.
 
-Values are compiled from the cited source family; per-field provenance/version metadata is not implemented.
+The current panels consume canonical numerical records and expose field-level source/reliability details. Legacy educational summaries remain separately labelled; their numerical prose is not a live measurement feed.
 
 ## Scientific approximations and visual-only systems
 
@@ -146,9 +131,14 @@ Values are compiled from the cited source family; per-field provenance/version m
 
 ## Future data integration plan
 
-1. **Strengthen current catalogue:** field-level provenance/units; separate physical, orbital, editorial, and rendering data; schema validation/versioning; parent relationships.
-2. **High-value expansion:** Pluto/Charon, Ceres, Galilean moons, Titan, Enceladus, and appropriate position models/aliases/panels.
-3. **Scalable catalogues:** authoritative ingestion/cache pipelines; double-precision spatial indexes; bounded tiles loaded by region, size/importance, zoom, proximity, search, and performance; instancing/point rendering plus label budgets.
-4. **Higher-fidelity time:** evaluate JPL Horizons or equivalent behind a server/cache boundary; selectable dates, appropriate time standards, and spacecraft trajectories.
+1. **Validated ephemeris expansion:** acquire reviewed, versioned local JPL Horizons/SPICE snapshots or fitted coefficients for Ceres/Pluto and moons; establish frame/time transformations and error bounds before activating new destinations.
+2. **Editorial review:** re-review retained NASA summaries, import descriptions for additional bodies, record dates and source locations, and avoid assertions about current mission status without a dated source.
+3. **Selected-world rendering:** add assets, labels, panels and travel only for data-ready bodies; preserve the ten-body renderer until that milestone.
+4. **Large catalogues:** an offline/import-time ingestion pipeline with schema/unit/source validation, reviewable diffs, release versions and rollback. Store compact numerical arrays separately from prose; spatially index/stream bounded active tiles. Never eagerly construct one mesh or metadata object per million-body catalogue entry in the scene loop.
+5. **Higher-fidelity time:** proper UTC/TT/TDB conversion, validated date ranges and optional cached ephemerides. Browser sessions must remain independent of external API uptime and billing.
 
-External integrations must be costed, cached, rate-limited, and server-side where credentials or provider limits apply.
+## Update and validation procedure
+
+Numerical rows are a reviewed local source snapshot, not a live scraper. To update: retrieve the authoritative table, preserve its epoch/frame/reference/uncertainty, edit only the corresponding row, bump `DATASET_VERSION`, record the review here or in DECISIONS, and run the catalogue and astronomy/scale regressions. Never claim `retrievedAt` is the measurement epoch or that a recently retrieved compilation is newly measured data.
+
+`tests/data-layer.test.mjs` verifies 32-body scope, referential integrity, units/provenance, missing-value behavior, independent Kepler/axis cases, time boundaries, deterministic offline calculations and scene/guide integration. Existing scale tests still verify scientific ratios and double-to-float conversion. No higher-precision ephemeris accuracy is claimed by these tests.

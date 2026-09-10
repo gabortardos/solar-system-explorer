@@ -72,7 +72,7 @@ This path preserves basic interaction and perspective, not WebGL parity.
 
 ## Coordinate and scale systems
 
-`app/astronomy.ts` returns Cartesian positions in AU for planets. The Moon is derived from the Earth model position plus a simplified local orbit.
+`app/astronomy.ts` returns Cartesian positions in AU for planets. The Moon is derived from the Earth model position plus a sourced, fixed mean ellipse, explicitly tagged illustrative.
 
 `app/scale.ts` is the only presentation-scale policy. `app/scene.ts` supplies model positions to it:
 
@@ -136,7 +136,13 @@ sequenceDiagram
 
 ## Object model
 
-The current `Body` catalogue is a typed array in `app/astronomy.ts`. A body combines stable identity, physical facts, educational copy, source URL, display metadata, and optional orbital elements. This suits ten objects but should be separated into versioned structured datasets before large-catalogue expansion.
+`app/data/` is the canonical local science layer: physical quantities, orbital parameters, computed positions, dynamic values and editorial summaries are separate modules. `catalog.ts` joins 32 records by stable ID/parent and supplies validation; quantities have units, provenance, uncertainty and explicit missing reasons. `positions.ts` returns result objects with frame/time/model/quality or an unavailable reason. `dynamic.ts` distinguishes computed distance/light time from missing live observations.
+
+`app/astronomy.ts` retains the ten-body `Body` adapter so existing scene/navigation/scale APIs remain stable. It joins science with `app/body-presentation.ts` and educational metadata rather than maintaining duplicate scientific literals. Sun orbital period is now null. New catalogue entries do not automatically become renderer destinations.
+
+`app/data-provenance.tsx` exposes scientific field sources/reliability in the details sheet. The offline guide uses the same canonical physical values and distance service; historical authored topics live separately in `app/data/guide-education.ts`. See [ASTRONOMY_DATA.md](ASTRONOMY_DATA.md) for source selection, schemas, frame conventions, missing models and import policy.
+
+No runtime external API or new dependency was introduced. Pure position results are calculated on demand; the present 32-record in-memory catalogue is not the future million-body storage strategy. Large datasets require compact indexed tiles and selective metadata loading outside the render loop.
 
 ## Backend/API architecture
 
@@ -148,6 +154,7 @@ Future external astronomy/AI services require server-side handling, secrets in h
 
 - `npm test` runs the verified production build followed by tests.
 - `npm run lint` runs ESLint in the managed Sites environment.
+- Standalone `tsc --noEmit` currently reports existing errors in flight narrowing and missing Worker ambient types; the production build is not a substitute for a clean standalone typecheck. See KI-021.
 - Vite groups Three.js core/addons but currently still reports a chunk above 500 kB.
 - Output is Cloudflare Worker-compatible through the Sites Vite plugin.
 - GitHub Actions validates pushes and PRs; it does not deploy.
@@ -173,7 +180,7 @@ See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for the release procedure.
 
 - Three.js provides mature browser 3D capability and controls.
 - Imperative rendering avoids React work on every frame.
-- Pure model functions keep scientific logic testable and presentation-independent.
+- Pure model functions and a versioned local data layer keep scientific logic testable and presentation-independent.
 - A centralized two-scale policy reconciles astronomical magnitude with playable exploration while retaining real measurements.
 - Camera-relative rendering and adaptive clipping preserve local precision across large coordinate ranges.
 - Compatibility rendering improves reach without blocking the WebGL experience.

@@ -148,3 +148,17 @@ Future agents should preserve these decisions unless new evidence or a product d
 - **Reason:** The former independent mobile overlays covered the Solar System and competed with the product's primary exploration surface.
 - **Impact:** Mobile and desktop share the same React selection/options state and scene-engine API, but CSS and small UI state choose different presentation density. Search replaces the always-visible mobile destination strip; core actions remain one or two taps away.
 - **Preserve:** Do not restore permanent stacked mobile cards, a permanent arrow pad, or a large intro over the scene. Do not turn the mobile menu into a new application architecture or alter scientific values/navigation to solve layout concerns.
+
+## D022 — Local authoritative catalogue with explicit provenance (2026-09-10)
+
+- **Decision:** Separate physical, orbital, calculated, dynamic-observation and educational data. Use JPL numerical tables, IAU nominal constants and NASA educational references in a versioned local dataset. Each numerical field preserves units, source location, quality and available uncertainty; missing values remain null with a reason.
+- **Reason:** Scientific facts must survive visual scaling, future catalogue growth and AI retrieval without hidden fabricated defaults or runtime API dependence. JPL numerical references take precedence over rounded educational page values (for example, Ceres radius).
+- **Impact:** 32 catalogue bodies feed a compatibility adapter for the existing ten scene destinations. Physical values and guide responses now share one numerical source. No paid service, runtime astronomy API or new library was added. Legacy educational prose is retained but labelled separately, not falsely promoted to newly audited reference data.
+- **Preserve:** Do not conflate body/system GM, sidereal/solar periods, parent-local/heliocentric coordinates, nominal/measured radii, or missing uncertainty/zero error. Do not replace source values merely because a different source offers more digits. Dataset update dates are not measurement epochs.
+
+## D023 — Missing ephemerides remain unavailable (2026-09-10)
+
+- **Decision:** Store additional satellite mean elements with their actual parent reference planes; return unavailable for unvalidated propagation and unimported Ceres/Pluto position models. Replace the Moon's arbitrary phase/circle with a sourced fixed mean ellipse while retaining an explicit illustrative quality flag.
+- **Reason:** A complete-looking invented orbit is less trustworthy than an honest unavailable result. A mean-element table alone does not establish a precision ephemeris or a correct coordinate transform. JPL's current Table 1 excludes Pluto.
+- **Impact:** Current ten-world exploration remains available. Lunar precession/perturbations and Earth–Moon barycenter approximation remain limitations; new bodies are data records, not yet selectable worlds. A calculation's application time range does not certify lunar accuracy over that range.
+- **Preserve:** Do not add fake phases, silently extrapolate outside the supported date interval, use GPU/compressed coordinates for measurements, or activate extra scene bodies until their positional model/assets are validated.
