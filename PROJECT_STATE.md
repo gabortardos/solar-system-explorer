@@ -4,9 +4,9 @@ Last verified: 2026-09-10 UTC
 
 Stable working product version: V1.1
 
-Previous published application checkpoint: `5bc749b` (public Site version 5, mobile HUD).
+Previous published application checkpoint: `46a2202` (public Site version 6, authoritative data).
 
-Current development state: Step 8 AUTHORITATIVE ASTRONOMICAL DATA implemented and published; dataset `2026.09.10-1`. The earlier visual, scale and mobile passes remain intact.
+Current development state: REAL ORBITAL POSITIONS implemented and published on top of dataset `2026.09.10-1`. Earlier visual, scale, mobile and data passes remain intact.
 
 Production: `https://solar-system-explorer-gabor.gabortardos.chatgpt.site`
 
@@ -26,13 +26,13 @@ The repository and deployed application are the source of truth. Do not rebuild 
 
 ## Current state
 
-V1.1 is a public, playable prototype covering the Sun, Moon, and eight planets. It opens near Earth and supports the core loop: select a world, travel or fly, inspect it, compare distances, and ask the offline astronomy guide. The current public release includes VISUAL PASS #1, the two-scale architecture, the compact mobile HUD and the Step 8 local astronomy layer.
+V1.1 is a public, playable prototype covering the Sun, Moon, and eight planets. It opens near Earth and supports the core loop: select a world, travel or fly, inspect it, compare distances, control simulated time, and ask the offline astronomy guide. The current source adds a robust simulation clock to the visual, scale, mobile and authoritative-data foundations.
 
 Latest source verification (2026-09-10):
 
-- Public Site version 6 deployed successfully on 2026-09-10 from application commit `46a2202d072826a3ff8b541c2741f3b09f858d19`. Public link access is preserved. The current commit may add continuity-only release notes after that application revision.
-- Production build, lint and all 23 tests passed, including six new catalogue/source/missing-value/model tests and all existing astronomy/scale/UI regressions.
-- No render/navigation/scale policy changes were made. Existing desktop and 390 × 844 compatibility-mode visual/gameplay QA belongs to the previous published milestone, not this data pass.
+- Public Site version 7 deployed successfully on 2026-09-10 from application checkpoint `7c719abbce5a04be7fbe2d5ffd9db1b669c38c4e`. Public link access is preserved.
+- Production build, lint and all 28 tests passed. New clock tests cover exact rates, pause/resume continuity, monotonic advancement, model-date clamping, UTC formatting, small-step orbital motion and JPL nominal-error metadata.
+- Rendering and scale policies are unchanged. The scene evaluates model positions each animation frame, while React receives the visible timestamp at 2 Hz. Browser-based rendered inspection was unavailable in this workspace; prior desktop and 390 × 844 compatibility QA still applies, and physical-device/WebGL QA remains open.
 - Standalone TypeScript check reports existing flight-nullability and Worker ambient-type errors outside the new data modules (KI-021).
 - Full WebGL and physical-device mobile QA remain open.
 
@@ -46,7 +46,7 @@ Latest source verification (2026-09-10):
 - Search dialog, destination strip, system view, focus target, labels, and fullscreen.
 - Details sheet with physical facts, atmosphere, curated fact, source links, and modeled distance comparison.
 - Exploration Scale and Scientific Scale modes; all displayed measurements remain based on the uncompressed astronomy model.
-- Optional orbit paths and simulation rates: paused, real time, 1,000×, one day/second.
+- Optional orbit paths and a UTC simulation clock: paused, real time, 10×, 100×, and 1,000×.
 - Offline curated astronomy guide tied to the selected world.
 - Device-local visited-world persistence and reset.
 - Reduced-motion setting.
@@ -63,12 +63,14 @@ Latest source verification (2026-09-10):
 - Curated offline routing in `app/guide.ts`, with authored topic content in `app/data/guide-education.ts`.
 - Custom fallback in `app/software-renderer.ts`.
 - Progressive mobile HUD state remains in React/CSS; it does not alter the scene-engine API.
+- `app/simulation-clock.ts` owns validated rates and monotonic time anchoring; the scene owns per-frame advancement and only throttles UI notifications.
 - Tailwind CSS 4 and existing Shadcn-derived primitives.
 - No active application database, authentication, analytics, paid API, or server-side product API.
 
 ## Current data systems
 
 - Planet positions: JPL approximate Keplerian elements for 1800–2050.
+- JPL-published nominal 1800–2050 longitude/latitude/radial error estimates are attached to each planet-position result.
 - Earth entry: Earth–Moon barycenter approximation used by the JPL element set.
 - Moon: sourced J2000 mean ellipse, without precession/perturbations; explicitly illustrative with no validated error bound.
 - 32-body local catalogue: Sun, eight planets, 21 selected moons, Ceres and Pluto. JPL/NASA/IAU numerical provenance, units, reference locations, uncertainty and explicit missing reasons.
@@ -111,7 +113,7 @@ Latest source verification (2026-09-10):
 - Stable production source: the ChatGPT Sites source repository identified by `.openai/hosting.json`.
 - Persistent external mirror: private GitHub repository `gabortardos/solar-system-explorer`.
 - Hosting: ChatGPT Sites with Cloudflare Worker runtime.
-- Site status: active, public version 6; contains visual, scale, mobile HUD and Step 8 data passes.
+- Site status: active, public version 7; contains visual, scale, mobile HUD, Step 8 data and REAL ORBITAL POSITIONS passes.
 - Access at last inspection: public link access.
 - `.openai/hosting.json` preserves the existing project identity; `d1` and `r2` are `null`.
 - GitHub CI validates pushes/PRs but does not deploy.
@@ -128,13 +130,13 @@ Latest source verification (2026-09-10):
 - Labels lack overlap/occlusion management.
 - Search covers only the ten current bodies.
 - Guide supports curated topics rather than open-ended AI conversation.
-- Date selection, reverse time, accurate lunar ephemerides, terrain/landing, spacecraft physics, sound, and catalogue streaming are absent.
+- Date selection, reverse time, accurate lunar ephemerides, terrain/landing, spacecraft physics, sound, and catalogue streaming are absent. Forward simulation stops at the last valid millisecond of 2049.
 
 See [KNOWN_ISSUES.md](KNOWN_ISSUES.md) for tracked status and fixes.
 
 ## Current milestone and unfinished work
 
-**Step 8 — AUTHORITATIVE ASTRONOMICAL DATA is implemented and published.** Local numerical architecture and source/missing-value handling are complete; expanded world rendering and high-accuracy ephemerides are not claimed. Prior visual, scale and mobile passes remain published.
+**REAL ORBITAL POSITIONS is implemented and published.** The eight planets update continuously from the existing JPL approximate model; the Sun remains the heliocentric origin and the Moon remains explicitly illustrative. A monotonic UTC clock supplies the five requested rates without frame-rounding accumulation or rate-change jumps.
 
 The next planned engineering milestone is **V1.2 — Flight and navigation quality**. Smooth non-gamer flight, broader navigation regression coverage, WebGL/physical-device mobile QA, and measured bundle optimization remain unfinished.
 
