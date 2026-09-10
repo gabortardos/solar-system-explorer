@@ -116,6 +116,8 @@ Planned improvement: smooth acceleration/deceleration, constrained distance-awar
 - Respect safe areas and keep the scene full-bleed behind the compact HUD.
 - Avoid horizontal page scrolling and text overlap.
 - Preserve travel, details, search, guide, settings/help, and time/scale meaning.
+- Keep the full UTC clock in the desktop footer and the mobile bottom sheet, not as another permanent phone overlay. Use tabular numerals so accelerated seconds do not shift nearby controls.
+- Clock labels are plain language: Paused, Real time, 10×, 100×, and 1,000×. The adjacent play/pause action resumes at real time; do not revive the ambiguous “one day / second” shortcut without a product decision.
 
 ## Accessibility
 
