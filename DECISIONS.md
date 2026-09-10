@@ -162,3 +162,10 @@ Future agents should preserve these decisions unless new evidence or a product d
 - **Reason:** A complete-looking invented orbit is less trustworthy than an honest unavailable result. A mean-element table alone does not establish a precision ephemeris or a correct coordinate transform. JPL's current Table 1 excludes Pluto.
 - **Impact:** Current ten-world exploration remains available. Lunar precession/perturbations and Earth–Moon barycenter approximation remain limitations; new bodies are data records, not yet selectable worlds. A calculation's application time range does not certify lunar accuracy over that range.
 - **Preserve:** Do not add fake phases, silently extrapolate outside the supported date interval, use GPU/compressed coordinates for measurements, or activate extra scene bodies until their positional model/assets are validated.
+
+## D024 — Monotonic simulation clock, frame-rate-independent motion (2026-09-10)
+
+- **Decision:** Anchor simulated UTC to monotonic browser time and expose only pause, 1×, 10×, 100× and 1,000×. Evaluate active body positions every animation frame, but notify React of the displayed timestamp at 2 Hz.
+- **Reason:** Directly accumulating frame deltas drifts through rounding and makes rate changes/tab suspension harder to reason about. Separating frame motion from UI updates keeps movement smooth without causing unnecessary component renders.
+- **Impact:** The eight planet positions continuously follow the existing local JPL model. The UI defaults to real time, speed changes are continuous, and the clock stops at the model boundary. No network ephemeris, new dependency, reverse time or date picker was added.
+- **Preserve:** Do not add arbitrary rates without product/data-range review, move per-frame time into React, extrapolate beyond `[1800, 2050)`, or imply that faster playback increases scientific accuracy. Large catalogues must update a bounded active set.
