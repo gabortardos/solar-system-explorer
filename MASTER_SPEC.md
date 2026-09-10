@@ -94,7 +94,7 @@ Do not display meaningless empty fields.
 ### Time and orbital motion
 
 - Show optional orbital paths.
-- Support pause, real time, and accelerated rates.
+- Support a UTC simulation clock with pause, real time, 10×, 100×, and 1,000× rates; motion remains continuous when rates change.
 - Later permit historical/future dates with documented model accuracy.
 - Preserve real numerical data even when visualization distances/sizes are altered.
 
