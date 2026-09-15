@@ -135,6 +135,26 @@ export function clippingRange(
   return { near, far };
 }
 
+/** Camera distance required to frame a circular heliocentric region. The
+ * caller chooses its viewing direction; this only derives the scale-aware
+ * distance from the limiting vertical or horizontal field of view. */
+export function overviewDistance(
+  extent: number,
+  verticalFovDegrees: number,
+  aspect: number,
+  padding = 1.12,
+) {
+  if (
+    ![extent, verticalFovDegrees, aspect, padding].every(Number.isFinite) ||
+    extent <= 0 || verticalFovDegrees <= 0 || aspect <= 0 || padding < 1
+  )
+    throw new RangeError("Invalid overview framing input");
+  const vertical = (verticalFovDegrees * Math.PI) / 180,
+    horizontal = 2 * Math.atan(Math.tan(vertical / 2) * aspect),
+    limitingHalfAngle = Math.min(vertical, horizontal) / 2;
+  return (extent / Math.sin(limitingHalfAngle)) * padding;
+}
+
 /** Upload only an already selected, bounded active tile; never a whole catalogue.
  * Float64/JS subtraction MUST precede the Float32 write. Output is caller-owned.
  */

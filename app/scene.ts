@@ -9,6 +9,7 @@ import {
   clippingRange,
   estimateSpacecraftPosition,
   MAX_RENDER_DISTANCE,
+  overviewDistance,
 } from "./scale";
 import { withRenderOrigin, worldLineGeometry, worldPointGeometry } from "./render-space";
 import { SimulationClock, type SimulationRate } from "./simulation-clock";
@@ -230,10 +231,10 @@ export function createScene(
           worldPointGeometry(projectPopulation(sample.positionsAU, mode())),
           new THREE.PointsMaterial({
             color: style.color,
-            size: 1,
+            size: 1.65,
             sizeAttenuation: false,
             transparent: true,
-            opacity: style.opacity,
+            opacity: Math.min(0.72, style.opacity + 0.22),
             depthWrite: false,
           }),
         );
@@ -1109,6 +1110,42 @@ export function createScene(
           duration: 1800,
         };
         onStatus("Opening solar system view…");
+      }
+    },
+    populationOverview() {
+      minorSelected=null;
+      stop();
+      focused = "sun";
+      preload("sun");
+      styleOrbits();
+      controls.minDistance = 0.05;
+      const populationExtent = Math.hypot(
+          ...projectPosition([50, 0, 0], mode()),
+        ),
+        range =
+          overviewDistance(
+            populationExtent,
+            camera.fov,
+            camera.aspect,
+            1.15,
+          ) / Math.hypot(1.3, 0.65),
+        offset = range * 0.11,
+        to = new THREE.Vector3(offset, range * 1.3, range * 0.65),
+        target = new THREE.Vector3(offset, 0, 0);
+      if (options.reduced) {
+        camera.position.copy(to);
+        controls.target.copy(target);
+        onStatus("Small-body regions overview");
+      } else {
+        viewTransition = {
+          start: performance.now(),
+          from: camera.position.clone(),
+          look: controls.target.clone(),
+          to,
+          target,
+          duration: 1800,
+        };
+        onStatus("Opening small-body regions…");
       }
     },
     brake() {

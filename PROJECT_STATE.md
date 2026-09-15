@@ -12,7 +12,7 @@ Step 15 — **ASTEROID BELT AND KUIPER BELT VISUALIZATION** adds renderer-only r
 
 Latest verification:
 
-- Production build, lint and all 51 automated tests pass.
+- Production build, lint and all 52 automated tests pass.
 - Tests cover catalogue integrity, every activated moon's parent-relative source-ellipse bounds, explicit illustrative-quality metadata, scale ordering, distances, clock behavior, rendering contracts, mobile HUD and bounded search.
 - Desktop compatibility-renderer QA passed for Io/Jupiter search and focus, moon orbit toggling, Charon's information-only panel and application console errors.
 - Full WebGL and physical-device mobile QA remain open.
@@ -31,7 +31,7 @@ Latest verification:
 - UTC simulation clock with pause, real time, 10×, 100× and 1,000×.
 - Offline deterministic astronomy guide; it never calls a paid AI service. Newly activated moons receive verified numerical/fact answers, with unsupported curated topics stated as unavailable.
 - Canvas compatibility renderer when WebGL is unavailable.
-- Optional small-body region layer with four bounded point draws, centralized scale projection, camera-relative precision and an always-visible disclosure that one-pixel markers and density are greatly enhanced.
+- Optional small-body region layer with four bounded point draws, centralized scale projection, camera-relative precision and an always-visible disclosure. A dedicated Small-body regions view frames the Asteroid Belt, Jupiter Trojan regions and Kuiper Belt in either scale.
 - V1.2 flight smoothing is now implemented: translation accelerates and decelerates with frame-rate-independent response, combined axes are normalized, arrow-key steering eases in and out, collision correction removes inward drift, and brake/focus/overview transitions clear residual motion.
 
 ## Architecture summary

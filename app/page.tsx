@@ -267,7 +267,7 @@ export default function Home() {
         engine.current = createScene(
           host.current,
           (id)=>{setSelected(id);setMinorView(null);},
-          (message)=>{setStatus(message);if(message==='Target locked'||message==='Solar system overview')setMinorView(null);},
+          (message)=>{setStatus(message);if(message==='Target locked'||message==='Solar system overview'||message==='Small-body regions overview')setMinorView(null);},
           setTime,
           (id) => setVisited((v) => (v.includes(id) ? v : [...v, id])),
           setError,
@@ -434,7 +434,7 @@ export default function Home() {
           <span><i className="asteroid-dot" />Asteroid Belt</span>
           <span><i className="trojan-dot" />Jupiter Trojans (L4 / L5)</span>
           <span><i className="kuiper-dot" />Kuiper Belt</span>
-          <p>Representative markers only. Size and density greatly enhanced.</p>
+          <p>Representative markers only. Use Small-body regions view; size and density greatly enhanced.</p>
         </aside>
       )}
       <header className="topbar">
@@ -515,6 +515,16 @@ export default function Home() {
         >
           <Orbit size={17} />
           <span>System view</span>
+        </button>
+        <button
+          aria-label="Small-body regions overview"
+          onClick={() => {
+            setOptions((o) => ({ ...o, populations: true, orbits: true }));
+            engine.current?.populationOverview();
+          }}
+        >
+          <Orbit size={17} />
+          <span>Small-body regions</span>
         </button>
         <button
           aria-label="Focus target"

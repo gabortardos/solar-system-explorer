@@ -186,10 +186,13 @@ test("labels schematic small-body regions and keeps them outside destination int
     readFile(path.join(root, "app/software-renderer.ts"), "utf8"),
   ]);
   assert.match(page, /Small-body regions/);
-  assert.match(page, /Representative markers only\. Size and density greatly enhanced/);
+  assert.match(page, /Small-body regions overview/);
+  assert.match(page, /Use Small-body regions view/);
+  assert.match(page, /Representative markers only\. Use Small-body regions view; size and density greatly enhanced/);
   assert.match(page, /dots are not object counts or precise current positions/);
   assert.match(scene, /new THREE\.Points/);
+  assert.match(scene, /overviewDistance/);
   assert.match(scene, /userData\.population = true/);
-  assert.match(scene, /sizeAttenuation: false,[\s\S]*opacity: style\.opacity/);
+  assert.match(scene, /sizeAttenuation: false,[\s\S]*opacity: Math\.min\(0\.72, style\.opacity \+ 0\.22\)/);
   assert.match(fallback, /userData\.population/);
 });

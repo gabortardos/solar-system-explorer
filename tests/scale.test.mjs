@@ -102,6 +102,16 @@ test('clipping supports close-up scientific Moon and large-distance travel witho
   }
 });
 
+test('small-body overview framing contains the Kuiper-region extent in both scale modes',()=>{
+ for(const mode of ['exploration','scientific']) {
+   const extent=Math.hypot(...scale.projectPosition([50,0,0],mode));
+   const distance=scale.overviewDistance(extent,43,16/9,1.15);
+   assert.ok(distance>extent);
+   assert.ok(extent/Math.sin(43*Math.PI/360)<distance);
+ }
+ assert.throws(()=>scale.overviewDistance(0,43,1));
+});
+
 test('body display size is explicitly independent of scientific radius data', () => {
   for(const b of bodies) {
     const km=b.radius;

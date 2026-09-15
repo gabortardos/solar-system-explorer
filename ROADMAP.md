@@ -152,11 +152,11 @@ Deferred scaling work: bulk streaming import, object-storage deployment, fine 3D
 
 Status: implemented and verified in source on 2026-09-14.
 
-- Four deterministic, renderer-only point regions: main asteroid belt (2.1–3.3 AU), Kuiper Belt (30–50 AU), and Jupiter Trojan L4/L5 regions centered approximately 60° ahead/behind Jupiter.
+- Four deterministic, renderer-only point regions: main asteroid belt (2.1–3.3 AU), Kuiper Belt (30–50 AU), and Jupiter Trojan L4/L5 regions centered approximately 60° ahead/behind Jupiter. A dedicated Small-body regions overview fits the full Kuiper envelope in both scales.
 - 1,100 total representative one-pixel markers across four draw calls. They are never catalogue records, object counts, destinations, raycast targets or distance inputs.
 - Both scale modes project each AU sample through `app/scale.ts`; camera-relative Float64-backed point buffers preserve precision. WebGL and Canvas paths are supported.
 - The Settings switch and visible accessible legend disclose that marker size and density are greatly enhanced and positions are illustrative.
-- Build, lint and automated sampling/projection/render/UI checks pass. Full WebGL and physical-device appearance/performance remain in the V1.2 QA plan.
+- Build, lint and 52 automated sampling/projection/render/UI checks pass. Full WebGL and physical-device appearance/performance remain in the V1.2 QA plan.
 
 ## Next recommended milestone
 
