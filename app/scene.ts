@@ -45,6 +45,7 @@ type ViewTransition = {
   to: THREE.Vector3;
   target: THREE.Vector3;
   duration: number;
+  completeStatus?: string;
 };
 export function createScene(
   host: HTMLDivElement,
@@ -865,10 +866,11 @@ export function createScene(
       camera.fov = 43 + Math.sin(Math.PI * t) * 1.4;
       camera.updateProjectionMatrix();
       if (t === 1) {
+        const completeStatus = viewTransition.completeStatus;
         viewTransition = null;
         camera.fov = 43;
         camera.updateProjectionMatrix();
-        onStatus(minorSelected ? minorActive.get(minorSelected)!.body.name+' · illustrative orbit · enlarged marker' : "Solar system overview");
+        onStatus(minorSelected ? minorActive.get(minorSelected)!.body.name+' · illustrative orbit · enlarged marker' : (completeStatus ?? "Solar system overview"));
       }
     }
     if (flight) {
@@ -1108,6 +1110,7 @@ export function createScene(
           to,
           target,
           duration: 1800,
+          completeStatus: "Solar system overview",
         };
         onStatus("Opening solar system view…");
       }
@@ -1144,6 +1147,7 @@ export function createScene(
           to,
           target,
           duration: 1800,
+          completeStatus: "Small-body regions overview",
         };
         onStatus("Opening small-body regions…");
       }

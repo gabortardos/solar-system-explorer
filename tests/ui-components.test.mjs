@@ -192,6 +192,7 @@ test("labels schematic small-body regions and keeps them outside destination int
   assert.match(page, /dots are not object counts or precise current positions/);
   assert.match(scene, /new THREE\.Points/);
   assert.match(scene, /overviewDistance/);
+  assert.match(scene, /completeStatus: "Small-body regions overview"/);
   assert.match(scene, /userData\.population = true/);
   assert.match(scene, /sizeAttenuation: false,[\s\S]*opacity: Math\.min\(0\.72, style\.opacity \+ 0\.22\)/);
   assert.match(fallback, /userData\.population/);
