@@ -1,145 +1,96 @@
 # Solar System Explorer — Current Project State
 
-Last verified: 2026-09-10 UTC
+Last verified: 2026-09-14 UTC
 
-Stable working product version: V1.1
+Stable product version: V1.1. Production URL: `https://solar-system-explorer-gabor.gabortardos.chatgpt.site`.
 
-Previous published application checkpoint: `46a2202` (public Site version 6, authoritative data).
+This is the fast handoff for **what exists now**. The repository and deployed application are the source of truth. Read the specialized documents for product direction, architecture, UX, astronomy, roadmap, decisions and issues. Do not rebuild from a starter or replace working architecture merely because a new Work chat begins.
 
-Current development state: REAL ORBITAL POSITIONS implemented and published on top of dataset `2026.09.10-1`. Earlier visual, scale, mobile and data passes remain intact.
+## Current reality
 
-Production: `https://solar-system-explorer-gabor.gabortardos.chatgpt.site`
+Step 15 — **ASTEROID BELT AND KUIPER BELT VISUALIZATION** adds renderer-only representative regions for the main asteroid belt, the Kuiper Belt and Jupiter's leading/trailing Trojan clouds. Step 14's separate on-demand 19-object JPL minor-body sample remains intact. The bounded active scene still contains 29 destinations; population dots are not catalogue objects, destinations, counts or ephemerides.
 
-## Role of this document
+Latest verification:
 
-This is the fast handoff for **what exists now**. Read it first, then use the specialized documents for detail:
-
-- [MASTER_SPEC.md](MASTER_SPEC.md): destination and requirements.
-- [ARCHITECTURE.md](ARCHITECTURE.md): technical operation.
-- [DESIGN_UX.md](DESIGN_UX.md): visual and interaction language.
-- [ASTRONOMY_DATA.md](ASTRONOMY_DATA.md): scientific/data rules.
-- [ROADMAP.md](ROADMAP.md): milestone order.
-- [DECISIONS.md](DECISIONS.md): decisions and rationale.
-- [KNOWN_ISSUES.md](KNOWN_ISSUES.md): bugs and technical debt.
-
-The repository and deployed application are the source of truth. Do not rebuild from a starter or replace working architecture because a new Work chat begins.
-
-## Current state
-
-V1.1 is a public, playable prototype covering the Sun, Moon, and eight planets. It opens near Earth and supports the core loop: select a world, travel or fly, inspect it, compare distances, control simulated time, and ask the offline astronomy guide. The current source adds a robust simulation clock to the visual, scale, mobile and authoritative-data foundations.
-
-Latest source verification (2026-09-10):
-
-- Public Site version 7 deployed successfully on 2026-09-10 from application checkpoint `7c719abbce5a04be7fbe2d5ffd9db1b669c38c4e`. Public link access is preserved.
-- Production build, lint and all 28 tests passed. New clock tests cover exact rates, pause/resume continuity, monotonic advancement, model-date clamping, UTC formatting, small-step orbital motion and JPL nominal-error metadata.
-- Rendering and scale policies are unchanged. The scene evaluates model positions each animation frame, while React receives the visible timestamp at 2 Hz. Browser-based rendered inspection was unavailable in this workspace; prior desktop and 390 × 844 compatibility QA still applies, and physical-device/WebGL QA remains open.
-- Standalone TypeScript check reports existing flight-nullability and Worker ambient-type errors outside the new data modules (KI-021).
+- Production build, lint and all 51 automated tests pass.
+- Tests cover catalogue integrity, every activated moon's parent-relative source-ellipse bounds, explicit illustrative-quality metadata, scale ordering, distances, clock behavior, rendering contracts, mobile HUD and bounded search.
+- Desktop compatibility-renderer QA passed for Io/Jupiter search and focus, moon orbit toggling, Charon's information-only panel and application console errors.
 - Full WebGL and physical-device mobile QA remain open.
 
 ## Working features
 
-- Ten selectable worlds: Sun, Mercury, Venus, Earth, Moon, Mars, Jupiter, Saturn, Uranus, Neptune.
-- Starts focused near Earth.
-- Assisted curved travel with progress, braking/cancellation, arrival focus, and visited-state updates.
-- Desktop free flight: W/S, A/D, Q/E, arrows, Shift boost, Space/Escape brake.
-- Mouse orbit/approach and touch drag/pinch. On mobile, flight controls are revealed only when requested.
-- Search dialog, destination strip, system view, focus target, labels, and fullscreen.
-- Details sheet with physical facts, atmosphere, curated fact, source links, and modeled distance comparison.
-- Exploration Scale and Scientific Scale modes; all displayed measurements remain based on the uncompressed astronomy model.
-- Optional orbit paths and a UTC simulation clock: paused, real time, 10×, 100×, and 1,000×.
-- Offline curated astronomy guide tied to the selected world.
-- Device-local visited-world persistence and reset.
-- Reduced-motion setting.
-- Canvas 2D compatibility renderer when WebGL is unavailable.
+- Starts focused near Earth; selection, assisted curved travel, brake/cancel, arrival focus and device-local visit progress.
+- Desktop free flight with W/S, A/D, Q/E, arrow look, Shift boost and Space/Escape brake; mouse/touch orbit and approach.
+- Mobile compact dock, bottom action sheet, optional flight controls and hide/restore HUD.
+- Bounded asynchronous search across all 32 records by name, curated alias, type and parent context. Results expose Show, Travel and Information; scene actions are enabled only for the 29 active destinations.
+- A ten-item primary destination strip keeps the desktop HUD compact; major moons are reached through search or contextual selection.
+- Reusable type-aware information panel with parent, applicable physical/orbital facts, sourced education and provenance. Empty/unknown values are omitted.
+- Reusable distance comparison with Earth, Sun, parent, spacecraft or another active destination. Simulated separation and average orbital distance remain distinct.
+- Exploration Scale and Scientific Scale; displayed scientific measurements always use uncompressed canonical data.
+- Optional planetary and relevant moon-system orbit paths.
+- UTC simulation clock with pause, real time, 10×, 100× and 1,000×.
+- Offline deterministic astronomy guide; it never calls a paid AI service. Newly activated moons receive verified numerical/fact answers, with unsupported curated topics stated as unavailable.
+- Canvas compatibility renderer when WebGL is unavailable.
+- Optional small-body region layer with four bounded point draws, centralized scale projection, camera-relative precision and an always-visible disclosure that one-pixel markers and density are greatly enhanced.
+- V1.2 flight smoothing is now implemented: translation accelerates and decelerates with frame-rate-independent response, combined axes are normalized, arrow-key steering eases in and out, collision correction removes inward drift, and brake/focus/overview transitions clear residual motion.
 
 ## Architecture summary
 
-- React 19 + TypeScript UI in a Vinext/Next-compatible app structure.
-- Vite 8 build and Cloudflare Worker-compatible output.
-- Imperative Three.js engine in `app/scene.ts`; React state and panels in `app/page.tsx`.
-- Canonical versioned data in `app/data/`; `app/astronomy.ts` is the existing ten-destination compatibility adapter.
-- Physical/orbital/calculated/dynamic/editorial modules are separate; visual metadata lives in `app/body-presentation.ts`.
-- Central presentation-scale policy in `app/scale.ts` and camera-relative GPU projection in `app/render-space.ts`.
-- Curated offline routing in `app/guide.ts`, with authored topic content in `app/data/guide-education.ts`.
-- Custom fallback in `app/software-renderer.ts`.
-- Progressive mobile HUD state remains in React/CSS; it does not alter the scene-engine API.
-- `app/simulation-clock.ts` owns validated rates and monotonic time anchoring; the scene owns per-frame advancement and only throttles UI notifications.
-- Tailwind CSS 4 and existing Shadcn-derived primitives.
-- No active application database, authentication, analytics, paid API, or server-side product API.
+- React 19 + TypeScript UI in a Vinext/Next-compatible structure; Vite 8 builds Cloudflare Worker-compatible output.
+- `app/page.tsx` owns UI state; the imperative Three.js engine remains isolated in `app/scene.ts`.
+- Canonical versioned science lives in `app/data/`; `app/astronomy.ts` adapts the bounded active scene set without duplicating scientific values.
+- Physical, orbital, calculated position, dynamic result and educational layers remain separate.
+- `app/scale.ts` owns presentation scale. `app/render-space.ts` performs camera-relative Float64-to-Float32 projection only at render time.
+- `app/search.ts`, `app/object-information.tsx` and `app/distance-comparison.tsx` remain reusable provider/presenter boundaries.
+- No database, authentication, analytics, runtime astronomy API or paid AI API.
 
-## Current data systems
+## Data and position systems
 
-- Planet positions: JPL approximate Keplerian elements for 1800–2050.
-- JPL-published nominal 1800–2050 longitude/latitude/radial error estimates are attached to each planet-position result.
-- Earth entry: Earth–Moon barycenter approximation used by the JPL element set.
-- Moon: sourced J2000 mean ellipse, without precession/perturbations; explicitly illustrative with no validated error bound.
-- 32-body local catalogue: Sun, eight planets, 21 selected moons, Ceres and Pluto. JPL/NASA/IAU numerical provenance, units, reference locations, uncertainty and explicit missing reasons.
-- Additional 22 bodies are data-only: no scene travel/assets yet. Ceres/Pluto positional elements are not imported; other moons lack validated propagation/frame transforms. Unsupported positions return unavailable.
-- Existing descriptions are legacy-curated; new-body descriptions are not imported. Live observation values are explicitly unavailable.
-- Physical values in panels/guide derive from canonical records. A details disclosure exposes sources and reliability.
-- Distances: center-to-center calculations from uncompressed model coordinates.
-- Scientific Scale: linear 100 visual units/AU center positions; body sizes remain visibly enlarged.
-- Exploration Scale: continuous radial compression with parent-local satellite placement.
-- Guide: deterministic local topic matching, not an LLM.
-- Progress: browser `localStorage` key `solar-explorer-progress-v1`.
+- Dataset version: `2026.09.14-1`; 32 local catalogue records with explicit units, sources, references, uncertainties where available and null/missing reasons.
+- Planet positions: JPL approximate Keplerian model for `[1800, 2050)`; Earth is the Earth–Moon barycenter approximation.
+- Major-moon positions: JPL J2000 mean ellipses in parent-ecliptic, local-Laplace or parent-equatorial frames. Laplace poles come from JPL; Uranus's equatorial pole comes from the IAU-based NASA/JPL NAIF PCK.
+- Moon positions are **illustrative**, not ephemerides: fixed mean ellipses omit apsidal/nodal precession, perturbations, light time and body orientation, and have no validated error bounds.
+- Charon's parent-relative elements are stored, but its position is unavailable because Pluto has no imported heliocentric position. No fallback is invented.
+- Major-moon education was reviewed against linked NASA Science pages on 2026-09-14. Legacy planet guide/temperature prose remains labelled separately.
 
-## Current visual systems
+## Visual and scale systems
 
-- Textured sphere bodies with mobile geometry reduction.
-- Physically based non-solar materials, a warm point light at the Sun, restrained ambient fill, soft WebGL shadows, and ACES Filmic tone mapping.
-- Earth cloud layer, night-lights map gated to the unlit hemisphere, and a day-weighted atmospheric limb shader.
-- Saturn ring mesh with alpha texture, improved material response, body-aware arrival distance, and WebGL shadow participation.
-- Layered Sun treatment: self-lit textured surface plus a restrained additive corona without global bloom.
-- Deterministic decorative star field with subtle brightness and temperature variation.
-- Optional 256-segment planetary orbit lines with quiet default styling and selected-orbit emphasis.
-- Axial tilts for selected bodies and time-driven surface rotation.
-- DOM world labels projected from 3D positions.
-- Canvas fallback approximating the same visual language with a graded space background, improved terminators/night lights, smoother rings, restrained glows, material-aware orbit opacity, and corrected overview framing.
-- Assisted travel and system overview use quintic easing with a subtle temporary field-of-view expansion; reduced motion remains instant.
-- Mobile presentation defaults to a slim header, icon-only view tools, and a compact destination dock. One bottom sheet groups deeper actions and scale selection; flight controls and the full HUD can be shown/hidden independently.
+- Textured primary bodies; lightweight color materials and lower-segment geometry for newly activated moons, avoiding new texture downloads.
+- Warm Sun light, restrained ambient fill, ACES tone mapping, soft WebGL shadows, Earth clouds/night lights/atmosphere, Saturn rings, Sun corona and deterministic decorative stars.
+- Scientific Scale is linear at 100 units/AU for centers. Bodies remain enlarged for visibility.
+- Exploration Scale compresses heliocentric radius continuously. Moon systems use a centralized monotonic parent-local radial compression preserving phase, direction and orbit ordering.
+- Planet paths use camera-relative double-backed line geometry. Moon paths are 96-segment parent-local lines that follow their moving parent.
+- Only the focused parent system is shown for moons. This visibility culling applies to WebGL, raycasting, labels, collision checks and the Canvas renderer, keeping the active visual set bounded.
 
-## Current navigation and flight
+## Navigation and deployment
 
-- `OrbitControls` handles mouse/touch orbit, zoom, damping, and pan.
-- Assisted travel uses a quadratic Bézier-like curve and quintic easing.
-- Travel duration is based on visual scene span and clamped to approximately 2.6–6.5 seconds.
-- Manual translation speed scales with target size and camera-to-target distance.
-- Manual inputs are immediate/binary; smooth acceleration, inertia, and configurable sensitivity are not implemented.
-- Camera collision protection keeps it outside enlarged visible body spheres.
-- Focused-body following compensates for orbital movement after arrival.
-
-## Deployment, repositories, and external services
-
-- Stable production source: the ChatGPT Sites source repository identified by `.openai/hosting.json`.
-- Persistent external mirror: private GitHub repository `gabortardos/solar-system-explorer`.
-- Hosting: ChatGPT Sites with Cloudflare Worker runtime.
-- Site status: active, public version 7; contains visual, scale, mobile HUD, Step 8 data and REAL ORBITAL POSITIONS passes.
-- Access at last inspection: public link access.
-- `.openai/hosting.json` preserves the existing project identity; `d1` and `r2` are `null`.
+- `OrbitControls` handles orbit/pan/zoom/damping. Assisted travel uses a quadratic curve with quintic easing and a roughly 2.6–6.5 second visual duration.
+- Focus following compensates for orbital movement. Collision protection covers relevant visible bodies.
+- Canonical production source is the Sites repository identified by `.openai/hosting.json`; public link access must remain enabled.
+- The private GitHub repository is an optional continuity mirror, not the production source. Do not overwrite production from it casually.
 - GitHub CI validates pushes/PRs but does not deploy.
-- Repository separation remains explicit: the Site source repository is the production source. The private GitHub repository is a continuity/document mirror unless a future owner-approved consolidation is performed; its application code must not overwrite production casually.
-- Runtime makes no external astronomy, AI, analytics, or authentication request.
-- Static sources/assets: NASA/JPL references and Solar System Scope/INOVE textures.
 
 ## Known limitations
 
-- Full WebGL—including logarithmic depth, custom atmosphere shaders, and camera-relative rendering—and physical-device mobile QA remain incomplete. Phone-sized responsive rendering has been verified in the supervised compatibility renderer.
-- At least one production chunk exceeds 500 kB after minification.
-- WebGL shadow cost has not been profiled on physical low/mid-range devices.
-- Saturn ring/planet shadows are enabled in WebGL but the Canvas renderer uses a visual approximation rather than physical shadow projection.
-- Labels lack overlap/occlusion management.
-- Search covers only the ten current bodies.
-- Guide supports curated topics rather than open-ended AI conversation.
-- Date selection, reverse time, accurate lunar ephemerides, terrain/landing, spacecraft physics, sound, and catalogue streaming are absent. Forward simulation stops at the last valid millisecond of 2049.
+- Moon positions are scientifically meaningful mean-orbit visualizations, not precision ephemerides or eclipse/navigation predictions.
+- Ceres, Pluto and Charon are not scene destinations.
+- Full WebGL/physical-device performance and appearance remain unverified; a production chunk remains over 500 kB.
+- Labels have no overlap/occlusion solver. Manual flight has no acceleration/inertia/sensitivity control.
+- Population regions are deterministic statistical samples with simplified radial/inclination envelopes. They intentionally do not reproduce true density, resonant structure, families or precise object positions; WebGL/physical-device visual sparsity still needs QA.
+- Primary search covers 32 core records. Its “Explore asteroids, comets and distant objects” entry opens a paged minor-body catalogue with prefix/alias search, collection filters, information, Show, Travel, Nearby Earth and Clear markers. Minor markers are separate from the primary destination/visited system.
+- Static catalogue pages hold at most 32 summaries; the provider caches at most 64 responses, evaluates at most 64 nearby candidates, and the scene retains at most 12 requested markers with one selected label. No catalogue-wide render or browser import.
+- Large-scale ingestion/object-storage hosting, a fine spatial index and million-record end-to-end benchmarks remain future work; the sample importer is not a bulk-ingestion tool.
+- Standalone TypeScript checking still has known Worker ambient-type/flight-narrowing gaps even though the verified production build passes.
 
-See [KNOWN_ISSUES.md](KNOWN_ISSUES.md) for tracked status and fixes.
+## Current milestone and next task
 
-## Current milestone and unfinished work
+**In progress:** V1.2 — Flight and navigation quality.
 
-**REAL ORBITAL POSITIONS is implemented and published.** The eight planets update continuously from the existing JPL approximate model; the Sun remains the heliocentric origin and the Moon remains explicitly illustrative. A monotonic UTC clock supplies the five requested rates without frame-rounding accumulation or rate-change jumps.
+Step 15 is implemented and verified in source. The current unfinished work returns to body-aware assisted-arrival review, full WebGL/physical-device mobile QA (including population sparsity in both scales), and evidence-led bundle/startup and shadow-cost measurement. Do not claim release confidence until those checks are complete.
 
-The next planned engineering milestone is **V1.2 — Flight and navigation quality**. Smooth non-gamer flight, broader navigation regression coverage, WebGL/physical-device mobile QA, and measured bundle optimization remain unfinished.
+## Step 14 data and release notes
 
-## Next recommended task
-
-Begin V1.2 with navigation regression coverage and smoother non-gamer flight. Resolve KI-021 during tooling/navigation work; complete WebGL/mobile validation before expanded worlds. Do not start the next milestone without the owner’s direction.
+- Raw JPL snapshots and provenance: `data-source/minor-bodies/`; offline importer: `scripts/import-minor-bodies.py`; generated HTTP pages: `public/catalogue/v1/`; provider/model: `app/minor-bodies.ts`; compact UI: `app/minor-body-panel.tsx`.
+- Includes Vesta, Pallas, Hygiea, Eros, Itokawa, Bennu, Ryugu, Apophis, Didymos, 1950 DA, Halley, Encke, 67P, Hale-Bopp, Eris, Makemake, Haumea, Sedna and Arrokoth.
+- Minor-body positions are explicitly illustrative fixed osculating ellipses, with no perturbations/outgassing/light-time correction or validated error bounds. Hyperbolic/missing elements return unavailable. PHA flags are sourced classifications, not impact predictions.
+- Desktop compatibility-renderer QA verified catalogue loading, Bennu and Halley search/details/travel, correct minor selection cards and timestamped Nearby Earth. Fixed browser fetch binding and arrival status/card issues found during QA. Full WebGL and physical-device mobile QA remain open. Public Site version 12 deployed successfully on 2026-09-14 from `e71ab9961a12e754e02ca6f201742b6dae623f4f`; public access preserved. Final production build, lint and all 40 tests passed. Earth return/arrival also passed rendered QA.

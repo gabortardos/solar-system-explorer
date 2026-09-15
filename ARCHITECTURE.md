@@ -28,6 +28,7 @@ flowchart TD
 - selected body;
 - readiness, renderer compatibility, status, errors, and displayed time;
 - active sheet/search state;
+- search query/result/loading state and a separate information-panel object ID;
 - compact mobile HUD, flight-control visibility, and distraction-free visibility state;
 - view/simulation options;
 - distance-comparison selection;
@@ -36,7 +37,7 @@ flowchart TD
 
 It creates the scene engine once after mounting the canvas host and communicates through method calls and callbacks. High-frequency frame state stays outside React.
 
-Existing Shadcn-derived primitives provide sheets, command search, selects, and switches. `app/globals.css` provides the product-specific HUD and responsive behavior.
+Existing Shadcn-derived primitives provide sheets, command search, selects, and switches. `app/globals.css` provides the product-specific HUD and responsive behavior; `app/search.css` isolates the responsive catalogue-result layout.
 
 At widths up to 760 px, React keeps the same selection/options/scene state but presents it through progressive disclosure: a compact destination dock, an optional touch-flight cluster, and a bottom `Sheet` containing the deeper actions and the same scale controls. Hiding the mobile HUD is presentation-only and never pauses or rewrites the engine.
 
@@ -52,7 +53,7 @@ It returns an imperative API: `focus`, `preload`, `overview`, `brake`, `setMovem
 
 The engine attempts WebGL2, then WebGL. When successful it creates a `THREE.WebGLRenderer` with logarithmic depth, antialiasing, capped device pixel ratio, sRGB output, ACES Filmic tone mapping, a point light at the Sun, and low ambient light.
 
-Each body uses a `THREE.Group` positioned by the astronomy model. Its visible mesh is a textured sphere. Earth adds a cloud sphere and atmosphere shader; Saturn adds a ring mesh. A separate group holds orbit lines. World labels are DOM buttons projected into screen space.
+Each active body uses a `THREE.Group` positioned by the astronomy model. Primary bodies use textured spheres; newly activated moons use lower-segment color-material spheres with no new texture downloads. Earth adds a cloud sphere and atmosphere shader; Saturn adds a ring mesh. Separate groups hold heliocentric planet paths and parent-local moon paths. World labels are DOM buttons projected into screen space.
 
 `OrbitControls` handles orbit/pan/zoom and damping. Raycasting handles clicking visible body meshes.
 
@@ -72,13 +73,15 @@ This path preserves basic interaction and perspective, not WebGL parity.
 
 ## Coordinate and scale systems
 
-`app/astronomy.ts` returns Cartesian positions in AU for planets. The Moon is derived from the Earth model position plus a sourced, fixed mean ellipse, explicitly tagged illustrative.
+`app/astronomy.ts` returns Cartesian positions in AU for the bounded active set. Planets use the JPL approximation. Moons use a sourced parent-relative J2000 mean ellipse transformed from its published parent-ecliptic, local-Laplace or parent-equatorial reference plane and added to the parent's heliocentric position. All satellite positions are explicitly tagged illustrative.
 
 `app/scale.ts` is the only presentation-scale policy. `app/scene.ts` supplies model positions to it:
 
 - **Scientific Scale:** each Cartesian AU component is multiplied by 100, preserving every modeled center-distance ratio.
 - **Exploration Scale:** direction is preserved while heliocentric radius becomes `24 × (1 − exp(−r / 0.05)) + 38 × ln(1 + r)`. The function is finite, continuous at the Sun, and monotonic.
-- **Satellite placement:** parent position and parent-local offset are transformed separately. The Moon retains its modeled offset in Scientific Scale and a 5-unit local separation in Exploration Scale.
+- **Satellite placement:** parent position and parent-local offset are transformed separately. Scientific Scale keeps exact modeled separation. Exploration Scale applies a centralized monotonic radial power compression inside each parent system, preserving direction, phase and orbit ordering rather than implying literal distance.
+
+Moon orbit lines use 96 local vertices and follow the moving parent. Only the focused moon system is visible/raycastable/collidable at a time; the Canvas renderer also traverses visible nodes only. This bounds scene work and label clutter while keeping all 29 destinations searchable and travelable.
 
 Body display radius is a separate presentation rule in `app/scale.ts`: the Sun is fixed at 5 exploration units; other bodies use a square-root enlargement with a minimum. Scientific Scale uses 5% of those display radii. Neither mode is a literal diameter-and-distance scale.
 
@@ -112,13 +115,15 @@ A temporary dashed route line is shown. Arrival enables focused-body following a
 
 Keyboard/touch movement writes active codes into a set. Each frame calculates forward/right/up translation. Speed depends on target visual size and camera-to-target distance; Shift applies an 8× multiplier. Arrow keys rotate the view direction. Any manual movement cancels assisted travel and enters free-flight status.
 
-Collision correction keeps the camera outside enlarged visible spheres. It is not spacecraft physics.
+`app/navigation-motion.ts` owns the pure motion-response policy. Combined translation axes are normalized, target velocity keeps the established body/distance-aware speed and 8× boost, and exponential response makes acceleration, deceleration and steering stable across frame rates. Releasing input coasts to a short controlled stop; Space/Escape and the explicit brake clear motion immediately. Focus, overview and assisted travel also clear residual manual motion so inertial state cannot leak into automated camera transitions.
+
+Collision correction keeps the camera outside enlarged visible spheres and removes the inward component of manual velocity after contact. It is not spacecraft physics.
 
 ### Simulation clock and orbital updates
 
 `app/simulation-clock.ts` is the single clock policy. It anchors simulation milliseconds to `performance.now()` and computes `anchor + elapsed × rate`, so frame duration does not accumulate rounding drift. Changing among pause, 1×, 10×, 100× and 1,000× first settles the old rate, then re-anchors at the same instant; the scene never jumps solely because speed changed. It clamps at the data model's `[1800, 2050)` interval and defaults to real time.
 
-`app/scene.ts` reads the clock and recalculates the ten active body transforms on every animation frame. Camera following uses the focused body's before/after positions so orbit motion does not leave the camera behind. Orbit paths remain static 256-segment approximations and are not rebuilt per frame. React receives time notifications at most twice per second, keeping high-frequency work outside component state. This is inexpensive for ten bodies; future catalogue growth must update only a spatially selected active set, not every stored record.
+`app/scene.ts` reads the clock and recalculates the bounded 29-body active set on every animation frame. Camera following uses the focused body's before/after positions so orbit motion does not leave the camera behind. Planet paths are static 256-segment approximations; 96-segment moon paths are local to and move with their parent. React receives time notifications at most twice per second, keeping high-frequency work outside component state. Only the focused moon system is visible, and future catalogue growth must still update a spatially selected active set rather than every stored record.
 
 ## State management and data flow
 
@@ -139,15 +144,23 @@ sequenceDiagram
 - Scene-local mutable state holds animation, camera, controls, input, textures, and flight.
 - The scene-local `SimulationClock` owns authoritative running time; React stores only the displayed snapshot and selected rate.
 - `localStorage` stores visited IDs/update time under `solar-explorer-progress-v1`.
-- Dynamic imports defer `app/scene.ts` and `app/guide.ts` until needed.
+- Dynamic imports defer `app/scene.ts`, `app/guide.ts`, and the search provider until needed.
 
 ## Object model
 
 `app/data/` is the canonical local science layer: physical quantities, orbital parameters, computed positions, dynamic values and editorial summaries are separate modules. `catalog.ts` joins 32 records by stable ID/parent and supplies validation; quantities have units, provenance, uncertainty and explicit missing reasons. `positions.ts` returns result objects with frame/time/model/quality or an unavailable reason. `dynamic.ts` distinguishes computed distance/light time from missing live observations.
 
-`app/astronomy.ts` retains the ten-body `Body` adapter so existing scene/navigation/scale APIs remain stable. It joins science with `app/body-presentation.ts` and educational metadata rather than maintaining duplicate scientific literals. Sun orbital period is now null. New catalogue entries do not automatically become renderer destinations.
+`app/astronomy.ts` retains the `Body` adapter so existing scene/navigation/scale APIs remain stable. It joins the explicit `app/body-presentation.ts` active set with science and educational metadata rather than maintaining duplicate scientific literals. Adding a catalogue record still does not automatically create a renderer destination.
 
-`app/data-provenance.tsx` exposes scientific field sources/reliability in the details sheet. The offline guide uses the same canonical physical values and distance service; historical authored topics live separately in `app/data/guide-education.ts`. See [ASTRONOMY_DATA.md](ASTRONOMY_DATA.md) for source selection, schemas, frame conventions, missing models and import policy.
+`app/object-information.tsx` is the presentation adapter for the details sheet. `buildObjectInformation()` composes a catalogue body, the active-scene adapter when present and separately stored educational content into an ordered `ObjectInformationModel`; only applicable, non-null fields are emitted. The renderer accepts that model directly, so future asteroid, comet and spacecraft adapters can reuse it without adding object-specific branches to `page.tsx`. `app/data/object-education.ts` holds the reviewed qualitative composition, discovery and scientific-importance layer.
+
+`app/data-provenance.tsx` exposes scientific field sources/reliability for displayed numerical values and filters unavailable rows by the same omission rule. The offline guide uses the same canonical physical values and distance service; historical authored topics live separately in `app/data/guide-education.ts`. See [ASTRONOMY_DATA.md](ASTRONOMY_DATA.md) for source selection, schemas, frame conventions, missing models and import policy.
+
+`app/distance-comparison.tsx` owns target ordering, unit presentation and the view model for distance results. Body-to-body results call `calculateDistance()` in the canonical dynamic layer at the displayed simulation time. A semimajor-axis “average orbital distance” appears only for a direct parent–child relationship and is never substituted for current separation. Unavailable position models remain unavailable.
+
+`app/search.ts` defines the bounded asynchronous `CatalogSearchProvider` contract and its current local adapter. It normalizes case, diacritics and punctuation, then ranks exact name, exact alias, prefix and all-term type/context matches. Responses expose only compact result records plus `total`/`hasMore`; the UI asks for 20 and the provider hard-caps requests at 50. React keeps `selected` (the active 3D destination) separate from `detailsId` (the object being inspected), so a data-only result cannot enter scene/navigation state. A future server/index provider must implement the same top-k contract with pagination/cursors and detail-on-demand; it must not send the full minor-body catalogue to the browser.
+
+The scene API exposes `getSpacecraftDistance(id)` as a read-only snapshot rather than leaking the Three.js camera into React. Under Scientific Scale, its linear 100-units/AU transform is inverted exactly. Exploration Scale has no single scientific inverse because it combines heliocentric compression, parent-local placement and enlarged bodies, so the estimate is anchored to the currently focused body's model position and physical-radius/display-radius ratio. The UI labels this as a navigation estimate; it is not part of the canonical ephemeris.
 
 No runtime external API or new dependency was introduced. Pure position results are calculated on demand; the present 32-record in-memory catalogue is not the future million-body storage strategy. Large datasets require compact indexed tiles and selective metadata loading outside the render loop.
 
@@ -175,13 +188,15 @@ See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for the release procedure.
 - Preserve `.openai/hosting.json` and the existing Site identity.
 - Keep calculations separate from rendering and UI.
 - Never derive scientific distances from compressed scene coordinates.
+- Keep object-information composition in the reusable presenter; do not reintroduce hard-coded planet facts in `page.tsx` or substitute defaults for missing values.
+- Keep body distances in the dynamic science layer and spacecraft-camera conversion behind the scene API. Never present an Exploration Scale spacecraft estimate as a measured or ephemeris position.
 - Route every body/orbit presentation position through `app/scale.ts`; do not duplicate scale formulas.
 - Keep absolute catalogue/navigation coordinates in doubles and rebase only the active render snapshot.
 - Preserve WebGL and Canvas paths unless a replacement is proven across supported devices.
 - Preserve reduced motion, touch controls, source links, and local progress.
 - Do not expose secrets in browser code.
 - Do not activate database/authentication merely because starter files exist.
-- Do not eagerly load large catalogues or all high-resolution assets.
+- Do not eagerly load large catalogues or all high-resolution assets. Preserve the bounded search-provider boundary; future results must come from an indexed server/tile source rather than a browser-resident full catalogue.
 
 ## Why this architecture was chosen
 
@@ -193,3 +208,23 @@ See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for the release procedure.
 - Compatibility rendering improves reach without blocking the WebGL experience.
 - Offline knowledge and local progress keep V1.1 private, inexpensive, and reliable.
 - Sites/Worker packaging provides managed deployment without client-side credentials.
+
+## Step 14 — Bounded minor-body provider
+
+The core 32-body science model and 29-destination scene remain intact. Minor bodies use a separate asynchronous provider (`app/minor-bodies.ts`), accessed through the existing search dialog and a compact sheet. No physical catalogue is imported into the client bundle.
+
+- Storage: versioned same-origin JSON pages in `public/catalogue/v1/`: `search/<normalized_prefix>/<page>`, `browse/<collection>/<page>`, `shells/<log2_AU_shell>/<page>`, and individual `objects/<stable_spk_id>`. A tiny manifest describes the edition. Raw snapshots stay in source control outside public assets. Builds do not call JPL.
+- Loading: explicit pages of 32 compact summaries, then details only on demand. LRU holds 64 responses; each response is capped at 128 KiB before parsing. Debounced queries ignore superseded UI responses. Search pages rank by curated importance, a presentation priority independent of hazard or scientific reliability.
+- Spatial filtering: conservative perihelion/aphelion overlap against logarithmic radial shells selects candidates; at most 64 candidates receive exact uncompressed two-body position/distance checks. Queries that exhaust budgets or exceed indexed radial coverage disclose incomplete results. UI exposes a timestamped 1-AU neighborhood of simulated Earth; provider accepts arbitrary centers/radii.
+- Rendering: only Show/Travel activates a marker. At most 12 low-poly spheres; lowest-importance retained entry is evicted when full. Unselected markers disappear beyond 160 visual units; selected markers have a finite horizon and a single label. Markers are enlarged symbols, not shape models. All active positions use the existing scale and camera-relative render pipeline; clipping includes visible markers. Resources are disposed on eviction/clear/unmount. No comet tails or global orbit-line clouds are invented.
+- Navigation: minor focus is a separate scene target with motion following and optional eased approach. Manual flight/primary focus cancels minor following. The selected minor body receives its own compact card/mobile summary; primary visited counters remain for the core worlds. Minor selection does not mutate canonical planet identities.
+
+### Growth path and constraints
+
+The browser contract scales independently of catalogue size, but the sample generator and static-asset deployment are not a million-record ingestion/hosting solution. Before a bulk import, replace the in-memory generator with streaming ingestion plus external sort, store object pages in object storage, and serve the same bounded contracts through a server index. Use a compact prefix trie/FTS rather than materializing every prefix as a separate hosted file. Partition spatial candidates using conservative 3D time-bucket envelopes and track epoch validity; retain radial shells as a broad phase. Dense-cell queries must remain paginated or explicitly incomplete. Test cold-cache latency, transfer bytes, heap and frame time at increasing catalogue sizes before increasing any rendering budget. Future mesh/point instancing and detailed shape assets remain bounded LOD tiers, never one mesh per catalogue record.
+
+## Step 15 — Statistical population regions
+
+`app/populations.ts` owns deterministic renderer-only samples in heliocentric scene-axis AU. Main-belt and Kuiper samples are simplified axisymmetric envelopes; Trojan samples are broad clouds centered approximately ±60° from Jupiter's uncompressed model longitude. `app/scene.ts` projects every sample independently through the centralized scale transform and updates the Trojan anchor at a low simulated-time cadence.
+
+The layer is limited to four `THREE.Points` draws and 1,100 one-pixel markers. It does not alter the canonical catalogue, minor-body provider, search, raycasting, collision, distance, travel or visit systems. `worldPointGeometry()` extends the camera-relative Float64-to-Float32 snapshot boundary; point containers are not translated a second time. The Canvas renderer draws the same bounded markers and includes visibility/buffer state in its render cache signature.

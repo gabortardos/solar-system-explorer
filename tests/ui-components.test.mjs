@@ -14,7 +14,7 @@ const vite = await createServer({
   configFile: false,
   root,
   resolve: { alias: { "@": root } },
-  server: { middlewareMode: true },
+  server: { middlewareMode: true, hmr: false },
 });
 
 after(async () => {
@@ -95,33 +95,101 @@ test("answers expanded astronomy-guide topics without a network service", async 
   assert.match(answerGuide(mars, "How far is it from Earth?", Date.UTC(2026, 8, 8)).source, /jpl\.nasa\.gov/);
 });
 
-test("keeps a complete, recoverable flight-control contract", async () => {
-  const [page, scene] = await Promise.all([
-    readFile(path.join(root, "app/page.tsx"), "utf8"),
-    readFile(path.join(root, "app/scene.ts"), "utf8"),
-  ]);
-
-  assert.match(page, /Return to Earth/);
-  assert.match(page, /Cancel assisted travel/);
-  assert.match(page, /Flight speed/);
-  assert.match(page, /Lock \{b\.name\}/);
-  assert.match(scene, /velocity\.addScaledVector/);
-  assert.match(scene, /const brake=/);
-  assert.match(scene, /const lock=/);
-  assert.match(scene, /const cancelTravel=/);
-  assert.match(scene, /angularVelocity/);
-});
-
-test("keeps the cinematic solar-system rendering treatment", async () => {
+test("preserves the restrained cinematic rendering treatment", async () => {
   const [scene, fallback] = await Promise.all([
     readFile(path.join(root, "app/scene.ts"), "utf8"),
     readFile(path.join(root, "app/software-renderer.ts"), "utf8"),
   ]);
 
   assert.match(scene, /PCFSoftShadowMap/);
+  assert.match(scene, /logarithmicDepthBuffer:\s*true/);
+  assert.match(scene, /withRenderOrigin/);
+  assert.match(scene, /projectPosition/);
   assert.match(scene, /MeshStandardMaterial/);
+  assert.match(scene, /earth_nightmap\.jpg/);
   assert.match(scene, /BackSide/);
-  assert.match(scene, /t\*t\*t\*\(t\*\(t\*6-15\)\+10\)/);
+  assert.match(scene, /Math\.pow\(-2 \* t \+ 2, 5\) \/ 2/);
   assert.match(fallback, /createRadialGradient/);
-  assert.match(fallback, /front\?\.78:\.55/);
+  assert.match(fallback, /nightMap/);
+  assert.match(fallback, /front\?\.82:\.6/);
+});
+
+test("keeps the mobile scene clear with a compact, optional HUD", async () => {
+  const [page, css] = await Promise.all([
+    readFile(path.join(root, "app/page.tsx"), "utf8"),
+    readFile(path.join(root, "app/globals.css"), "utf8"),
+  ]);
+
+  assert.match(page, /mobile-target-dock/);
+  assert.match(page, /mobile-menu-sheet/);
+  assert.match(page, /mobile-hud-hidden/);
+  assert.match(page, /touch-flight.*is-open/);
+  assert.match(page, /Travel to \{b\.name\}/);
+  assert.match(css, /\.universe\{inset:0\}/);
+  assert.match(css, /\.flight-heading,\.target-card,\.bottom-area,\.control-hint\{display:none\}/);
+  assert.match(css, /\.touch-flight\.is-open\{display:grid\}/);
+  assert.match(css, /\.mobile-hud-hidden .*\.mobile-target-dock/);
+  assert.match(page, /mobile-clock/);
+  assert.match(css, /\.mobile-clock/);
+});
+
+test("keeps catalogue search bounded and separates information from scene selection", async () => {
+  const [page, search, css] = await Promise.all([
+    readFile(path.join(root, "app/page.tsx"), "utf8"),
+    readFile(path.join(root, "app/search.ts"), "utf8"),
+    readFile(path.join(root, "app/search.css"), "utf8"),
+  ]);
+
+  assert.match(page, /catalogSearchProvider\.search\(searchQuery,\s*\{ limit: 20 \}\)/);
+  assert.match(page, />\s*Show\s*<\/button>/);
+  assert.match(page, />\s*Travel to\s*<\/button>/);
+  assert.match(page, />\s*Information\s*<\/button>/);
+  assert.match(page, /detailsId/);
+  assert.match(search, /CatalogSearchProvider/);
+  assert.match(search, /Math\.min\(options\?\.limit\?\?20,50\)/);
+  assert.match(search, /server-side/);
+  assert.match(css, /grid-template-columns:\s*repeat\(3/);
+});
+
+test("exposes the validated simulation clock without the former unbounded rate", async () => {
+  const [page, clock, scene] = await Promise.all([
+    readFile(path.join(root, "app/page.tsx"), "utf8"),
+    readFile(path.join(root, "app/simulation-clock.ts"), "utf8"),
+    readFile(path.join(root, "app/scene.ts"), "utf8"),
+  ]);
+
+  assert.match(clock, /SIMULATION_RATES=\[0,1,10,100,1000\]/);
+  assert.match(clock, /anchorMonotonicMs/);
+  assert.doesNotMatch(page, /86400/);
+  assert.match(scene, /requestAnimationFrame\(animate\)/);
+  assert.match(scene, /now - lastNotify > 500/);
+});
+
+test("renders the reusable object panel without empty sections", async () => {
+  const { ObjectInformation } = await vite.ssrLoadModule("/app/object-information.tsx");
+  const model = {
+    id: "probe", name: "Example Probe", category: "spacecraft", type: "Spacecraft",
+    facts: [{ label: "Launch", value: "2032" }],
+    narratives: [{ label: "Scientific importance", text: "Studies a selected target." }],
+  };
+  const html = renderToStaticMarkup(React.createElement(ObjectInformation, { model }));
+  assert.match(html, /Example Probe/);
+  assert.match(html, /Spacecraft/);
+  assert.match(html, /Launch/);
+  assert.doesNotMatch(html, /Atmosphere|Radius|Parent/);
+});
+
+test("labels schematic small-body regions and keeps them outside destination interaction", async () => {
+  const [page, scene, fallback] = await Promise.all([
+    readFile(path.join(root, "app/page.tsx"), "utf8"),
+    readFile(path.join(root, "app/scene.ts"), "utf8"),
+    readFile(path.join(root, "app/software-renderer.ts"), "utf8"),
+  ]);
+  assert.match(page, /Small-body regions/);
+  assert.match(page, /Representative markers only\. Size and density greatly enhanced/);
+  assert.match(page, /dots are not object counts or precise current positions/);
+  assert.match(scene, /new THREE\.Points/);
+  assert.match(scene, /userData\.population = true/);
+  assert.match(scene, /sizeAttenuation: false,[\s\S]*opacity: style\.opacity/);
+  assert.match(fallback, /userData\.population/);
 });

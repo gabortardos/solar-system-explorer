@@ -6,11 +6,13 @@ The current stable baseline is **V1.1**. It is publicly available through ChatGP
 
 ## What works
 
-- Select any of ten modeled worlds from the scene, search, or destination strip.
+- Select any of 29 modeled destinations through the scene or bounded search; the ten-item primary strip remains a compact overview.
 - Travel with an assisted curved approach, or fly with keyboard, mouse, and touch controls.
+- Ease into and out of manual movement and steering; combined axes stay normalized while brake remains immediate.
 - Inspect physical facts and compare modeled center-to-center distances.
 - Switch between an exploration scale and relatively accurate orbital distances.
 - Show orbital paths and labels, pause or accelerate simulation time, and reduce motion.
+- Show sparse, explicitly schematic Asteroid Belt, Kuiper Belt and Jupiter Trojan regions; marker size and density are greatly enhanced for visibility.
 - Ask a curated astronomy guide common questions without sending data to an external service.
 - Save visited-world progress in the current browser on the current device.
 - Fall back to a reduced-detail Canvas renderer when WebGL is unavailable.
@@ -30,6 +32,7 @@ The current stable baseline is **V1.1**. It is publicly available through ChatGP
 | --- | --- |
 | `app/page.tsx` | Main interface, interaction state, panels, and local progress persistence |
 | `app/scene.ts` | Three.js scene, renderer lifecycle, selection, flight, travel, and camera behavior |
+| `app/populations.ts` | Deterministic bounded samples for schematic small-body regions |
 | `app/software-renderer.ts` | Reduced-detail Canvas fallback for devices without WebGL |
 | `app/astronomy.ts` | Ten-destination adapter over the canonical science layer |
 | `app/data/` | Versioned 32-body science catalogue, sources, orbits, positions, dynamic results and educational content |
@@ -70,7 +73,7 @@ npm run lint
 
 ## Scientific scope
 
-Planet positions use JPL approximate Keplerian elements for 1800–2050, evaluated at the displayed UTC time. The Moon uses a sourced fixed mean ellipse with no validated positional error bound, not a current lunar ephemeris. The local catalogue includes 32 bodies, while ten are selectable; missing/unvalidated positions for additional objects return unavailable. Physical distances are calculated from model coordinates before visual compression.
+Planet positions use JPL approximate Keplerian elements for 1800–2050, evaluated at the displayed UTC time. Twenty major moons use sourced J2000 mean ellipses transformed from their published parent reference planes; these are illustrative models with no validated positional error bounds, not current ephemerides. The local catalogue includes 32 bodies and 29 scene destinations; Ceres, Pluto and Charon remain information-only. Physical distances are calculated from model coordinates before visual compression.
 
 Body sizes, assisted-travel paths, surface rotations, atmospheres, lighting, and stars are illustrative. The application is an educational experience, not a spacecraft-navigation or research tool. Full assumptions and boundaries are documented in [Architecture](ARCHITECTURE.md) and [Astronomy and Data](ASTRONOMY_DATA.md).
 
@@ -94,3 +97,9 @@ The texture license does not determine the license for the application source co
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the branch, review, test, and release workflow. Security guidance is in [SECURITY.md](SECURITY.md).
+
+## Asteroids and comets
+
+Open search and choose “Explore asteroids, comets and distant objects” to browse 19 sourced JPL sample objects, search names/aliases, open information, show markers, travel, or find nearby objects around simulated Earth. Pages, cache, nearby candidates and active markers are bounded independently of catalogue size. At most 12 minor markers are retained. Orbits are illustrative two-body calculations, not precision ephemerides or impact predictions.
+
+See `ARCHITECTURE.md` for storage/index growth plans and `ASTRONOMY_DATA.md` for snapshot provenance. Bulk ingestion and million-object end-to-end performance are future work.

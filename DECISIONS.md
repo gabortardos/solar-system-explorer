@@ -158,6 +158,8 @@ Future agents should preserve these decisions unless new evidence or a product d
 
 ## D023 — Missing ephemerides remain unavailable (2026-09-10)
 
+Status: partially superseded by D028 after the satellite reference-plane transforms were implemented and tested. Its prohibition on invented/unvalidated positions remains active.
+
 - **Decision:** Store additional satellite mean elements with their actual parent reference planes; return unavailable for unvalidated propagation and unimported Ceres/Pluto position models. Replace the Moon's arbitrary phase/circle with a sourced fixed mean ellipse while retaining an explicit illustrative quality flag.
 - **Reason:** A complete-looking invented orbit is less trustworthy than an honest unavailable result. A mean-element table alone does not establish a precision ephemeris or a correct coordinate transform. JPL's current Table 1 excludes Pluto.
 - **Impact:** Current ten-world exploration remains available. Lunar precession/perturbations and Earth–Moon barycenter approximation remain limitations; new bodies are data records, not yet selectable worlds. A calculation's application time range does not certify lunar accuracy over that range.
@@ -169,3 +171,52 @@ Future agents should preserve these decisions unless new evidence or a product d
 - **Reason:** Directly accumulating frame deltas drifts through rounding and makes rate changes/tab suspension harder to reason about. Separating frame motion from UI updates keeps movement smooth without causing unnecessary component renders.
 - **Impact:** The eight planet positions continuously follow the existing local JPL model. The UI defaults to real time, speed changes are continuous, and the clock stops at the model boundary. No network ephemeris, new dependency, reverse time or date picker was added.
 - **Preserve:** Do not add arbitrary rates without product/data-range review, move per-frame time into React, extrapolate beyond `[1800, 2050)`, or imply that faster playback increases scientific accuracy. Large catalogues must update a bounded active set.
+
+## D025 — Type-aware object information is a reusable presentation model (2026-09-13)
+
+- **Decision:** Build the details sheet from a reusable `ObjectInformationModel` that composes canonical quantities with a separate qualitative education layer. Emit only fields that apply and have values; the component accepts star, planet, moon, dwarf-planet, asteroid, comet and spacecraft categories.
+- **Reason:** Different object types have different meaningful properties. A small presenter prevents hard-coded planet markup from spreading through the page while keeping scientific storage independent of layout and future catalogue adapters.
+- **Impact:** Current worlds receive compact ordered facts and narratives; future asteroids, comets and spacecraft can supply the same model without redesigning the sheet. NASA-reviewed composition/discovery/scientific-importance summaries do not overwrite reference quantities or legacy guide text.
+- **Preserve:** Do not render empty placeholders, infer unknown values, move canonical facts back into `page.tsx`, or force every category through a planet-shaped record. Extend the model with optional typed fields and explicit provenance instead.
+
+## D026 — Instantaneous distance, average orbit and spacecraft estimates stay distinct (2026-09-13)
+
+- **Decision:** Calculate body separation only from simultaneous uncompressed model positions. Show semimajor axis as a separately labelled average reference only for direct parent–child pairs. Keep spacecraft-camera conversion behind a read-only scene API: exact in linear Scientific Scale and focused-body-local/estimated in Exploration Scale.
+- **Reason:** A current separation, an orbit's semimajor axis and a camera location answer different questions. Exploration compression, enlarged bodies and parent-local satellite placement prevent one globally physical inverse for the visual camera.
+- **Impact:** The reusable calculator can compare the selected object with Earth, Sun, parent, spacecraft or another destination while honestly communicating basis, time, units and availability. No external service or invented orbit phase is required.
+- **Preserve:** Never calculate body facts from rendered coordinates, silently replace unavailable separation with an average, call the Exploration Scale spacecraft estimate an ephemeris/measurement, or expose mutable Three.js camera state directly to React.
+
+## D027 — Search is bounded, asynchronous, and independent of scene activation (2026-09-13)
+
+- **Decision:** Search through an asynchronous provider that returns compact, capped results. Keep canonical names/curated aliases in identity data, and keep the inspected-object ID separate from the active 3D destination. The current adapter indexes only the 32 local records; future large catalogues require a server-side index with paginated/top-k retrieval and detail-on-demand.
+- **Reason:** Exact aliases and context need one deterministic identity source, while hundreds of thousands or millions of records cannot be shipped into browser memory or instantiated in the scene merely to be searchable.
+- **Impact:** All 32 records can be found and inspected. D028 later expanded the bounded scene from ten to 29 destinations; Ceres, Pluto and Charon still communicate unavailable Show/travel rather than receiving invented coordinates.
+- **Preserve:** Do not bulk-import a future catalogue into the client bundle, make search create scene meshes, conflate information selection with travel selection, invent aliases, or enable Show/travel without validated positions and presentation assets.
+
+## D028 — Major moons use honest mean-orbit models and bounded system rendering (2026-09-14)
+
+- **Decision:** Activate moons only when their parent has a scene position and their JPL mean-element reference plane can be explicitly transformed. Parent-ecliptic, local-Laplace and parent-equatorial frames are handled separately; Uranus's equatorial pole comes from the IAU-based NASA/JPL NAIF PCK. Every moon position remains `illustrative`, not an ephemeris. Exploration Scale applies a centralized monotonic parent-local compression. Only the focused moon system is rendered/raycastable/collidable, using lightweight untextured geometry and local orbit lines.
+- **Reason:** This makes the requested moon systems scientifically meaningful without overstating rounded mean elements, preserves small parent-relative offsets at large heliocentric distance, and prevents catalogue growth from turning into permanent mesh/label/render cost.
+- **Impact:** Nineteen moons join Earth's Moon as scene destinations. Their direction, phase and orbit order are meaningful; visual spacing is compressed. Charon remains information-only because Pluto lacks a heliocentric model. Search and reusable information/distance systems require no architectural replacement.
+- **Preserve:** Do not call these positions precision/current ephemerides, flatten every satellite frame into ecliptic coordinates, infer spin from orbit period, activate a child whose parent position is unavailable, load detailed assets for every catalogue record, or remove focused-system culling without measured performance evidence.
+
+## D029 — Minor catalogue storage is independent of scene activation (2026-09-14)
+
+- **Decision:** Store JPL snapshots locally and serve bounded summary/detail/index pages. Keep the 29 primary destinations separate from up to 12 explicitly requested minor markers. Use conservative radial filtering plus exact model distances and disclose incomplete neighborhoods.
+- **Reason:** Catalogue size must not determine browser heap, mesh count or per-frame propagation work. Static sample pages avoid a new paid/runtime astronomy dependency while preserving a replaceable provider boundary.
+- **Impact:** Prefix/alias search, collections, nearby Earth, information and marker travel work for 19 real objects. Larger ingestion, object-storage hosting and finer spatial indexes are planned extensions, not claims of measured million-object readiness.
+- **Preserve:** Never fetch the entire future catalogue into the browser, treat curated importance as hazard, silently invent missing physics, or call fixed-ellipse propagation an authoritative ephemeris. Maintain page/cache/candidate/render budgets and explicit incompleteness when replacing storage.
+
+## D030 — Manual flight uses bounded response, not spacecraft physics (2026-09-14)
+
+- **Decision:** Keep the existing direct keyboard/touch controls and body/distance-aware speed, but approach target translation and steering rates with frame-rate-independent exponential response. Normalize combined movement axes, retain the 8× boost, and make brake/focus/overview/assisted transitions clear residual motion immediately.
+- **Reason:** Non-gamers need calmer starts, stops and turns without losing responsiveness or changing the established navigation model.
+- **Impact:** Brief release coasting feels smoother, diagonal input no longer gains unintended speed, and body collision correction removes inward velocity. The implementation remains a camera-navigation aid, not inertia, thrust or orbital physics.
+- **Preserve:** Do not let residual manual velocity leak into automated transitions, weaken the immediate brake, make speed frame-rate dependent, or describe the smoothing as physical spacecraft simulation. Tune response only with cross-device evidence.
+
+## D031 — Population regions are schematic renderer layers (2026-09-14)
+
+- **Decision:** Represent the main asteroid belt, main Kuiper Belt and Jupiter L4/L5 Trojan regions with four deterministic, bounded `Points` layers generated in uncompressed AU and individually passed through the central scale transform. Keep a visible disclosure whenever enabled.
+- **Reason:** Educational context benefits from visible regions, but a torus, dense haze or pseudo-catalogue would falsely imply solid belts, true density, current positions or complete counts.
+- **Impact:** Both renderers show sparse one-pixel samples without expanding search, selection, collision, navigation or canonical data. Marker count, size, distribution and vertical spread are presentation choices.
+- **Preserve:** Do not turn region dots into objects, measurements or census data; remove the exaggeration disclosure; derive Trojan geometry from compressed coordinates; add glow/opaque fills; or increase budgets without measured device evidence.

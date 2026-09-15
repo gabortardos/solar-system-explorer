@@ -33,6 +33,21 @@ For changes to rendering or interaction, also check:
 - Preserve the existing Sites project identifier and hosting bindings.
 - Treat deployment as a separate, deliberate step after merge.
 
+## Permanent project knowledge
+
+Read `PROJECT_STATE.md` before starting substantial work. Update only the records affected by a change:
+
+- current reality in `PROJECT_STATE.md`;
+- long-term requirements in `MASTER_SPEC.md`;
+- technical operation in `ARCHITECTURE.md`;
+- visual/interaction rules in `DESIGN_UX.md`;
+- scientific sources/models in `ASTRONOMY_DATA.md`;
+- milestone progress in `ROADMAP.md`;
+- rationale for meaningful choices in `DECISIONS.md`;
+- confirmed bugs, limitations, and debt in `KNOWN_ISSUES.md`.
+
+Do not copy the same explanation into every file. Keep each document within its stated role and mark uncertain findings as uncertain.
+
 ## Security and privacy
 
 Never commit API keys, tokens, passwords, private keys, personal data, or environment files. Browser-delivered code cannot safely contain a secret. New paid or external services require a server-side boundary, rate limiting, a cost limit, and an explicit product decision before integration.

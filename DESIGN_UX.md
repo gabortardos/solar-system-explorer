@@ -68,10 +68,18 @@ Users must retain two travel modes:
 - Space/Escape or brake stops travel.
 - “Focus target” recovers local orientation.
 - “System view” provides global context.
-- Search and destination strip choose the same target model.
+- Search and the primary destination strip choose the same target model. The strip intentionally remains the ten-entry overview; major moons are found through search or their visible parent system so the HUD does not become a 29-item ribbon.
 - Reduced-motion travel is immediate and understandable.
 
-Planned improvement: smooth acceleration/deceleration, constrained distance-aware speed, and calmer steering without removing direct control.
+Current V1.2 implementation eases acceleration/deceleration and steering while retaining direct controls, distance-aware speed and the 8× boost. Combined movement axes are normalized so diagonal input is not faster. Brake remains immediate; physical-device feel and tuning still require validation.
+
+## Small-body population regions
+
+- Use sparse one-pixel statistical markers, never an opaque torus, haze, debris wall or glowing field.
+- Keep Asteroid Belt, Kuiper Belt and Jupiter Trojan L4/L5 colors muted and subordinate to destinations.
+- Whenever markers are visible, show an accessible legend stating that each marker is representative and that size and density are greatly enhanced.
+- Population markers are noninteractive background context. They do not receive names, cards, travel actions or implied object identities.
+- The Settings switch is independent of World labels and survives overview/scale changes. Hiding the mobile HUD also hides the legend.
 
 ## Camera behavior
 
@@ -88,15 +96,24 @@ Planned improvement: smooth acceleration/deceleration, constrained distance-awar
 
 - Use a right-side sheet so the scene remains visible.
 - Adapt facts to object type; omit meaningless fields.
-- Put description and essential facts before atmosphere/fact/distance/source.
+- Keep the current desktop sheet at a compact maximum width of 440 px and scroll internally; on mobile it may occupy the viewport width but must remain dismissible over the full-bleed scene.
+- Lead with name, type and parent when applicable. Put the short description and a dense two-column quantitative grid before qualitative sections, distance and source details.
+- Show qualitative sections only when authored content exists. Use short scan-friendly headings and reserve the tinted emphasis treatment for one interesting fact.
 - Distance comparison identifies endpoints, units, AU/light time, and limitations.
+- The distance calculator remains inside the details sheet. Its target selector prioritizes Earth, Sun, the applicable parent and spacecraft before other active destinations, without duplicate choices.
+- Mark the result as **Simulated position** or **Spacecraft estimate** and show its UTC timestamp. Use km below one million km, million km for larger values, and add AU only at Solar-System-scale distances.
+- Show “Average orbital distance” only as a secondary semimajor-axis reference for a direct parent–child pair. Never let it visually replace the current simulated separation.
 - Sources open safely in a new tab.
 - State clearly when the guide is offline/curated rather than live AI.
 - Scientific disclaimers may be quieter but remain readable.
 
 ## Interaction patterns
 
-- Command search: `Cmd/Ctrl + K` plus visible search.
+- Command search: `Cmd/Ctrl + K` plus visible search. Match exact names and aliases first, then prefixes and type/parent context.
+- Search results show name, object type, and concise location context (“Solar System center” or “Orbits …”), with compact Show, Travel to, and Information actions.
+- If an object lacks validated scene position/assets, keep Show and Travel visible but disabled with an honest explanation; Information remains available. Do not pretend a catalogue record is a rendered destination.
+- Show moon labels and paths only for the focused parent system. This preserves visual hierarchy and performance; search remains the reliable global access path.
+- Keep search results bounded and scrollable. On phones, the search dialog respects safe areas and uses one compact three-action row per result rather than covering the scene with permanent controls.
 - Scene selection: click/tap visible body or label.
 - Destination strip: persistent access to all V1.1 worlds.
 - Sheets: details, guide, settings, controls.
@@ -161,3 +178,9 @@ Planned improvement: smooth acceleration/deceleration, constrained distance-awar
 - Distinguish reference gravity from a derived spherical estimate and disclose approximation limits next to distance comparisons.
 - Unavailable scientific values render as unavailable/—, never zero, an invented default, or a loading value that resembles a measurement.
 - Educational summaries, calculated positions and live observations must remain visibly distinct. Current lunar positions are illustrative; existing descriptions are curated educational copy.
+
+## Minor-body exploration
+
+- Reach the dedicated small-body catalogue from search; keep the existing compact sheet and mobile HUD. Lists scroll independently and details omit absent data.
+- Show/Travel closes the sheet to reveal the scene. Only requested markers appear; one selected label states “illustrative orbit”. Neutral stone/ice marker colors are symbolic; no fabricated shape textures or comet tails.
+- Keep NEO/PHA labels factual and understated. Nearby Earth shows its sampled simulation timestamp and whether the bounded sample is complete.

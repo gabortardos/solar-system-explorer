@@ -100,17 +100,79 @@ Status: completed and published on 2026-09-10 (checkpoint `7c719ab`, public Site
 - Kept orbit polylines static and React time updates at 2 Hz while positions animate per frame.
 - Production build, lint and all 28 tests pass. Automated clock/orbit integration checks were added; current-environment rendered browser inspection was unavailable, so physical-device and full-WebGL QA remain open.
 
-## Current milestone
+### Step 10 — OBJECT INFORMATION SYSTEM
+
+Status: completed and published on 2026-09-13 (checkpoint `64cbdf8`, public Site version 8).
+
+- Replaced the planet-specific details markup with a reusable, type-aware information model and renderer.
+- Current destinations show applicable canonical radius, diameter, mass, gravity, orbital period and rotation values plus separately stored atmosphere, composition, temperature, discovery, scientific importance and interesting-fact content.
+- Missing and inapplicable values are omitted from both the panel and provenance disclosure; no display defaults are invented.
+- Added asteroid, comet and spacecraft category support at the model boundary and a generic spacecraft rendering regression without prematurely adding those objects to the scene.
+- Production build, lint and all 30 tests pass.
+
+### Step 11 — DISTANCE CALCULATOR
+
+Status: completed and published on 2026-09-13 (checkpoint `91515d5`, public Site version 9).
+
+- Added contextual comparison targets for Earth, Sun, applicable parent body, spacecraft and every other active destination.
+- Body-to-body values use simultaneous calculated positions at the displayed simulation time and expose their UTC timestamp and model limitation.
+- Direct parent–child pairs show the semimajor axis separately as “Average orbital distance”; it never replaces instantaneous separation.
+- Added magnitude-aware km, million-km and AU formatting plus explicit unavailable states.
+- Added a read-only spacecraft-distance scene boundary: exact in Scientific Scale and explicitly estimated in compressed Exploration Scale.
+- Production build, lint and all 32 tests pass.
+
+### Step 12 — SEARCH SYSTEM
+
+Status: completed and published on 2026-09-13 (checkpoint `1363df3`, public Site version 10).
+
+- Searches all 32 local catalogue records using canonical names, curated aliases, object type and parent/location context; exact name/alias matches rank first.
+- Every result presents Show, Travel to and Information. Show/travel are enabled only for the ten validated scene destinations; all 32 can open the reusable information panel.
+- Separates the information-panel ID from active 3D selection, preventing data-only records from entering navigation state.
+- Adds a lazy-loaded asynchronous provider contract with 20-result UI requests and a 50-result hard cap. A future indexed server adapter can replace the local implementation without loading a million-object catalogue in browser memory.
+- Production build, lint and all 34 tests pass.
+
+### Step 13 — ADD MAJOR MOONS
+
+Status: completed on 2026-09-14; stable checkpoint/public deployment recorded in the repository and Sites version history.
+
+- Activated 19 additional moons around Mars, Jupiter, Saturn, Uranus and Neptune, bringing the bounded scene to 29 destinations while retaining all 32 catalogue records.
+- Added JPL-frame-aware parent-relative mean-orbit propagation, including IAU/NAIF Uranus pole orientation, with explicit illustrative quality and no claimed ephemeris error bound.
+- Added lightweight moon materials, lower-detail geometry, 96-segment parent-local orbit paths, and focused-system visibility culling across WebGL, Canvas, labels, raycasting and collision checks.
+- Added NASA-reviewed descriptions, facts, atmospheres, composition, discovery and scientific-importance content for the major moons and Charon.
+- Kept Charon information-only because Pluto has no validated heliocentric position; no fallback was invented.
+- Production build and all 36 tests pass; desktop compatibility-renderer search/focus/orbit/information QA found no application console errors.
+
+### Step 14 — ASTEROID AND COMET SYSTEM
+
+Implemented: 19-object JPL snapshot, offline importer, paged prefix/alias/category indexes, detail-on-demand LRU, conservative spatial filtering with exact model distance, timestamped Nearby Earth, importance ranking, capped marker activation/eviction, visibility LOD and Show/Travel. Final production build, lint and all 40 tests passed. Desktop compatibility QA passed; published as public Site version 12. Full WebGL/physical-device mobile QA remains open.
+
+Deferred scaling work: bulk streaming import, object-storage deployment, fine 3D time-valid spatial indexes, million-record end-to-end benchmarks and detailed shape/point-instancing tiers. The current browser workload is bounded; large-catalogue throughput has not been measured.
+
+### Step 15 — ASTEROID BELT AND KUIPER BELT VISUALIZATION
+
+Status: implemented and verified in source on 2026-09-14.
+
+- Four deterministic, renderer-only point regions: main asteroid belt (2.1–3.3 AU), Kuiper Belt (30–50 AU), and Jupiter Trojan L4/L5 regions centered approximately 60° ahead/behind Jupiter.
+- 1,100 total representative one-pixel markers across four draw calls. They are never catalogue records, object counts, destinations, raycast targets or distance inputs.
+- Both scale modes project each AU sample through `app/scale.ts`; camera-relative Float64-backed point buffers preserve precision. WebGL and Canvas paths are supported.
+- The Settings switch and visible accessible legend disclose that marker size and density are greatly enhanced and positions are illustrative.
+- Build, lint and automated sampling/projection/render/UI checks pass. Full WebGL and physical-device appearance/performance remain in the V1.2 QA plan.
+
+## Next recommended milestone
 
 ### V1.2 — Flight and navigation quality
 
-Status: planned; implementation has not begun.
+Status: in progress.
 
-1. Add navigation regression coverage for focus, overview, travel, braking, cancellation, and reduced motion.
-2. Add smooth non-gamer-friendly acceleration, deceleration, and steering without removing direct control.
+1. Completed in source: navigation regressions protect focus, overview, travel, braking, cancellation and reduced motion.
+2. Completed in source: smooth frame-rate-independent acceleration, deceleration and steering; normalized combined axes; retained distance-aware speed/direct control and immediate brake.
 3. Refine body-aware assisted arrival framing where VISUAL PASS #1 QA shows a need.
 4. Complete WebGL and physical-device mobile visual/interaction QA.
-5. Measure bundle/startup and WebGL shadow cost; optimize only where evidence supports it.
+5. Measure bundle/startup, population-layer frame cost and WebGL shadow cost; optimize only where evidence supports it.
+
+Planned sequence: complete assisted-arrival matrix first; run desktop/mobile WebGL and physical touch/keyboard QA second; profile startup/chunk/shadow/population cost third; then address only evidenced failures and close V1.2 with a stable checkpoint.
+
+The current source passes the production build, lint and all 51 automated tests. It is not considered fully validated for control feel or population appearance until physical keyboard/touch-device and full-WebGL QA are complete.
 
 ```mermaid
 flowchart TD
@@ -122,20 +184,20 @@ flowchart TD
 
 ## Next milestones
 
-### V1.3 — Close-approach depth and selected worlds
+### V1.3 — Close-approach depth and dwarf planets
 
 Provisional; depends on V1.2 quality/performance and validated local position models for the now-catalogued bodies.
 
 - Explicit LOD strategy.
-- Selected objects: Pluto/Charon, Ceres, Galilean moons, Titan, Enceladus.
-- Generalized parent-child relationships and object-type panels.
+- Validate/import local Ceres and Pluto positions, then enable Pluto/Charon and Ceres only when their parent/heliocentric models are complete.
+- Add selected high-value moon textures/close-approach detail only where asset provenance and measured performance justify them.
 - Better label crowding and nearby-object discovery.
 
-### V1.4 — Search, time, and learning depth
+### V1.4 — Catalogue, time, and learning depth
 
 Provisional; depends on generalized data schemas.
 
-- Aliases and richer/natural-language catalogue search.
+- Server-indexed/paginated catalogue ingestion and optional natural-language query interpretation above the bounded search-provider contract.
 - Selectable dates and documented accuracy.
 - Guided tours and stronger provenance display.
 
