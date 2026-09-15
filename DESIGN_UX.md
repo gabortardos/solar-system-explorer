@@ -117,7 +117,7 @@ The Step 16 guide shows selected-object meaning, captured UTC time, explanation 
 - Search results show name, object type, and concise location context (“Solar System center” or “Orbits …”), with compact Show, Travel to, and Information actions.
 - If an object lacks validated scene position/assets, keep Show and Travel visible but disabled with an honest explanation; Information remains available. Do not pretend a catalogue record is a rendered destination.
 - Show moon labels and paths only for the focused parent system. This preserves visual hierarchy and performance; search remains the reliable global access path.
-- Keep search results bounded and scrollable. On phones, the search dialog respects safe areas and uses one compact three-action row per result rather than covering the scene with permanent controls.
+- Keep search results bounded and scrollable. On phones, the search dialog is anchored below the safe area with a bounded internal list, including while the keyboard is open; use one compact three-action row per result rather than covering the scene with permanent controls. Phone text inputs must compute to at least 16px so iOS does not magnify the page and strand the sheet exit offscreen.
 - Scene selection: click/tap visible body or label.
 - Destination strip: persistent access to all V1.1 worlds.
 - Sheets: details, guide, settings, controls.

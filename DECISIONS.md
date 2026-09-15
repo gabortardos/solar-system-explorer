@@ -1,5 +1,9 @@
 # Solar System Explorer — Decision Record
 
+## D035 — Mobile search and input stability (2026-09-15)
+
+On phones, the catalogue search dialog is anchored below the safe area and uses a bounded internal result list; it must not retain Dialog's vertical-centering transform. Text-entry controls use at least a 16px computed font size on iOS-sized layouts, preventing Safari's automatic page magnification while preserving user pinch zoom. This applies to the guide's question field and catalogue search input.
+
 ## D034 — Step-number branding and compact operational controls (2026-09-15)
 
 The top-left interface label reports the latest successfully completed development step, independently of the product release name and Sites deployment version. Use the browser-native simulation-rate selector because it remains open during clock rerenders. Keep Step 15's exaggeration disclosure available beside Small-body regions through a keyboard/touch-operable info disclosure rather than a permanent card. Desktop free-flight status and instructions are contextual help, not permanent scene furniture; mobile may still show status while its optional flight control is open. Canvas Saturn close-ups may use a bounded higher-resolution sphere raster while the rest of the compatibility scene retains the lower-cost buffer.

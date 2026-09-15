@@ -162,7 +162,7 @@ Status: implemented and verified in source on 2026-09-14.
 
 ### UI/graphics checkpoints requested by owner
 
-A and Step 17 correction implemented: orbital timelapse, path contrast, desktop HUD cleanup/hide/restore, input and label treatment, sticky panel exit, stable time selector, compact small-body disclosure and improved Canvas Saturn close-ups; 62 tests/build/lint pass. B next: target-visible travel/arrival choreography and full rendered interaction matrix. Milky Way context and streamed surface detail remain scoped proposals awaiting agreement, not active implementation. See `docs/UI_GRAPHICS_PLAN.md`.
+A, Step 17 and Step 18 corrections implemented: orbital timelapse, path contrast, desktop HUD cleanup/hide/restore, input and label treatment, sticky panel exit, stable time selector, compact small-body disclosure, improved Canvas Saturn close-ups, keyboard-safe mobile search and iOS-stable guide entry; 63 tests/build/lint pass. B next: target-visible travel/arrival choreography and full rendered interaction matrix. Milky Way context and streamed surface detail remain scoped proposals awaiting agreement, not active implementation. See `docs/UI_GRAPHICS_PLAN.md`.
 
 ### Step 16 — AI astronomy guide foundation
 

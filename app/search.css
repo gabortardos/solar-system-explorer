@@ -80,15 +80,32 @@
   border-top: 1px solid #ffffff12;
 }
 
-@media (max-width: 480px) {
+@media (max-width: 760px) {
   .catalog-search-dialog {
-    top: calc(12px + env(safe-area-inset-top)) !important;
+    top: calc(10px + env(safe-area-inset-top)) !important;
+    left: 50% !important;
+    width: calc(100vw - 20px) !important;
+    max-width: calc(100vw - 20px) !important;
+    height: min(62dvh, 540px) !important;
+    max-height: calc(100dvh - 20px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
     transform: translateX(-50%) !important;
-    max-height: calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+    display: flex !important;
+    flex-direction: column;
   }
 
   .catalog-search-list {
-    max-height: calc(100dvh - 180px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: none !important;
+    overscroll-behavior: contain;
+  }
+
+  .catalog-search-dialog [data-slot="command"] {
+    min-height: 0;
+  }
+
+  .catalog-search-dialog [data-slot="command-input"] {
+    font-size: 16px !important;
   }
 
   .search-result-actions button {

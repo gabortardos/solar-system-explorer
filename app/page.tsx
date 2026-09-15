@@ -440,7 +440,7 @@ export default function Home() {
         >
           <Orbit size={28} />
           <span>
-            SOLAR SYSTEM<span className="brand-sub">EXPLORER / STEP 17</span>
+            SOLAR SYSTEM<span className="brand-sub">EXPLORER / STEP 18</span>
           </span>
         </Link>
         <button className="search-button" onClick={() => setSearch(true)}>

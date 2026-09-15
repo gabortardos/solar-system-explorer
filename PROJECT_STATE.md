@@ -8,7 +8,7 @@ This is the fast handoff for **what exists now**. The repository and deployed ap
 
 ## Current reality
 
-Step 17 UI correction: Saturn close-ups in the Canvas compatibility renderer use an adaptive 256-pixel sphere raster, the simulation rate uses a stable native selector, small-body disclosure is an on-demand info control, and static desktop flight instructions/status are removed. The brand now displays the latest completed development step. Build, lint and 62 tests pass. Travel visibility choreography remains the next checkpoint. See `docs/UI_GRAPHICS_PLAN.md`; Milky Way/surface-depth ideas are proposals only.
+Step 18 mobile input correction: search is an anchored, bounded sheet above the keyboard rather than a vertically centered dialog, and mobile text fields use 16px text so iOS does not zoom the page. The brand now displays the latest completed development step. Build, lint and 63 tests pass. Travel visibility choreography remains the next checkpoint. See `docs/UI_GRAPHICS_PLAN.md`; Milky Way/surface-depth ideas are proposals only.
 
 Step 16 foundation now adds request-time selected-object/spacecraft/time context, bounded nearby core objects, separate sourced evidence cards and a free local assistant prototype. No external LLM or paid endpoint is activated. See `docs/AI_GUIDE.md` for the implemented contract and the gated server/cost design. Step 15 was published as Site version 15; its source/live mismatch was resolved.
 
@@ -16,7 +16,7 @@ Step 15 — **ASTEROID BELT AND KUIPER BELT VISUALIZATION** adds renderer-only r
 
 Latest verification:
 
-- Production build, lint and all 62 automated tests pass. Step 17 source/interaction contracts are covered; full WebGL and physical-device appearance QA remain open.
+- Production build, lint and all 63 automated tests pass. Step 18 source/interaction contracts are covered; full WebGL and physical-device appearance QA remain open.
 - Tests cover catalogue integrity, every activated moon's parent-relative source-ellipse bounds, explicit illustrative-quality metadata, scale ordering, distances, clock behavior, rendering contracts, mobile HUD and bounded search.
 - Desktop compatibility-renderer QA passed for Io/Jupiter search and focus, moon orbit toggling, Charon's information-only panel and application console errors.
 - Full WebGL and physical-device mobile QA remain open.
@@ -88,7 +88,7 @@ Latest verification:
 
 ## Current milestone and next task
 
-**Current delivered increment:** Step 17 — UI correction and compatibility-renderer Saturn refinement. **Still open:** V1.2 flight/device QA and optional paid LLM activation safeguards.
+**Current delivered increment:** Step 18 — mobile search and guide input correction. **Still open:** V1.2 flight/device QA and optional paid LLM activation safeguards.
 
 Step 15 is implemented and verified in source. The current unfinished work returns to body-aware assisted-arrival review, full WebGL/physical-device mobile QA (including population sparsity in both scales), and evidence-led bundle/startup and shadow-cost measurement. Do not claim release confidence until those checks are complete.
 

@@ -150,6 +150,14 @@ test("keeps catalogue search bounded and separates information from scene select
   assert.match(search, /Math\.min\(options\?\.limit\?\?20,50\)/);
   assert.match(search, /server-side/);
   assert.match(css, /grid-template-columns:\s*repeat\(3/);
+  assert.match(css, /height:\s*min\(62dvh, 540px\)/);
+  assert.match(css, /transform:\s*translateX\(-50%\)/);
+  assert.match(css, /command-input.*font-size:\s*16px/s);
+});
+
+test("keeps mobile text entry from triggering iOS page zoom", async () => {
+  const css = await readFile(path.join(root, "app/globals.css"), "utf8");
+  assert.match(css, /@media\(max-width:760px\)\{\.ask-form input\{font-size:16px\}\}/);
 });
 
 test("exposes the validated simulation clock without the former unbounded rate", async () => {
@@ -173,7 +181,7 @@ test("uses progressive disclosure and the completed development step in the desk
     readFile(path.join(root, "app/globals.css"), "utf8"),
   ]);
 
-  assert.match(page, /EXPLORER \/ STEP 17/);
+  assert.match(page, /EXPLORER \/ STEP 18/);
   assert.match(page, /<details className="population-info">/);
   assert.match(page, /About small-body region markers/);
   assert.doesNotMatch(page, /className="population-legend"/);
