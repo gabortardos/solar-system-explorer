@@ -6,6 +6,8 @@ Severity: **High** blocks a core path/risks serious regression; **Medium** mater
 
 ## Active issues
 
+Step 16: context-aware local guide is implemented, but open-ended/multi-turn LLM conversation, durable paid-endpoint abuse/spend controls and refreshed legacy educational prose are not. The output validator is a format guard, not a scientific truth verifier. Paid activation is deliberately unavailable pending owner authorization and those safeguards (`docs/AI_GUIDE.md`).
+
 | ID | Description | Severity | Status | System | Workaround | Recommended fix |
 | --- | --- | --- | --- | --- | --- | --- |
 | KI-002 | Full WebGL appearance, logarithmic depth, camera-relative rendering, and the updated custom atmosphere shaders were not verified because the supervised browser lacked WebGL. | Medium | Validation gap | WebGL visuals, scale | Use the verified Canvas compatibility path. | Record desktop/mobile WebGL QA before V1.2 release. |

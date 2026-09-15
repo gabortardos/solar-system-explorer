@@ -1,5 +1,9 @@
 # Solar System Explorer — Decision Record
 
+## D032 — Context snapshots and evidence before paid generation (2026-09-15)
+
+“Here” explicitly means selected object, not arrival or camera location. Capture time/navigation/selection at request start; retain the answer's subject and time. Structured numerical facts and registry citations remain separate from local or future generated prose. Nearest objects are a bounded, explicitly incomplete core-catalogue sample. Keep the working local prototype free; paid provider activation requires server canonical retrieval, durable abuse/spend limits, privacy disclosure and explicit owner approval. See `docs/AI_GUIDE.md`.
+
 Future agents should preserve these decisions unless new evidence or a product decision justifies change.
 
 ## D001 — The Solar System is the interface

@@ -22,6 +22,8 @@ Dataset `2026.09.14-1`, schema version 1; numerical references retrieved 2026-09
 
 ## Scientific data boundaries
 
+Step 16 guide snapshots use the existing canonical catalogue and dynamic calculations without new measurements. Spacecraft coordinates are ecliptic J2000 AU with linear-camera/navigation-estimate/unavailable basis; nearby calculations inherit that limitation and exclude schematic population samples. Facts retain source registry links; legacy guide prose remains explicitly distinct from structured reference quantities.
+
 | Module | Responsibility |
 | --- | --- |
 | `app/data/schema.ts` | Quantity values/units, source IDs, reference location, quality, uncertainty and missing reason |

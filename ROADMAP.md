@@ -160,6 +160,12 @@ Status: implemented and verified in source on 2026-09-14.
 
 ## Next recommended milestone
 
+### Step 16 — AI astronomy guide foundation
+
+Implemented free local context/evidence prototype with bounded nearby objects, coordinate caveats, timestamped answers, source cards and a future provider contract. Paid LLM integration remains gated; see `docs/AI_GUIDE.md`. Do not describe this prototype as a connected generative AI. V1.2 physical-device validation remains open and is not superseded.
+
+Verification: production build, lint and 59 automated tests pass. New guide browser/device interaction QA is not yet recorded. Next: inspect the prototype in use, then decide whether to authorize a paid provider after current pricing and hard-budget safeguards are established.
+
 ### V1.2 — Flight and navigation quality
 
 Status: in progress.

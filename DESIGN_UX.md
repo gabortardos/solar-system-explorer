@@ -94,6 +94,8 @@ Current V1.2 implementation eases acceleration/deceleration and steering while r
 
 ## Information panels
 
+The Step 16 guide shows selected-object meaning, captured UTC time, explanation and separate sourced evidence. Old answers retain their captured subject rather than changing when a new world is selected. Clearly label free local mode and legacy-curated content; never imply selection equals arrival.
+
 - Use a right-side sheet so the scene remains visible.
 - Adapt facts to object type; omit meaningless fields.
 - Keep the current desktop sheet at a compact maximum width of 440 px and scroll internally; on mobile it may occupy the viewport width but must remain dismissible over the full-bleed scene.

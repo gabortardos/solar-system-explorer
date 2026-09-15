@@ -1,6 +1,7 @@
 "use client";
 /* eslint-disable react-hooks/set-state-in-effect -- these effects hydrate browser state and initialize the imperative scene adapter */
 import { useEffect, useRef, useState } from "react";
+import type { GuideResponse } from './guide-assistant';
 import Link from "next/link";
 import {MinorBodyPanel} from './minor-body-panel';
 import type {MinorBody} from './minor-bodies';
@@ -248,8 +249,7 @@ export default function Home() {
     rate: 1,
   });
   const [question, setQuestion] = useState(""),
-    [answer, setAnswer] = useState(""),
-    [guideSource, setGuideSource] = useState(""),
+    [guideResult, setGuideResult] = useState<GuideResponse|null>(null),
     [guideBusy, setGuideBusy] = useState(false);
   const b = bodies.find((b) => b.id === selected)!,
     detailsBody = bodies.find((body) => body.id === detailsId),
@@ -394,14 +394,17 @@ export default function Home() {
     setPanel("details");
   };
   const ask = async (q: string) => {
-    const body = b;
+    if(guideBusy)return;
+    const selectedId=b.id;
+    const navigation=engine.current?.getGuideNavigation();
     setQuestion(q);
     setGuideBusy(true);
     try {
-      const { answerGuide } = await import("./guide");
-      const result = answerGuide(body, q, time || Date.now());
-      setAnswer(result.answer);
-      setGuideSource(result.source);
+      const [{answerContextGuide},{buildGuideContext}]=await Promise.all([import('./guide-assistant'),import('./guide-context')]);
+      if(!navigation)throw new Error('The scene is not ready. Please try again.');
+      setGuideResult(answerContextGuide(buildGuideContext(selectedId,navigation),q));
+    } catch(error) {
+      setGuideResult({subject:'Guide unavailable',atUtcMs:time,explanation:error instanceof Error?error.message:'Please retry.',evidence:[],contextNote:'No answer was generated.',mode:'local'});
     } finally {
       setGuideBusy(false);
     }
@@ -834,7 +837,7 @@ export default function Home() {
             {panel === "details"
               ? objectInfo.type
               : panel === "guide"
-                ? `Exploring ${b.name} · Offline curated guide`
+                ? `Selected: ${minorView?.name??b.name} · Free local prototype`
                 : panel === "settings"
                   ? "A clear distinction between the model and the view."
                   : panel === "menu"
@@ -992,6 +995,7 @@ export default function Home() {
                 Offline educational summaries and sourced physical data. Modeled
                 distances are approximate; no live observations are connected.
                 Nothing is sent to an AI service, so it has no usage cost.
+                “Here” means the selected object, not your spacecraft location.
               </div>
               <h3>What would you like to know?</h3>
               <div className="suggestions">
@@ -1002,8 +1006,11 @@ export default function Home() {
                   "Does it have water?",
                   "How long are its day and year?",
                   "How far is it from Earth?",
+                  "What objects are nearest to me?",
+                  "Where am I?",
+                  "What is the simulated date and time?",
                 ].map((q) => (
-                  <button key={q} onClick={() => ask(q)}>
+                  <button key={q} disabled={guideBusy} onClick={() => ask(q)}>
                     {q}
                     <MoveUpRight size={15} />
                   </button>
@@ -1018,7 +1025,8 @@ export default function Home() {
               >
                 <input
                   aria-label="Ask about selected world"
-                  placeholder={`Ask about ${b.name}…`}
+                  placeholder={`Ask about ${minorView?.name??b.name}…`}
+                  maxLength={600}
                   value={question}
                   onChange={(e) => setQuestion(e.target.value)}
                 />
@@ -1033,19 +1041,13 @@ export default function Home() {
                   )}
                 </button>
               </form>
-              {answer && (
+              {guideResult && (
                 <div className="guide-answer" aria-live="polite">
-                  <span className="eyebrow">ABOUT {b.name.toUpperCase()}</span>
-                  <p>{answer}</p>
-                  <a
-                    className="source-link"
-                    href={guideSource || b.source}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    Source and further reading
-                    <ArrowUpRight size={15} />
-                  </a>
+                  <span className="eyebrow">ABOUT {guideResult.subject.toUpperCase()}</span>
+                  <p>{guideResult.contextNote}</p>
+                  <p>Snapshot: {Number.isFinite(guideResult.atUtcMs)?new Date(guideResult.atUtcMs).toISOString():'Time unavailable'}</p>
+                  <p>{guideResult.explanation}</p>
+                  {guideResult.evidence.map(f=><div key={f.id} className="guide-note"><strong>{f.label}: {f.value}</strong><p>{f.quality} · {f.note}</p>{f.sources.map(s=><a key={s.url} className="source-link" href={s.url} target="_blank" rel="noreferrer">{s.title}<ArrowUpRight size={15}/></a>)}</div>)}
                 </div>
               )}
             </>

@@ -1060,6 +1060,18 @@ export function createScene(
     },
     focus,
     preload,
+    getGuideNavigation() {
+      const anchor=bodyById.get(focused);
+      const craft=anchor&&!minorSelected?estimateSpacecraftPosition(camera.position.toArray(),position(anchor,time),world(anchor).toArray(),anchor.radius,sizes.get(anchor.id)!,mode(),AU):options.scientific?camera.position.toArray().map(v=>v/100):null;
+      return {
+        atUtcMs:time,
+        positionAU:craft?[craft[0],-craft[2],craft[1]] as [number,number,number]:null,
+        basis:craft?(options.scientific?'linear-camera' as const:'navigation-estimate' as const):'unavailable' as const,
+        anchorId:focused,
+        note:options.scientific?'Scientific Scale: linear camera conversion; not a physical spacecraft trajectory.':minorSelected?'Spacecraft coordinates unavailable while focused on a minor body in Exploration Scale.':'Exploration Scale: focused-body-local navigation estimate, not a globally physical position.',
+        selectedMinor:minorSelected?structuredClone(minorActive.get(minorSelected)?.body??null):null,
+      };
+    },
     getSpacecraftDistance(id: string) {
       const anchor = bodyById.get(focused),
         target = bodyById.get(id);

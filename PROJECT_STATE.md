@@ -1,6 +1,6 @@
 # Solar System Explorer — Current Project State
 
-Last verified: 2026-09-14 UTC
+Last verified: 2026-09-15 UTC
 
 Stable product version: V1.1. Production URL: `https://solar-system-explorer-gabor.gabortardos.chatgpt.site`.
 
@@ -8,11 +8,13 @@ This is the fast handoff for **what exists now**. The repository and deployed ap
 
 ## Current reality
 
+Step 16 foundation now adds request-time selected-object/spacecraft/time context, bounded nearby core objects, separate sourced evidence cards and a free local assistant prototype. No external LLM or paid endpoint is activated. See `docs/AI_GUIDE.md` for the implemented contract and the gated server/cost design. Step 15 was published as Site version 15; its source/live mismatch was resolved.
+
 Step 15 — **ASTEROID BELT AND KUIPER BELT VISUALIZATION** adds renderer-only representative regions for the main asteroid belt, the Kuiper Belt and Jupiter's leading/trailing Trojan clouds. Step 14's separate on-demand 19-object JPL minor-body sample remains intact. The bounded active scene still contains 29 destinations; population dots are not catalogue objects, destinations, counts or ephemerides.
 
 Latest verification:
 
-- Production build, lint and all 52 automated tests pass.
+- Production build, lint and all 59 automated tests pass, including seven Step 16 context/evidence regressions. Step 16 browser/device interaction QA remains open.
 - Tests cover catalogue integrity, every activated moon's parent-relative source-ellipse bounds, explicit illustrative-quality metadata, scale ordering, distances, clock behavior, rendering contracts, mobile HUD and bounded search.
 - Desktop compatibility-renderer QA passed for Io/Jupiter search and focus, moon orbit toggling, Charon's information-only panel and application console errors.
 - Full WebGL and physical-device mobile QA remain open.
@@ -84,7 +86,7 @@ Latest verification:
 
 ## Current milestone and next task
 
-**In progress:** V1.2 — Flight and navigation quality.
+**Current delivered increment:** Step 16 — free guide foundation. **Still open:** V1.2 flight/device QA and optional paid LLM activation safeguards.
 
 Step 15 is implemented and verified in source. The current unfinished work returns to body-aware assisted-arrival review, full WebGL/physical-device mobile QA (including population sparsity in both scales), and evidence-led bundle/startup and shadow-cost measurement. Do not claim release confidence until those checks are complete.
 

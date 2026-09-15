@@ -166,6 +166,8 @@ No runtime external API or new dependency was introduced. Pure position results 
 
 ## Backend/API architecture
 
+Step 16: `guide-context.ts` consumes the scene's read-only `getGuideNavigation()` snapshot; `guide-assistant.ts` separates local explanation from typed evidence/citations. The UI retains answer subject/time independently of current selection. `docs/AI_GUIDE.md` defines the disabled future provider seam and server-side activation requirements. No provider endpoint or paid call is present.
+
 No product backend/API is active. The Worker delegates requests to Vinext and supports framework image optimization. Dormant database scaffolding/examples and authentication helpers are present from the starter but are not active product features. `.openai/hosting.json` has `d1: null` and `r2: null`.
 
 Future external astronomy/AI services require server-side handling, secrets in hosted environment settings, validation, rate limits, and cost controls.
