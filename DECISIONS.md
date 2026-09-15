@@ -1,5 +1,9 @@
 # Solar System Explorer — Decision Record
 
+## D034 — Step-number branding and compact operational controls (2026-09-15)
+
+The top-left interface label reports the latest successfully completed development step, independently of the product release name and Sites deployment version. Use the browser-native simulation-rate selector because it remains open during clock rerenders. Keep Step 15's exaggeration disclosure available beside Small-body regions through a keyboard/touch-operable info disclosure rather than a permanent card. Desktop free-flight status and instructions are contextual help, not permanent scene furniture; mobile may still show status while its optional flight control is open. Canvas Saturn close-ups may use a bounded higher-resolution sphere raster while the rest of the compatibility scene retains the lower-cost buffer.
+
 ## D033 — Explicit orbital timelapse and desktop clarity (2026-09-15)
 
 Owner requested visibly moving orbits beyond 1000×. Extend D024's allowed rates with explicitly named 1 day/second and 30 days/second modes, preserving the single scientific clock, epoch bounds and relative physical periods. Disclose fast-satellite temporal aliasing rather than independently slowing moons. Desktop hide/restore is presentation-only. Orbit contrast increases retain selected-orbit emphasis. Future target-locked travel is a separate tested change, not bundled silently.

@@ -39,6 +39,8 @@ Step 16: context-aware local guide is implemented, but open-ended/multi-turn LLM
 
 ## Resolved/stabilized history
 
+- Step 17 owner-review corrections: the unstable animated time-rate picker was replaced by a native selector; the permanent population legend and desktop flight text were converted to compact/contextual UI; close Canvas Saturn uses a bounded higher-detail sphere raster; the brand now tracks completed development step 17. Build, lint and 62 tests pass. Physical-device/full-WebGL appearance remains covered by KI-002/KI-011.
+
 - KI-015: canonical science/editorial/rendering data separated in Step 8; the combined ten-body `Body` shape remains only as a compatibility adapter. Versioned unit/provenance/missing-value and parent validation added.
 - Playable V1: `719e8cd`.
 - Controls/fallback stabilization: `fa6a107`.

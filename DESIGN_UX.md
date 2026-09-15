@@ -138,7 +138,7 @@ The Step 16 guide shows selected-object meaning, captured UTC time, explanation 
 - Avoid horizontal page scrolling and text overlap.
 - Preserve travel, details, search, guide, settings/help, and time/scale meaning.
 - Keep the full UTC clock in the desktop footer and the mobile bottom sheet, not as another permanent phone overlay. Use tabular numerals so accelerated seconds do not shift nearby controls.
-- Clock labels are plain language: Paused, Real time, 10×, 100×, and 1,000×. The adjacent play/pause action resumes at real time; do not revive the ambiguous “one day / second” shortcut without a product decision.
+- Clock labels are plain language: Paused, Real time, 10×, 100×, 1,000×, 1 day / second and 30 days / second. The adjacent play/pause action resumes at real time. Use a stable native selector so accelerated clock rerenders cannot collapse the open choice list.
 
 ## Accessibility
 
@@ -186,5 +186,6 @@ The Step 16 guide shows selected-object meaning, captured UTC time, explanation 
 ## Minor-body exploration
 
 - Reach the dedicated small-body catalogue from search; keep the existing compact sheet and mobile HUD. Lists scroll independently and details omit absent data.
+- Keep the statistical-region exaggeration disclosure behind the labelled info control beside Small-body regions. It must remain keyboard and touch operable and close on a second activation.
 - Show/Travel closes the sheet to reveal the scene. Only requested markers appear; one selected label states “illustrative orbit”. Neutral stone/ice marker colors are symbolic; no fabricated shape textures or comet tails.
 - Keep NEO/PHA labels factual and understated. Nearby Earth shows its sampled simulation timestamp and whether the bounded sample is complete.

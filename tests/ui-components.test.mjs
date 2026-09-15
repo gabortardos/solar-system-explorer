@@ -112,6 +112,7 @@ test("preserves the restrained cinematic rendering treatment", async () => {
   assert.match(fallback, /createRadialGradient/);
   assert.match(fallback, /nightMap/);
   assert.match(fallback, /front\?\.82:\.6/);
+  assert.match(fallback, /id==='saturn'&&size>128\?256:128/);
 });
 
 test("keeps the mobile scene clear with a compact, optional HUD", async () => {
@@ -161,8 +162,22 @@ test("exposes the validated simulation clock without the former unbounded rate",
   assert.match(clock, /SIMULATION_RATES=\[0,1,10,100,1000,86400,2592000\]/);
   assert.match(clock, /anchorMonotonicMs/);
   assert.match(page, /Timelapse/);
+  assert.match(page, /<select[\s\S]*className="time-rate-select"[\s\S]*aria-label="Simulation speed"/);
   assert.match(scene, /requestAnimationFrame\(animate\)/);
   assert.match(scene, /now - lastNotify > 500/);
+});
+
+test("uses progressive disclosure and the completed development step in the desktop HUD", async () => {
+  const [page, css] = await Promise.all([
+    readFile(path.join(root, "app/page.tsx"), "utf8"),
+    readFile(path.join(root, "app/globals.css"), "utf8"),
+  ]);
+
+  assert.match(page, /EXPLORER \/ STEP 17/);
+  assert.match(page, /<details className="population-info">/);
+  assert.match(page, /About small-body region markers/);
+  assert.doesNotMatch(page, /className="population-legend"/);
+  assert.match(css, /\.control-hint\{display:none\}\.flight-status\{display:none\}/);
 });
 
 test("renders the reusable object panel without empty sections", async () => {

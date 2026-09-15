@@ -32,6 +32,7 @@ import {
   Menu,
   EyeOff,
   Eye,
+  Info,
 } from "lucide-react";
 import {
   Sheet,
@@ -131,15 +132,16 @@ function ClockControls({
       >
         {rate ? <Pause size={14} /> : <Play size={14} />}
       </button>
-      <Picker
-        label="Simulation speed"
+      <select
+        className="time-rate-select"
+        aria-label="Simulation speed"
         value={String(rate)}
-        onChange={(v) => onRateChange(parseSimulationRate(v))}
-        items={SIMULATION_RATES.map((value) => ({
-          value: String(value),
-          label: rateLabel(value),
-        }))}
-      />
+        onChange={(event) => onRateChange(parseSimulationRate(event.target.value))}
+      >
+        {SIMULATION_RATES.map((value) => (
+          <option key={value} value={value}>{rateLabel(value)}</option>
+        ))}
+      </select>
       <time dateTime={iso}>{formatSimulationTime(time)}</time>
       {rate>=86400&&<span className="timelapse-note">Timelapse · fast moons may skip between frames</span>}
     </div>
@@ -430,15 +432,6 @@ export default function Home() {
     >
       <div ref={host} className="universe" />
       <div className="vignette" />
-      {options.populations && (
-        <aside className="population-legend" aria-label="Small-body region legend">
-          <strong>SMALL-BODY REGIONS</strong>
-          <span><i className="asteroid-dot" />Asteroid Belt</span>
-          <span><i className="trojan-dot" />Jupiter Trojans (L4 / L5)</span>
-          <span><i className="kuiper-dot" />Kuiper Belt</span>
-          <p>Representative markers only. Use Small-body regions view; size and density greatly enhanced.</p>
-        </aside>
-      )}
       <header className="topbar">
         <Link
           className="brand"
@@ -447,7 +440,7 @@ export default function Home() {
         >
           <Orbit size={28} />
           <span>
-            SOLAR SYSTEM<span className="brand-sub">EXPLORER / V1.1</span>
+            SOLAR SYSTEM<span className="brand-sub">EXPLORER / STEP 17</span>
           </span>
         </Link>
         <button className="search-button" onClick={() => setSearch(true)}>
@@ -519,16 +512,30 @@ export default function Home() {
           <Orbit size={17} />
           <span>System view</span>
         </button>
-        <button
-          aria-label="Small-body regions overview"
-          onClick={() => {
-            setOptions((o) => ({ ...o, populations: true, orbits: true }));
-            engine.current?.populationOverview();
-          }}
-        >
-          <Orbit size={17} />
-          <span>Small-body regions</span>
-        </button>
+        <div className="small-body-control">
+          <button
+            aria-label="Small-body regions overview"
+            onClick={() => {
+              setOptions((o) => ({ ...o, populations: true, orbits: true }));
+              engine.current?.populationOverview();
+            }}
+          >
+            <Orbit size={17} />
+            <span>Small-body regions</span>
+          </button>
+          <details className="population-info">
+            <summary aria-label="About small-body region markers" title="About small-body region markers">
+              <Info size={14} />
+            </summary>
+            <aside className="population-info-card" aria-label="Small-body region information">
+              <strong>SMALL-BODY REGIONS</strong>
+              <span><i className="asteroid-dot" />Asteroid Belt</span>
+              <span><i className="trojan-dot" />Jupiter Trojans (L4 / L5)</span>
+              <span><i className="kuiper-dot" />Kuiper Belt</span>
+              <p>Representative markers only. Use Small-body regions view; size and density greatly enhanced.</p>
+            </aside>
+          </details>
+        </div>
         <button
           aria-label="Focus target"
           onClick={() => engine.current?.focus(selected, true)}

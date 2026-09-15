@@ -8,7 +8,7 @@ This is the fast handoff for **what exists now**. The repository and deployed ap
 
 ## Current reality
 
-UI/graphics checkpoint A: explicit 1-day/second and 30-day/second timelapse, higher-contrast orbit paths, desktop hide/restore, left-rail cleanup, label backplates and sticky panel exit. Build/lint and 61 tests pass; parent-relative Moon/Io/Titan/Triton motion is verified numerically. Desktop compatibility QA passed startup, hide/restore, guide exit, search dismissal and timelapse. Fixed stale Step 16 guide setters that caused a runtime startup error. Travel visibility choreography is the next checkpoint. See `docs/UI_GRAPHICS_PLAN.md`; Milky Way/surface-depth ideas are proposals only.
+Step 17 UI correction: Saturn close-ups in the Canvas compatibility renderer use an adaptive 256-pixel sphere raster, the simulation rate uses a stable native selector, small-body disclosure is an on-demand info control, and static desktop flight instructions/status are removed. The brand now displays the latest completed development step. Build, lint and 62 tests pass. Travel visibility choreography remains the next checkpoint. See `docs/UI_GRAPHICS_PLAN.md`; Milky Way/surface-depth ideas are proposals only.
 
 Step 16 foundation now adds request-time selected-object/spacecraft/time context, bounded nearby core objects, separate sourced evidence cards and a free local assistant prototype. No external LLM or paid endpoint is activated. See `docs/AI_GUIDE.md` for the implemented contract and the gated server/cost design. Step 15 was published as Site version 15; its source/live mismatch was resolved.
 
@@ -16,7 +16,7 @@ Step 15 — **ASTEROID BELT AND KUIPER BELT VISUALIZATION** adds renderer-only r
 
 Latest verification:
 
-- Production build, lint and all 59 automated tests pass, including seven Step 16 context/evidence regressions. Step 16 browser/device interaction QA remains open.
+- Production build, lint and all 62 automated tests pass. Step 17 source/interaction contracts are covered; full WebGL and physical-device appearance QA remain open.
 - Tests cover catalogue integrity, every activated moon's parent-relative source-ellipse bounds, explicit illustrative-quality metadata, scale ordering, distances, clock behavior, rendering contracts, mobile HUD and bounded search.
 - Desktop compatibility-renderer QA passed for Io/Jupiter search and focus, moon orbit toggling, Charon's information-only panel and application console errors.
 - Full WebGL and physical-device mobile QA remain open.
@@ -32,10 +32,10 @@ Latest verification:
 - Reusable distance comparison with Earth, Sun, parent, spacecraft or another active destination. Simulated separation and average orbital distance remain distinct.
 - Exploration Scale and Scientific Scale; displayed scientific measurements always use uncompressed canonical data.
 - Optional planetary and relevant moon-system orbit paths.
-- UTC simulation clock with pause, real time, 10×, 100× and 1,000×.
+- UTC simulation clock with pause, real time, 10×, 100×, 1,000×, 1 day/second and 30 days/second.
 - Offline deterministic astronomy guide; it never calls a paid AI service. Newly activated moons receive verified numerical/fact answers, with unsupported curated topics stated as unavailable.
 - Canvas compatibility renderer when WebGL is unavailable.
-- Optional small-body region layer with four bounded point draws, centralized scale projection, camera-relative precision and an always-visible disclosure. A dedicated Small-body regions view frames the Asteroid Belt, Jupiter Trojan regions and Kuiper Belt in either scale.
+- Optional small-body region layer with four bounded point draws, centralized scale projection, camera-relative precision and an accessible on-demand disclosure beside its view control. A dedicated Small-body regions view frames the Asteroid Belt, Jupiter Trojan regions and Kuiper Belt in either scale.
 - V1.2 flight smoothing is now implemented: translation accelerates and decelerates with frame-rate-independent response, combined axes are normalized, arrow-key steering eases in and out, collision correction removes inward drift, and brake/focus/overview transitions clear residual motion.
 
 ## Architecture summary
@@ -88,7 +88,7 @@ Latest verification:
 
 ## Current milestone and next task
 
-**Current delivered increment:** Step 16 — free guide foundation. **Still open:** V1.2 flight/device QA and optional paid LLM activation safeguards.
+**Current delivered increment:** Step 17 — UI correction and compatibility-renderer Saturn refinement. **Still open:** V1.2 flight/device QA and optional paid LLM activation safeguards.
 
 Step 15 is implemented and verified in source. The current unfinished work returns to body-aware assisted-arrival review, full WebGL/physical-device mobile QA (including population sparsity in both scales), and evidence-led bundle/startup and shadow-cost measurement. Do not claim release confidence until those checks are complete.
 

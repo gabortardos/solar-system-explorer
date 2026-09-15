@@ -10,6 +10,10 @@ Verification: 61 tests/build/lint pass after fixing the stale Step 16 `setAnswer
 - The guide's scrolling close control is a likely contributor to the reported exit difficulty, not a reproduced root cause. Added explicit sticky escape route; full browser reproduction remains required.
 - Moon/Io/Titan/Triton parent-relative motion regression. Existing model already advances these satellites; focused camera compensation can hide apparent movement. Use parent focus to watch satellites, not Moon-following view. Other systems remain culled when irrelevant by design.
 
+## Step 17 correction — implemented
+
+The owner review exposed four presentation regressions. Canvas Saturn now raises sphere raster detail only for a large close-up and slightly lifts its compatibility-only night-side floor. The time-rate picker is a stable native selector, including the two lower timelapse entries. The permanent small-body legend is replaced by a labelled info disclosure beside Small-body regions; the same representative-marker and exaggeration warning remains available on click/tap. Static desktop spacecraft status and control hints are removed, while mobile flight mode retains its contextual status. The brand reads `STEP 17`. Production build, lint and 62 tests pass; physical-device and full-WebGL visual checks remain part of V1.2 QA.
+
 ## Checkpoint B — next, not implemented here
 
 Target-locked assisted travel: first establish destination visibility when offscreen, optionally pull back to a fitted overview, smoothly orient while holding the target on screen, then approach with body/ring-aware clearance. Preserve cancellation, reduced motion and moving-target following. Test Sun, Earth/Moon, Saturn, distant worlds and minor markers at both scales, desktop/mobile, and both renderers. Avoid force-locking free-flight cameras. Add sampled screen-space trajectory tests before publication.
