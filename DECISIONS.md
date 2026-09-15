@@ -1,5 +1,9 @@
 # Solar System Explorer — Decision Record
 
+## D033 — Explicit orbital timelapse and desktop clarity (2026-09-15)
+
+Owner requested visibly moving orbits beyond 1000×. Extend D024's allowed rates with explicitly named 1 day/second and 30 days/second modes, preserving the single scientific clock, epoch bounds and relative physical periods. Disclose fast-satellite temporal aliasing rather than independently slowing moons. Desktop hide/restore is presentation-only. Orbit contrast increases retain selected-orbit emphasis. Future target-locked travel is a separate tested change, not bundled silently.
+
 ## D032 — Context snapshots and evidence before paid generation (2026-09-15)
 
 “Here” explicitly means selected object, not arrival or camera location. Capture time/navigation/selection at request start; retain the answer's subject and time. Structured numerical facts and registry citations remain separate from local or future generated prose. Nearest objects are a bounded, explicitly incomplete core-catalogue sample. Keep the working local prototype free; paid provider activation requires server canonical retrieval, durable abuse/spend limits, privacy disclosure and explicit owner approval. See `docs/AI_GUIDE.md`.

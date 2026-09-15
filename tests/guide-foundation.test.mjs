@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test,{after} from 'node:test';
 import {createServer} from 'vite';
+import {readFile} from 'node:fs/promises';
 const vite=await createServer({configFile:false,server:{middlewareMode:true},appType:'custom'});
 after(()=>vite.close());
 const {buildGuideContext}=await vite.ssrLoadModule('/app/guide-context.ts');
@@ -36,4 +37,8 @@ test('explicit other-world question requests a selection instead of answering th
 test('minor selection cannot silently receive an Earth answer',()=>{
  const c=buildGuideContext('earth',{...nav,selectedMinor:{id:'sb-test',name:'Test minor',physical:[],source:{url:'https://ssd.jpl.nasa.gov/'}}});
  const a=answerContextGuide(c,'Could I live here?');assert.equal(a.subject,'Test minor');assert.match(a.explanation,/No planet answer/);
+});
+test('page no longer calls removed legacy guide state setters',async()=>{
+ const page=await readFile(new URL('../app/page.tsx',import.meta.url),'utf8');
+ assert.doesNotMatch(page,/setAnswer\(|setGuideSource\(/);
 });

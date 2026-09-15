@@ -544,7 +544,7 @@ export function createScene(
       const material = new THREE.LineBasicMaterial({
         color: "#6f8b96",
         transparent: true,
-        opacity: b.id === focused ? 0.34 : 0.15,
+        opacity: b.id === focused ? 0.72 : 0.38,
         depthWrite: false,
       });
       orbitMaterials.set(b.id, material);
@@ -559,7 +559,7 @@ export function createScene(
       const material = new THREE.LineBasicMaterial({
         color: "#78929b",
         transparent: true,
-        opacity: 0.15,
+        opacity: 0.38,
         depthWrite: false,
       });
       const line = new THREE.Line(
@@ -578,8 +578,8 @@ export function createScene(
   rebuildPopulations();
   function styleOrbits() {
     for (const [id, material] of orbitMaterials) {
-      material.opacity = id === focused ? 0.34 : 0.15;
-      material.color.set(id === focused ? "#9db8bd" : "#6f8b96");
+      material.opacity = id === focused ? 0.72 : 0.38;
+      material.color.set(id === focused ? "#c5e6de" : "#91aab6");
     }
   }
   function systemRelevant(b: Body) {

@@ -8,6 +8,8 @@ This is the fast handoff for **what exists now**. The repository and deployed ap
 
 ## Current reality
 
+UI/graphics checkpoint A: explicit 1-day/second and 30-day/second timelapse, higher-contrast orbit paths, desktop hide/restore, left-rail cleanup, label backplates and sticky panel exit. Build/lint and 61 tests pass; parent-relative Moon/Io/Titan/Triton motion is verified numerically. Desktop compatibility QA passed startup, hide/restore, guide exit, search dismissal and timelapse. Fixed stale Step 16 guide setters that caused a runtime startup error. Travel visibility choreography is the next checkpoint. See `docs/UI_GRAPHICS_PLAN.md`; Milky Way/surface-depth ideas are proposals only.
+
 Step 16 foundation now adds request-time selected-object/spacecraft/time context, bounded nearby core objects, separate sourced evidence cards and a free local assistant prototype. No external LLM or paid endpoint is activated. See `docs/AI_GUIDE.md` for the implemented contract and the gated server/cost design. Step 15 was published as Site version 15; its source/live mismatch was resolved.
 
 Step 15 — **ASTEROID BELT AND KUIPER BELT VISUALIZATION** adds renderer-only representative regions for the main asteroid belt, the Kuiper Belt and Jupiter's leading/trailing Trojan clouds. Step 14's separate on-demand 19-object JPL minor-body sample remains intact. The bounded active scene still contains 29 destinations; population dots are not catalogue objects, destinations, counts or ephemerides.

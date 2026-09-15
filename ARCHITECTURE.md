@@ -121,6 +121,8 @@ Collision correction keeps the camera outside enlarged visible spheres and remov
 
 ### Simulation clock and orbital updates
 
+UI checkpoint A extends the rate union with 86,400 and 2,592,000 seconds/second (explicit timelapse labels). Same clock/clamping/callback boundaries apply. Both renderers now use stronger orbit-material contrast; Canvas no longer caps all path opacity at 0.32. No new scene populations or travel architecture was introduced.
+
 `app/simulation-clock.ts` is the single clock policy. It anchors simulation milliseconds to `performance.now()` and computes `anchor + elapsed × rate`, so frame duration does not accumulate rounding drift. Changing among pause, 1×, 10×, 100× and 1,000× first settles the old rate, then re-anchors at the same instant; the scene never jumps solely because speed changed. It clamps at the data model's `[1800, 2050)` interval and defaults to real time.
 
 `app/scene.ts` reads the clock and recalculates the bounded 29-body active set on every animation frame. Camera following uses the focused body's before/after positions so orbit motion does not leave the camera behind. Planet paths are static 256-segment approximations; 96-segment moon paths are local to and move with their parent. React receives time notifications at most twice per second, keeping high-frequency work outside component state. Only the focused moon system is visible, and future catalogue growth must still update a spatially selected active set rather than every stored record.

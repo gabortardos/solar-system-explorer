@@ -158,9 +158,9 @@ test("exposes the validated simulation clock without the former unbounded rate",
     readFile(path.join(root, "app/scene.ts"), "utf8"),
   ]);
 
-  assert.match(clock, /SIMULATION_RATES=\[0,1,10,100,1000\]/);
+  assert.match(clock, /SIMULATION_RATES=\[0,1,10,100,1000,86400,2592000\]/);
   assert.match(clock, /anchorMonotonicMs/);
-  assert.doesNotMatch(page, /86400/);
+  assert.match(page, /Timelapse/);
   assert.match(scene, /requestAnimationFrame\(animate\)/);
   assert.match(scene, /now - lastNotify > 500/);
 });

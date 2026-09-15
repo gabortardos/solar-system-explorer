@@ -34,6 +34,25 @@
 .flight-heading,.view-tools,.target-card,.flight-status,.bottom-area,.control-hint,.error-banner,.loading{z-index:2}
 
 .touch-flight{display:none}
+/* Desktop clarity checkpoint: retain accessible focus without white input boxes. */
+.world-label{border:0;border-radius:5px;background:#07111cdd;letter-spacing:.3px}
+.ask-form input:focus,.catalog-search-dialog input:focus{outline:none;box-shadow:none}
+.ask-form:focus-within,[data-slot=command-input-wrapper]:focus-within{box-shadow:inset 0 -2px #a8e3cf}
+.ask-form,.search-button{border-color:#7ca99a55}
+.panel-exit{position:sticky;top:0;z-index:10;align-self:flex-start;flex-shrink:0;border:1px solid #8fc2b34d;border-radius:6px;padding:10px 14px;background:#10232d;color:#c6eee1;margin-right:30px}
+.timelapse-note{color:#c5d9d0;font-size:12px;max-width:175px;line-height:1.4}
+@media(min-width:761px){
+ .explorer{min-height:620px}.flight-heading{top:112px;left:28px}.flight-heading h1{font-size:28px;margin:10px 0}.flight-heading p{display:none}
+ .view-tools{left:28px;top:240px;gap:5px;max-width:215px;padding:10px;border-radius:9px;background:#08141dc9}.view-tools button{padding:8px;font-size:14px}
+ .topbar{padding-inline:28px}.brand{font-size:12px;letter-spacing:1px}.header-actions{gap:3px}.search-button{width:240px}
+ .flight-status{left:28px;bottom:215px}.control-hint{left:28px;bottom:183px;max-width:440px;flex-wrap:wrap;gap:9px}
+ .bottom-area{left:28px;right:28px}.world-button{height:62px}.bottom-bar{flex-wrap:wrap}.time-controls{flex-wrap:wrap;gap:8px}
+ .explorer .population-legend{left:28px;top:385px;width:220px;font-size:12px}.explorer .population-legend p{font-size:12px}
+ .mobile-hud-hidden .topbar,.mobile-hud-hidden .flight-heading,.mobile-hud-hidden .view-tools,.mobile-hud-hidden .target-card,.mobile-hud-hidden .flight-status,.mobile-hud-hidden .bottom-area,.mobile-hud-hidden .control-hint,.mobile-hud-hidden .population-legend{display:none}
+ .mobile-hud-hidden .universe{inset:0}.mobile-hud-hidden .vignette{display:none}.mobile-hud-hidden .world-label{display:none!important}
+ .mobile-hud-hidden .hud-restore{display:flex;position:absolute;right:24px;top:24px;z-index:30;align-items:center;gap:8px;padding:12px;border:1px solid #8fb6ac66;border-radius:7px;background:#0c1c27d9;color:#cce6dd}
+}
+@media(min-width:761px) and (max-height:820px){.explorer .flight-heading{display:none}.explorer .view-tools{top:105px}.explorer .population-legend{top:260px}.explorer .control-hint{display:none}.explorer .flight-status{bottom:185px}}
 .progress-setting{display:flex;gap:18px;justify-content:space-between;align-items:center;padding:15px 0;border-bottom:1px solid #ffffff14}
 .progress-setting strong{font-size:14px;font-weight:500}.progress-setting p{font-size:13px!important;color:#829bab!important;margin-top:7px!important}.progress-setting button{display:flex;align-items:center;gap:7px;border:1px solid #ffffff24;background:#14232f;color:#c6d8df;border-radius:5px;padding:9px 11px;font-size:13px}
 .guide-loading{display:block;min-width:17px;font-size:18px;line-height:17px}

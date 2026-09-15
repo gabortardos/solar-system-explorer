@@ -64,6 +64,8 @@ All data needed by the app ships locally. No external astronomy API, paid servic
 
 ## Calculated positions and time
 
+Owner-requested timelapse extension (2026-09-15): 86,400× and 2,592,000× are labeled 1 day/second and 30 days/second. They only advance the existing shared time; no orbital periods/elements are changed. Fast satellites can alias between display frames. The same end-of-2049 clamp applies. Numerical regression confirms Moon/Io/Titan/Triton change parent-relative position after a simulated day.
+
 `calculatePosition(id, utcMs)` returns available coordinates with unit, frame, time, model, quality, sources and caveat, or `unavailable` with `value: null` and a reason. Unknown IDs, unsupported models, invalid times and out-of-range dates fail explicitly. The active-scene adapter throws for invalid requests rather than inventing positions.
 
 - Planet model: Table 1, J2000 TDB coefficients; UTC is still substituted for TDB and disclosed. Twelve Newton iterations solve Kepler's equation.

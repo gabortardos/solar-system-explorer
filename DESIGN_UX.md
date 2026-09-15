@@ -59,6 +59,8 @@ Keep the center open. Avoid new persistent panels without strong value. Show one
 
 ## Navigation behavior
 
+Desktop now offers Hide interface / Show controls without browser fullscreen, plus a sticky Back to space action in sheets. Labels use opaque dark backplates without underlines. Orbit paths have higher baseline contrast while focus remains emphasized. Explicit 1 day/second and 30 days/second modes are educational timelapse; fast-satellite frame skipping is disclosed.
+
 Users must retain two travel modes:
 
 - **Assisted travel:** select a body, press “Travel to,” watch a safe cinematic approach.

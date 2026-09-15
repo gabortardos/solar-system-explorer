@@ -160,6 +160,10 @@ Status: implemented and verified in source on 2026-09-14.
 
 ## Next recommended milestone
 
+### UI/graphics checkpoints requested by owner
+
+A implemented: orbital timelapse, path contrast, desktop HUD cleanup/hide/restore, input and label treatment, sticky panel exit; 60 tests/build/lint pass. B next: target-visible travel/arrival choreography and full rendered interaction matrix. Milky Way context and streamed surface detail remain scoped proposals awaiting agreement, not active implementation. See `docs/UI_GRAPHICS_PLAN.md`.
+
 ### Step 16 — AI astronomy guide foundation
 
 Implemented free local context/evidence prototype with bounded nearby objects, coordinate caveats, timestamped answers, source cards and a future provider contract. Paid LLM integration remains gated; see `docs/AI_GUIDE.md`. Do not describe this prototype as a connected generative AI. V1.2 physical-device validation remains open and is not superseded.

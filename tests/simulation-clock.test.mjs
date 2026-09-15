@@ -9,9 +9,9 @@ const {calculatePosition}=await vite.ssrLoadModule('/app/data/positions.ts');
 const start=Date.UTC(2026,8,10,12);
 
 test('offers only the required simulation rates and parses them strictly',()=>{
- assert.deepEqual([...SIMULATION_RATES],[0,1,10,100,1000]);
+ assert.deepEqual([...SIMULATION_RATES],[0,1,10,100,1000,86400,2592000]);
  for(const rate of SIMULATION_RATES)assert.equal(parseSimulationRate(String(rate)),rate);
- assert.throws(()=>parseSimulationRate('86400'),RangeError);
+ assert.throws(()=>parseSimulationRate('86401'),RangeError);
  assert.throws(()=>parseSimulationRate('fast'),RangeError);
 });
 
@@ -41,4 +41,13 @@ test('planet positions move smoothly under accelerated simulated time',()=>{
  const delta=Math.hypot(...second.value.map((value,index)=>value-first.value[index]));
  assert.ok(delta>0&&delta<.001,'a 1,000-second simulated step should be small and non-zero');
  assert.deepEqual(first.nominalError,{longitudeArcsec:20,latitudeArcsec:8,distanceKm:6000});
+});
+test('Moon and major satellites move relative to parents during one simulated day',()=>{
+ for(const [id,parent] of [['moon','earth'],['io','jupiter'],['titan','saturn'],['triton','neptune']]){
+  const rel=t=>{const p=calculatePosition(id,t).value,c=calculatePosition(parent,t).value;return p.map((v,i)=>v-c[i]);};
+  const a=rel(start),b=rel(start+86400000);
+  assert.ok(Math.hypot(...a.map((v,i)=>v-b[i]))>1e-6,id+' must move around its parent');
+ }
+ const clock=new SimulationClock(start,86400,0);assert.equal(clock.read(1000),start+86400000);
+ const fast=new SimulationClock(start,2592000,0);assert.equal(fast.read(1000),start+2592000000);
 });

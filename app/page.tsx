@@ -107,7 +107,7 @@ const rateLabel = (rate: SimulationRate) =>
     ? "Paused"
     : rate === 1
       ? "Real time"
-      : `${rate.toLocaleString()}×`;
+      : rate===86400 ? '1 day / second' : rate===2592000 ? '30 days / second' : `${rate.toLocaleString()}×`;
 function ClockControls({
   rate,
   time,
@@ -141,6 +141,7 @@ function ClockControls({
         }))}
       />
       <time dateTime={iso}>{formatSimulationTime(time)}</time>
+      {rate>=86400&&<span className="timelapse-note">Timelapse · fast moons may skip between frames</span>}
     </div>
   );
 }
@@ -300,9 +301,7 @@ export default function Home() {
     if (panel || search) engine.current?.brake();
   }, [panel, search]);
   useEffect(() => {
-    setAnswer("");
     setQuestion("");
-    setGuideSource("");
   }, [selected]);
   useEffect(() => {
     setSpacecraftDistance(null);
@@ -480,6 +479,7 @@ export default function Home() {
           >
             <Maximize2 size={18} />
           </button>
+          <button aria-label="Hide desktop interface" title="Hide interface" onClick={()=>{setPanel(null);setSearch(false);setMobileHudHidden(true);}}><EyeOff size={18}/></button>
         </div>
         <div className="mobile-header-actions">
           <button onClick={() => setSearch(true)} aria-label="Find a world">
@@ -818,6 +818,7 @@ export default function Home() {
           side={panel === "menu" ? "bottom" : "right"}
           className={panel === "menu" ? "mobile-menu-sheet" : "info-sheet"}
         >
+          <button className="panel-exit" onClick={()=>{setPanel(null);setSearch(false);}}>Back to space</button>
           <SheetTitle
             className={panel === "menu" || panel === "details" ? "sr-only" : ""}
           >

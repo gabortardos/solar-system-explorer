@@ -1,6 +1,6 @@
 import {MODEL_END,MODEL_START} from './data/positions';
 
-export const SIMULATION_RATES=[0,1,10,100,1000] as const;
+export const SIMULATION_RATES=[0,1,10,100,1000,86400,2592000] as const;
 export type SimulationRate=(typeof SIMULATION_RATES)[number];
 export const MAX_SIMULATION_TIME=MODEL_END-1;
 
