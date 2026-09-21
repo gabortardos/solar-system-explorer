@@ -16,12 +16,16 @@ export interface GuideExplanationProvider {
   explain(input:{question:string;subject:string;evidence:GuideEvidence[]},signal:AbortSignal):Promise<ExplanationSegments>;
 }
 
-/** Reject numerical prose, URLs, unknown evidence references and oversized output. */
+const numericWord='(?:zero|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety)';
+const measuredThing='(?:percent|degrees?|kelvin|celsius|fahrenheit|kilometers?|kilometres?|meters?|metres?|miles?|feet|seconds?|minutes?|hours?|days?|years?|au|astronomical units?|kilograms?|grams?|moons?|rings?|missions?)';
+
+/** Allow natural qualitative prose while rejecting unsupported precise values, URLs and unknown evidence references. */
 export function validateExplanation(value:unknown,evidence:GuideEvidence[]):value is ExplanationSegments{
   if(!value||typeof value!=='object'||!('segments' in value)||!Array.isArray(value.segments)||value.segments.length<1||value.segments.length>20)return false;
   return value.segments.every(s=>s&&typeof s==='object'&&Object.keys(s).length===1&&
     ('evidenceId' in s?typeof s.evidenceId==='string'&&evidence.some(e=>e.id===s.evidenceId):
-      'text' in s&&typeof s.text==='string'&&s.text.length<=800&&!/[\d０-９]|https?:|\b(one|two|three|four|five|six|seven|eight|nine|ten|hundred|thousand|million|billion)\b/i.test(s.text)));
+      'text' in s&&typeof s.text==='string'&&s.text.length<=800&&!/[\d０-９]|https?:/i.test(s.text)&&
+        !new RegExp(`\\b(?:hundred|thousand|million|billion|trillion)\\b|\\b${numericWord}(?:[-\\s]+${numericWord})*\\s+${measuredThing}\\b`,'i').test(s.text)));
 }
 
 export function renderExplanationSegments(value:ExplanationSegments,evidence:GuideEvidence[]):string{
@@ -140,7 +144,7 @@ export function answerContextGuide(context:GuideContext,question:string):GuideRe
       explanation=`Simultaneous modeled center separation between ${subject.name} and ${reference.name}; this is not a flight path, travel duration or live observation.`;
       evidence.push({id:'body-distance',label:`Distance from ${reference.name}`,value:distance.status==='available'?`${distance.value.toPrecision(6)} km`:'Unavailable',quality:distance.status==='available'?distance.quality:'unavailable',note:distance.status==='unavailable'?distance.reason:'Positions use the local dataset and captured simulation time.',sources:distance.status==='available'?sourceList(distance.sourceIds):[]});
     }
-  }else if(/radius|diameter|size|big|gravity|mass|weigh|rotation|spin|day|year|period|orbit|facts?/.test(q)){
+  }else if(/radius|diameter|size|big|gravity|mass|weigh|jump|fall|rotation|spin|day|year|period|orbit|facts?/.test(q)){
     explanation='These values come directly from the local scientific dataset. Missing values remain unavailable; rotation and orbital periods are separate.';
     addPhysicalEvidence(evidence,subject);
   }else{

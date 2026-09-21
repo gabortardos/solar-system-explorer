@@ -11,7 +11,7 @@ type EndpointDependencies={fetchImpl?:typeof fetch;now?:()=>number;timeoutMs?:nu
 const explanationSchema={
   type:'object',additionalProperties:false,required:['segments'],properties:{
     segments:{type:'array',minItems:1,maxItems:8,items:{anyOf:[
-      {type:'object',additionalProperties:false,required:['text'],properties:{text:{type:'string',maxLength:320}}},
+      {type:'object',additionalProperties:false,required:['text'],properties:{text:{type:'string',maxLength:800}}},
       {type:'object',additionalProperties:false,required:['evidenceId'],properties:{evidenceId:{type:'string'}}},
     ]}},
   },
@@ -78,7 +78,7 @@ async function callOpenAI(apiKey:string,question:string,local:GuideResponse,fetc
         model:LIVE_GUIDE_MODEL,
         store:false,
         max_output_tokens:LIVE_GUIDE_LIMITS.outputTokens,
-        instructions:'You are the Solar System Explorer Astronomy Guide. Answer only from the supplied structured evidence and reference resolution. Never invent measurements, dates, mission names, habitability claims, or citations. Use an evidenceId segment whenever stating a supplied fact, especially any quantitative fact. Text segments must contain no numbers or URLs. Return one short qualitative sentence and at most three evidenceId segments; never enumerate every supplied field. If evidence is insufficient, say so plainly. Return only the required JSON object.',
+        instructions:'You are the Solar System Explorer Astronomy Guide. Answer the user directly, naturally, and conversationally about the solar system. There are two information classes. First, supplied structured application evidence is authoritative for exact measurements, calculated distances, spacecraft position, simulation time, orbital values, physical values, and other app-owned facts. Whenever an exact or numerical claim is needed, use an evidenceId segment instead of writing the value yourself. If the required verified value is absent, say the app does not currently have verified data for it and do not estimate. Second, you may freely compose concise qualitative explanations and ordinary general scientific or common knowledge in text segments, including everyday contextual questions and well-established mission context. Do not imply that this general-knowledge prose is verified application data. Never invent citations, exact values, dates, or scene state. Do not include numbers or URLs in text segments. Keep the answer relevant to the solar system and do not provide harmful instructions. Use only evidence that materially supports the answer, with at most three evidenceId segments, and do not enumerate every supplied field. Return only the required JSON object.',
         input:[{role:'user',content:[{type:'input_text',text:input}]}],
         text:{format:{type:'json_schema',name:'astronomy_guide_answer',strict:true,schema:explanationSchema}},
       }),
@@ -143,8 +143,9 @@ export async function handleGuideRequest(request:Request,env:GuideEnv,deps:Endpo
       await finishGuideRequest(env.DB,body.requestId,'invalid_output',provider.usage,'empty_output');
       return json(fallback(local,'invalid_model_output'));
     }
+    const usedEvidenceIds=new Set(provider.output.segments.flatMap(segment=>'evidenceId' in segment?[segment.evidenceId]:[]));
     await finishGuideRequest(env.DB,body.requestId,'succeeded',provider.usage);
-    return json({...local,explanation,mode:'live',model:LIVE_GUIDE_MODEL});
+    return json({...local,explanation,evidence:local.evidence.filter(item=>usedEvidenceIds.has(item.id)),mode:'live',model:LIVE_GUIDE_MODEL});
   }catch(error){
     const code=error instanceof Error?error.message:'provider_error';
     await finishGuideRequest(env.DB,body.requestId,code==='provider_timeout'?'timeout':'provider_error',undefined,code.slice(0,80));

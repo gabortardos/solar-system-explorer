@@ -25,10 +25,12 @@ test('missing position and unsupported subject are explicit',()=>{
  assert.match(answerContextGuide(buildGuideContext('absent',nav),'Could I live here?').explanation,/Select an object/);
  assert.equal(buildGuideContext('earth',{...nav,positionAU:null}).nearby.length,0);
 });
-test('provider output refuses numerical prose and fabricated citations',()=>{
+test('provider output allows natural prose but refuses unsupported exact values and fabricated citations',()=>{
  const evidence=answerContextGuide(buildGuideContext('earth',nav),'gravity').evidence;
  assert.equal(validateExplanation({segments:[{evidenceId:'radius'}]},evidence),true);
- for(const segments of [[{text:'Radius is 42 km'}],[{text:'forty million miles'}],[{evidenceId:'invented'}]])assert.equal(validateExplanation({segments},evidence),false);
+ assert.equal(validateExplanation({segments:[{text:'Yes. Dogs live on Earth alongside people, and they have done so for a very long time.'}]},evidence),true);
+ assert.equal(validateExplanation({segments:[{text:'One reason Mars looks red is iron-rich dust on its surface.'}]},evidence),true);
+ for(const segments of [[{text:'Radius is 42 km'}],[{text:'forty million miles'}],[{text:'Jupiter has ninety moons.'}],[{evidenceId:'invented'}]])assert.equal(validateExplanation({segments},evidence),false);
  assert.throws(()=>answerContextGuide(buildGuideContext('earth',nav),'x'.repeat(601)));
 });
 test('explicit named world resolves without answering for the wrong selection',()=>{

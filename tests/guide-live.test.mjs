@@ -53,6 +53,24 @@ test('live endpoint calls Responses API once without sending the API key in its 
  const response=await handleGuideRequest(request('mars','Could I live here?'),{DB:db,OPENAI_API_KEY:'server-secret'},{fetchImpl,reserve:allowed});
  const result=await response.json();
  assert.equal(response.status,200);assert.equal(result.mode,'live');assert.equal(result.model,'gpt-5.6-luna');assert.equal(calls,1);assert.doesNotMatch(captured,/server-secret/);
+ assert.match(captured,/ordinary general scientific or common knowledge/);
+});
+test('natural qualitative answers work across the requested planet and moon examples',async()=>{
+ const examples=[
+  ['earth','Are there dogs on Earth?','Yes. Dogs live on Earth alongside people.','earth'],
+  ['mars','Why is Mars red?','Mars looks red because iron-rich minerals in its surface dust have oxidized.','mars'],
+  ['europa','Could humans live here?','Europa is hostile to unprotected humans because it is intensely cold, airless, and exposed to strong radiation.','europa'],
+  ['jupiter','Why does this planet have so many moons?','Jupiter is massive, with strong gravity and a long history of gathering and retaining many different kinds of moons.','jupiter'],
+  ['moon','What would happen if I jumped here?','You would rise higher and remain airborne longer than on Earth because the Moon has weaker gravity.','moon'],
+ ];
+ for(const [selectedId,question,answer,subjectId] of examples){
+  const response=await handleGuideRequest(request(selectedId,question),{DB:db,OPENAI_API_KEY:'server-secret'},{fetchImpl:provider({segments:[{text:answer}]}),reserve:allowed});
+  const result=await response.json();assert.equal(result.mode,'live');assert.equal(result.resolution.subjectId,subjectId);assert.equal(result.explanation,answer);assert.deepEqual(result.evidence,[]);
+ }
+});
+test('current Mars distance remains structured and only cited evidence is returned',async()=>{
+ const response=await handleGuideRequest(request('mars','How far is this planet from Earth right now?'),{DB:db,OPENAI_API_KEY:'server-secret'},{fetchImpl:provider({segments:[{text:'At the captured simulation time, the modeled center-to-center distance is:'},{evidenceId:'body-distance'}]}),reserve:allowed});
+ const result=await response.json();assert.equal(result.mode,'live');assert.equal(result.resolution.subjectId,'mars');assert.equal(result.evidence.length,1);assert.equal(result.evidence[0].id,'body-distance');assert.match(result.explanation,/Distance from Earth: .* km/);
 });
 test('provider failure returns deterministic Local guide without retry',async()=>{
  let calls=0;
@@ -83,4 +101,9 @@ test('application budget refusal serves Local guide and migration contains quota
  const result=await response.json();assert.equal(result.mode,'local');assert.equal(result.fallbackReason,'lifetime_budget');
  const sql=await readFile(new URL('../drizzle/0000_guide_limits.sql',import.meta.url),'utf8');
  assert.match(sql,/guide_requests/);assert.match(sql,/guide_budget_totals/);assert.match(sql,/CREATE TRIGGER `guide_requests_budget_insert`/);
+});
+test('guide UI keeps the answer primary and grounds details in an expandable section',async()=>{
+ const page=await readFile(new URL('../app/page.tsx',import.meta.url),'utf8');
+ assert.match(page,/guide-answer-copy/);assert.match(page,/<details className="guide-grounding">/);assert.match(page,/Sources &amp; data/);
+ assert.ok(page.indexOf('guide-answer-copy')<page.indexOf('<details className="guide-grounding">'));
 });

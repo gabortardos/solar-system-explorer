@@ -9,8 +9,8 @@ Status: **complete and published** on 2026-09-21. Production uses `gpt-5.6-luna`
 3. The Worker validates the body and rebuilds the astronomy context and evidence from the server-bundled canonical catalogue. Browser-supplied facts, source URLs and explanations are never trusted.
 4. The Worker resolves contextual references and creates at most 12 structured evidence records before any provider call.
 5. After an atomic D1 quota reservation, the Worker makes one non-streaming Responses API call with `store: false`, no tools, no web search, a 400-token output ceiling and a 10-second timeout. Failed calls are not retried automatically.
-6. Strict JSON output may contain short non-numerical text segments or references to supplied evidence IDs. The server rejects numerical model prose, URLs, unknown evidence IDs, malformed JSON and oversized output. Trusted numbers and citations continue to come from structured local evidence.
-7. The browser receives the answer, evidence and citations, never `OPENAI_API_KEY`. A visible badge identifies `Live AI` or `Local guide`.
+6. Strict JSON output may contain natural qualitative text segments plus references to supplied evidence IDs. The model may use ordinary scientific and common knowledge for explanatory prose, but exact measurements and scene-dependent values must use structured evidence references. The server rejects unsupported numerical model prose, URLs, unknown evidence IDs, malformed JSON and oversized output.
+7. The browser receives the answer and only the structured evidence records materially referenced by that answer, never `OPENAI_API_KEY`. A visible badge identifies `Live AI` or `Local guide`.
 
 `GET /api/guide` is a non-paid health check. It reports the model, provider configuration state and whether the required D1 tables and trigger exist; it never returns the secret.
 
@@ -25,11 +25,19 @@ Status: **complete and published** on 2026-09-21. Production uses `gpt-5.6-luna`
 
 The response retains `resolution.selectedId`, `subjectId`, `comparisonId` and a plain-language interpretation so the UI and tests can verify what each phrase meant.
 
+## Two-class answer policy
+
+Trusted structured application data remains authoritative for exact measurements, calculated distances, spacecraft position, simulation time, orbital values and physical values. Exact values are rendered server-side from evidence IDs; the model cannot supply or alter those values. If verified structured data is absent, the Live guide must say so rather than estimate a precise value.
+
+AI explanatory/general knowledge may be used for qualitative astronomy explanations, ordinary science, common-knowledge questions, well-established mission context and conversational follow-ups. This permits direct answers to questions such as whether dogs live on Earth, why Mars looks red, how a jump on the Moon would feel, or why Jupiter has many moons. Such prose is not labelled as verified application data and does not receive an evidence card unless structured data actually supports it.
+
+The answer is the primary UI content. The `Live AI` / `Local guide` badge remains visible, while request-time snapshot details, context resolution, data quality and materially relevant evidence cards are grouped under the collapsed **Sources & data** disclosure.
+
 ## Evidence coverage
 
 The live boundary supports selected planets and moons, habitability, atmosphere, water/ice, missions, physical facts, spacecraft-to-object distance, body-to-body distance and two-object comparisons. Missing fields remain unavailable. Source-reviewed moon descriptions support questions such as Europa water; mission lists are declined when no reviewed local mission summary exists.
 
-The provider does not replace trusted structured astronomy values. Comparison prompts receive a small balanced subset for concise generation, while the application response retains the full bounded evidence set for both objects.
+The provider does not replace trusted structured astronomy values. Comparison prompts receive a small balanced subset for concise generation. Live responses return only evidence IDs the model actually cited; deterministic Local guide responses retain their bounded topic evidence.
 
 ## Cost and abuse controls
 
@@ -64,4 +72,6 @@ Published production checks passed for:
 
 The production database recorded 10 provider requests during implementation and acceptance: 7 final successful answer categories plus 3 safe-fallback diagnostics used to correct comparison output. The conservative approved per-request estimate places total OpenAI API cost below $0.009; D1 reserved $0.020 of application budget. A subsequent request returned `Local guide` with `viewer_day` before any provider call, confirming the deployed daily limit.
 
-Automated checks cover provider failure, timeout, malformed/model-invalid output, oversized requests, rate refusal, application-budget refusal, one-call/no-retry behavior, key non-disclosure, reference resolution and structured two-object evidence. Final verification: production build and lint pass; all 76 automated tests pass.
+Automated checks cover provider failure, timeout, malformed/model-invalid output, oversized requests, rate refusal, application-budget refusal, one-call/no-retry behavior, key non-disclosure, reference resolution and structured two-object evidence. Final verification: production build and lint pass; all 79 automated tests pass.
+
+The natural-answer update adds targeted coverage for Earth dogs, Mars color, Europa habitability, Jupiter's moons, jumping on the Moon and the current modeled Mars–Earth distance. Qualitative answers can be AI-composed without irrelevant cards; the distance answer must cite `body-distance`, and unsupported exact numbers still fail validation to the deterministic Local guide. The production UI keeps the answer first and places grounding details under **Sources & data**.
