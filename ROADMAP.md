@@ -162,13 +162,21 @@ Status: implemented and verified in source on 2026-09-14.
 
 ### UI/graphics checkpoints requested by owner
 
-A, Step 17 and Step 18 corrections implemented: orbital timelapse, path contrast, desktop HUD cleanup/hide/restore, input and label treatment, sticky panel exit, stable time selector, compact small-body disclosure, improved Canvas Saturn close-ups, keyboard-safe mobile search and iOS-stable guide entry; 63 tests/build/lint pass. B next: target-visible travel/arrival choreography and full rendered interaction matrix. Milky Way context and streamed surface detail remain scoped proposals awaiting agreement, not active implementation. See `docs/UI_GRAPHICS_PLAN.md`.
+A, Step 17 and Step 18 corrections implemented: orbital timelapse, path contrast, desktop HUD cleanup/hide/restore, input and label treatment, sticky panel exit, stable time selector, compact small-body disclosure, improved Canvas Saturn close-ups, keyboard-safe mobile search and iOS-stable guide entry. B next: target-visible travel/arrival choreography and full rendered interaction matrix. Milky Way context and streamed surface detail remain scoped proposals awaiting agreement, not active implementation. See `docs/UI_GRAPHICS_PLAN.md`.
 
 ### Step 16 — AI astronomy guide foundation
 
-Implemented free local context/evidence prototype with bounded nearby objects, coordinate caveats, timestamped answers, source cards and a future provider contract. Paid LLM integration remains gated; see `docs/AI_GUIDE.md`. Do not describe this prototype as a connected generative AI. V1.2 physical-device validation remains open and is not superseded.
+Implemented free local context/evidence prototype with bounded nearby objects, coordinate caveats, timestamped answers and source cards. This remains the deterministic fallback beneath Step 17. V1.2 physical-device validation remains open and is not superseded.
 
-Verification: production build, lint and 59 automated tests pass. New guide browser/device interaction QA is not yet recorded. Next: inspect the prototype in use, then decide whether to authorize a paid provider after current pricing and hard-budget safeguards are established.
+### Step 17 — CONNECT THE LIVE AI
+
+Status: completed and published on 2026-09-21.
+
+- Connected the guide to `gpt-5.6-luna` through a server-only Responses API boundary.
+- Added D1-backed atomic per-address/global rate limits and rolling/lifetime application budget caps.
+- Preserved strict evidence/citation separation, bounded output, no tools, no retries, timeout handling and deterministic Local guide fallback.
+- Added request-time resolution for “here,” “this moon,” “this planet” and “that planet,” plus structured two-object comparisons.
+- Production acceptance passed for planets, moons, distance, habitability, missions, water and comparisons. Build/lint and all 76 tests pass. See `docs/AI_GUIDE.md`.
 
 ### V1.2 — Flight and navigation quality
 

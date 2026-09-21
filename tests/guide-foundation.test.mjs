@@ -31,8 +31,9 @@ test('provider output refuses numerical prose and fabricated citations',()=>{
  for(const segments of [[{text:'Radius is 42 km'}],[{text:'forty million miles'}],[{evidenceId:'invented'}]])assert.equal(validateExplanation({segments},evidence),false);
  assert.throws(()=>answerContextGuide(buildGuideContext('earth',nav),'x'.repeat(601)));
 });
-test('explicit other-world question requests a selection instead of answering the wrong world',()=>{
- assert.match(answerContextGuide(buildGuideContext('earth',nav),'Could I live on Mars?').explanation,/Please select/);
+test('explicit named world resolves without answering for the wrong selection',()=>{
+ const answer=answerContextGuide(buildGuideContext('earth',nav),'Could I live on Mars?');
+ assert.equal(answer.subject,'Mars');assert.equal(answer.resolution.subjectId,'mars');
 });
 test('minor selection cannot silently receive an Earth answer',()=>{
  const c=buildGuideContext('earth',{...nav,selectedMinor:{id:'sb-test',name:'Test minor',physical:[],source:{url:'https://ssd.jpl.nasa.gov/'}}});

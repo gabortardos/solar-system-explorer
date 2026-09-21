@@ -168,11 +168,11 @@ No runtime external API or new dependency was introduced. Pure position results 
 
 ## Backend/API architecture
 
-Step 16: `guide-context.ts` consumes the scene's read-only `getGuideNavigation()` snapshot; `guide-assistant.ts` separates local explanation from typed evidence/citations. The UI retains answer subject/time independently of current selection. `docs/AI_GUIDE.md` defines the disabled future provider seam and server-side activation requirements. No provider endpoint or paid call is present.
+Step 16: `guide-context.ts` consumes the scene's read-only `getGuideNavigation()` snapshot; `guide-assistant.ts` separates local explanation from typed evidence/citations. The UI retains answer subject/time independently of current selection.
 
-No product backend/API is active. The Worker delegates requests to Vinext and supports framework image optimization. Dormant database scaffolding/examples and authentication helpers are present from the starter but are not active product features. `.openai/hosting.json` has `d1: null` and `r2: null`.
+Step 17: `app/guide-client.ts` submits the captured snapshot to `POST /api/guide`. `worker/guide/endpoint.ts` validates it, rebuilds canonical context/evidence, resolves contextual references, reserves quota through `worker/guide/limits.ts`, and makes one bounded `gpt-5.6-luna` Responses API call. Strict evidence-ID output validation keeps provider prose separate from trusted measurements and citations. Every provider, validation, timeout, network, quota or budget failure returns the deterministic Local guide.
 
-Future external astronomy/AI services require server-side handling, secrets in hosted environment settings, validation, rate limits, and cost controls.
+The Worker still delegates application rendering to Vinext and supports framework image optimization. D1 binding `DB` stores only guide request/budget accounting through `0000_guide_limits.sql`; R2 remains disabled. `OPENAI_API_KEY` is a server-only Sites secret. No authentication, analytics or runtime astronomy API is active. See `docs/AI_GUIDE.md` for the exact limits and trust boundary.
 
 ## Build and deployment
 

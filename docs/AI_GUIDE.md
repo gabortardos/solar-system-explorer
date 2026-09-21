@@ -1,33 +1,67 @@
-# Step 16 — Guide foundation
+# Step 17 — Live Astronomy Guide
 
-## Implemented prototype (no external account or usage charges)
+Status: **complete and published** on 2026-09-21. Production uses `gpt-5.6-luna` through the OpenAI Responses API with a deterministic Local guide fallback.
 
-The guide is a deterministic local assistant, not a connected LLM. Existing legacy guide exports remain for compatibility; the visible guide uses `guide-assistant.ts`.
+## Request and trust boundary
 
-1. Scene `getGuideNavigation()` captures simulation time, camera-derived coordinates, coordinate basis/anchor and selected minor record together. Scientific conversion reverses scene axes into heliocentric ecliptic J2000 AU. Exploration coordinates remain estimates; minor-focused Exploration coordinates return unavailable.
-2. `buildGuideContext()` copies selection and science, dataset version and nearest five core objects at that instant. This is a bounded core-catalogue neighborhood, not a full minor-body census. Region dots are excluded.
-3. `answerContextGuide()` resolves “here” to the selected object, never implicit arrival. Spacecraft questions use the separate navigation context. It returns explanation and typed evidence separately; numerical fields preserve units, missing reasons, quality, notes and registry citations.
-4. UI retains the answer subject/time, renders React text (not model HTML), labels legacy prose, and allows one request at a time with a 600-character input cap. Questions/answers stay in memory and are not persisted or sent externally.
+1. The browser captures one immutable request-time snapshot: selected object, simulation timestamp, spacecraft/navigation estimate, coordinate basis and scene anchor.
+2. The browser sends only the question, selected object ID, bounded navigation snapshot and a unique request ID to `POST /api/guide`.
+3. The Worker validates the body and rebuilds the astronomy context and evidence from the server-bundled canonical catalogue. Browser-supplied facts, source URLs and explanations are never trusted.
+4. The Worker resolves contextual references and creates at most 12 structured evidence records before any provider call.
+5. After an atomic D1 quota reservation, the Worker makes one non-streaming Responses API call with `store: false`, no tools, no web search, a 400-token output ceiling and a 10-second timeout. Failed calls are not retried automatically.
+6. Strict JSON output may contain short non-numerical text segments or references to supplied evidence IDs. The server rejects numerical model prose, URLs, unknown evidence IDs, malformed JSON and oversized output. Trusted numbers and citations continue to come from structured local evidence.
+7. The browser receives the answer, evidence and citations, never `OPENAI_API_KEY`. A visible badge identifies `Live AI` or `Local guide`.
 
-Limitations: local keyword intents, no multi-turn inference or general question answering; older educational numerical prose is explicitly legacy-curated, not authoritative measurements. Missing moon/minor habitability content is declined. Named-object comparison and open-ended questions require future intent resolution. Hardware visual QA remains separate.
+`GET /api/guide` is a non-paid health check. It reports the model, provider configuration state and whether the required D1 tables and trigger exist; it never returns the secret.
 
-## Future paid LLM boundary — disabled, not production-ready
+## Contextual-reference policy
 
-The exported provider/segment contract and output format validator form a testable seam, not an activated provider. There is no API route, API key, fetch to an LLM, or paid fallback. Adding a key alone cannot activate usage.
+- “Here” means the selected object, not the spacecraft location and not an implicit arrival.
+- “This moon” resolves to the selected moon. If a planet is selected, it resolves only when the moon is uniquely determined or explicitly named.
+- “This planet” and “that planet” resolve to the selected planet, or to the parent planet when a moon is selected.
+- Explicit named objects may become the subject when the question is not a comparison.
+- Comparisons retain the resolved selected subject and use structured evidence for both objects.
+- “How far am I from this moon?” uses the captured spacecraft/navigation snapshot and the selected moon position at the captured simulation time.
 
-Required before activation:
+The response retains `resolution.selectedId`, `subjectId`, `comparisonId` and a plain-language interpretation so the UI and tests can verify what each phrase meant.
 
-- Owner approves provider/model, monthly hard spend ceiling, expected audience, and transmission of question plus bounded simulation context. No account identities, browsing history, raw camera scene, or secrets go into prompts.
-- Configure the provider key as a server-only Sites secret. For OpenAI, use the OpenAI Developers plugin's API-key workflow; never paste keys in chat or client code.
-- Add a Worker-compatible server endpoint. Validate body IDs/time/question length; retrieve canonical evidence on the server, never trust client-supplied facts/source URLs. Client navigation coordinates are explicitly untrusted simulation estimates.
-- Separate intent/retrieval from explanation. Facts are rendered from server evidence IDs; the model may not supply numeric literals or URLs. The format validator is defense-in-depth only: it cannot prove semantic entailment or block every spelled-out/indirect quantity. Unsupported claims require refusal or reviewed evidence-bound templates, not prompt-only trust.
-- Before exposing a public paid endpoint, implement atomic durable global budget reservation and per-viewer/session limits with abuse protection. In-memory Worker counters or browser localStorage are not hard spend limits. No auth/database is activated in this foundation.
-- Proposed budgets: question 600 characters, bounded evidence 12 items, input 2,000 tokens, output 400 tokens, timeout 10 seconds, no automatic paid retries, no automatic calls on selection/frame/time change. Reject requests exceeding budget, fail to local mode, and expose a server kill switch.
-- Cache only identical canonical question/subject/dataset/context keys; dynamic keys include exact simulation timestamp/coordinate basis. Never reuse a date-dependent answer as current. Cache bounded public stable answers; avoid retaining personal questions. No provider tools/web search in the first paid release.
-- Record token totals and request status without question text. Reserve worst-case request cost before calling; reconcile actual usage afterward. Budget exhaustion refuses paid generation.
+## Evidence coverage
 
-## Cost approval
+The live boundary supports selected planets and moons, habitability, atmosphere, water/ice, missions, physical facts, spacecraft-to-object distance, body-to-body distance and two-object comparisons. Missing fields remain unavailable. Source-reviewed moon descriptions support questions such as Europa water; mission lists are declined when no reviewed local mission summary exists.
 
-Current prototype: zero LLM calls and $0 LLM usage cost. No external API/account is required.
+The provider does not replace trusted structured astronomy values. Comparison prompts receive a small balanced subset for concise generation, while the application response retains the full bounded evidence set for both objects.
 
-Before a paid provider is chosen, obtain its current official prices and present a dated estimate: `(input_tokens × input_price_per_million + output_tokens × output_price_per_million) / 1,000,000`, multiplied by expected monthly requests, plus any explicit tool/storage charges. Do not activate against an undated guessed price or claim a provider dashboard alert is a hard cap. Owner approval must cover the precise provider, data transmitted, audience and enforced maximum spend. Paid activation is a separate gated task.
+## Cost and abuse controls
+
+- Request body: 6,000 UTF-8 bytes maximum.
+- Question: 600 characters maximum.
+- Estimated provider input: 2,000 tokens maximum.
+- Provider output: 400 tokens maximum.
+- Timeout: 10 seconds; no automatic paid retry.
+- Per network address: 2 reservations per minute and 10 per rolling 24 hours.
+- Global: 5 per minute, 100 per rolling 24 hours and 1,000 per rolling 31 days.
+- Reservation: $0.002 worst-case per attempted provider call.
+- Application caps: $2 rolling 31 days and $4 lifetime reserved spend.
+- The separate OpenAI project has the owner-configured $5 hard spend limit.
+
+`drizzle/0000_guide_limits.sql` creates `guide_requests`, `guide_budget_totals`, indexes and the `guide_requests_budget_insert` trigger. A single conditional insert reserves quota atomically. Duplicate request UUIDs are blocked. Failed, timed-out and invalid responses retain their reservation so failures cannot bypass the budget.
+
+## Fallback behavior
+
+The deterministic Local guide is returned when the provider key, D1, quota, budget, network, provider, timeout or output validation is unavailable. The client also falls back locally if the server cannot be reached or returns an invalid response. Malformed and oversized requests are rejected before quota reservation or paid work.
+
+## Production acceptance — 2026-09-21
+
+Published production checks passed for:
+
+- Mars — “Could I live here?” (`Live AI`)
+- Moon — “How far am I from this moon?” (`Live AI`)
+- Jupiter — “Compare this planet with Earth.” (`Live AI`)
+- Europa selected — “What missions visited that planet?” resolved to Jupiter (`Live AI`)
+- Europa selected — “What about this moon?” (`Live AI`)
+- Europa selected — “Is there water here?” (`Live AI`)
+- Earth — “How does this compare with Mars?” (`Live AI` after bounding comparison output)
+
+The production database recorded 10 provider requests during implementation and acceptance: 7 final successful answer categories plus 3 safe-fallback diagnostics used to correct comparison output. The conservative approved per-request estimate places total OpenAI API cost below $0.009; D1 reserved $0.020 of application budget. A subsequent request returned `Local guide` with `viewer_day` before any provider call, confirming the deployed daily limit.
+
+Automated checks cover provider failure, timeout, malformed/model-invalid output, oversized requests, rate refusal, application-budget refusal, one-call/no-retry behavior, key non-disclosure, reference resolution and structured two-object evidence. Final verification: production build and lint pass; all 76 automated tests pass.

@@ -401,11 +401,12 @@ export default function Home() {
     setQuestion(q);
     setGuideBusy(true);
     try {
-      const [{answerContextGuide},{buildGuideContext}]=await Promise.all([import('./guide-assistant'),import('./guide-context')]);
+      const [{requestGuide},{buildGuideContext}]=await Promise.all([import('./guide-client'),import('./guide-context')]);
       if(!navigation)throw new Error('The scene is not ready. Please try again.');
-      setGuideResult(answerContextGuide(buildGuideContext(selectedId,navigation),q));
+      const context=buildGuideContext(selectedId,navigation);
+      setGuideResult(await requestGuide(context,q));
     } catch(error) {
-      setGuideResult({subject:'Guide unavailable',atUtcMs:time,explanation:error instanceof Error?error.message:'Please retry.',evidence:[],contextNote:'No answer was generated.',mode:'local'});
+      setGuideResult({subject:'Guide unavailable',atUtcMs:time,explanation:error instanceof Error?error.message:'Please retry.',evidence:[],contextNote:'No answer was generated.',mode:'local',resolution:{selectedId,subjectId:selectedId,subjectName:b.name,comparisonId:null,interpretation:'The guide request could not be interpreted.'}});
     } finally {
       setGuideBusy(false);
     }
@@ -1000,10 +1001,11 @@ export default function Home() {
           {panel === "guide" && (
             <>
               <div className="guide-note">
-                Offline educational summaries and sourced physical data. Modeled
-                distances are approximate; no live observations are connected.
-                Nothing is sent to an AI service, so it has no usage cost.
-                “Here” means the selected object, not your spacecraft location.
+                Live AI explains the selected object using the app’s bounded,
+                sourced astronomy evidence. Trusted measurements and citations
+                remain local structured data. If Live AI is unavailable, the
+                deterministic Local guide answers instead. “Here” means the
+                selected object, not your spacecraft location.
               </div>
               <h3>What would you like to know?</h3>
               <div className="suggestions">
@@ -1051,7 +1053,7 @@ export default function Home() {
               </form>
               {guideResult && (
                 <div className="guide-answer" aria-live="polite">
-                  <span className="eyebrow">ABOUT {guideResult.subject.toUpperCase()}</span>
+                  <div className="guide-answer-heading"><span className="eyebrow">ABOUT {guideResult.subject.toUpperCase()}</span><span className={`guide-mode guide-mode-${guideResult.mode}`}>{guideResult.mode==='live'?'Live AI':'Local guide'}</span></div>
                   <p>{guideResult.contextNote}</p>
                   <p>Snapshot: {Number.isFinite(guideResult.atUtcMs)?new Date(guideResult.atUtcMs).toISOString():'Time unavailable'}</p>
                   <p>{guideResult.explanation}</p>
