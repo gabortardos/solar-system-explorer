@@ -6,11 +6,14 @@ import {guide} from './data/guide-education';
 import type {Quantity} from './data/schema';
 import type {GuideContext} from './guide-context';
 
-export type GuideEvidence={id:string;label:string;value:string;quality:string;note:string;sources:{title:string;url:string}[]};
+export type GuideEvidenceClass='project-structured'|'project-curated'|'authoritative-external';
+export type GuideEvidence={id:string;label:string;value:string;quality:string;note:string;sources:{title:string;url:string}[];sourceClass?:GuideEvidenceClass;retrievedAt?:string;claimKey?:string};
 export type GuideResolution={selectedId:string|null;subjectId:string|null;subjectName:string;comparisonId:string|null;interpretation:string};
-export type GuideResponse={subject:string;atUtcMs:number;explanation:string;evidence:GuideEvidence[];contextNote:string;mode:'local'|'live';resolution:GuideResolution;model?:string;fallbackReason?:string};
+export type GuideExternalStatus='not-needed'|'retrieved'|'unavailable'|'unsupported';
+export type GuideSourceConflict={claimKey:string;projectEvidenceId:string;externalEvidenceId:string;note:string};
+export type GuideResponse={subject:string;atUtcMs:number;explanation:string;evidence:GuideEvidence[];contextNote:string;mode:'local'|'live';resolution:GuideResolution;model?:string;fallbackReason?:string;external?:{status:GuideExternalStatus;note:string;retrievedAt?:string};sourceConflicts?:GuideSourceConflict[]};
 export const GUIDE_LIMITS={questionCharacters:600,evidenceItems:12,nearby:5,paidEnabled:true} as const;
-export type ExplanationSegments={segments:({text:string}|{evidenceId:string})[]};
+export type ExplanationSegments={segments:({text:string}|{evidenceId:string})[];citationIds:string[]};
 
 export interface GuideExplanationProvider {
   explain(input:{question:string;subject:string;evidence:GuideEvidence[]},signal:AbortSignal):Promise<ExplanationSegments>;
@@ -18,14 +21,25 @@ export interface GuideExplanationProvider {
 
 const numericWord='(?:zero|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety)';
 const measuredThing='(?:percent|degrees?|kelvin|celsius|fahrenheit|kilometers?|kilometres?|meters?|metres?|miles?|feet|seconds?|minutes?|hours?|days?|years?|au|astronomical units?|kilograms?|grams?|moons?|rings?|missions?)';
+const numberTerm=`(?:${numericWord}|hundred|thousand|million|billion|trillion)`;
+
+function unsupportedNumberClaims(text:string):string[]{
+  const digitClaims=text.match(new RegExp(`[\\d０-９]+(?:[.,][\\d０-９]+)?(?:\\s*${measuredThing})?`,'gi'))??[];
+  const wordClaims=text.match(new RegExp(`\\b${numberTerm}(?:[-\\s]+${numberTerm})*\\s+(?:[a-z-]+\\s+){0,2}${measuredThing}\\b`,'gi'))??[];
+  const magnitudeClaims=text.match(/\b(?:hundred|thousand|million|billion|trillion)\b/gi)??[];
+  return [...digitClaims,...wordClaims,...magnitudeClaims].map(claim=>claim.replace(/\s+/g,' ').trim().toLowerCase());
+}
 
 /** Allow natural qualitative prose while rejecting unsupported precise values, URLs and unknown evidence references. */
 export function validateExplanation(value:unknown,evidence:GuideEvidence[]):value is ExplanationSegments{
-  if(!value||typeof value!=='object'||!('segments' in value)||!Array.isArray(value.segments)||value.segments.length<1||value.segments.length>20)return false;
+  if(!value||typeof value!=='object'||!('segments' in value)||!Array.isArray(value.segments)||value.segments.length<1||value.segments.length>20||!('citationIds' in value)||!Array.isArray(value.citationIds)||value.citationIds.length>4)return false;
+  const ids=new Set(evidence.map(item=>item.id));
+  if(value.citationIds.some(id=>typeof id!=='string'||!ids.has(id))||new Set(value.citationIds).size!==value.citationIds.length)return false;
+  const citedExternal=evidence.filter(item=>item.sourceClass==='authoritative-external'&&value.citationIds.includes(item.id)).map(item=>item.value.replace(/\s+/g,' ').toLowerCase());
   return value.segments.every(s=>s&&typeof s==='object'&&Object.keys(s).length===1&&
     ('evidenceId' in s?typeof s.evidenceId==='string'&&evidence.some(e=>e.id===s.evidenceId):
-      'text' in s&&typeof s.text==='string'&&s.text.length<=800&&!/[\d０-９]|https?:/i.test(s.text)&&
-        !new RegExp(`\\b(?:hundred|thousand|million|billion|trillion)\\b|\\b${numericWord}(?:[-\\s]+${numericWord})*\\s+${measuredThing}\\b`,'i').test(s.text)));
+      'text' in s&&typeof s.text==='string'&&s.text.length<=800&&!/https?:/i.test(s.text)&&
+        unsupportedNumberClaims(s.text).every(claim=>citedExternal.some(value=>value.includes(claim)))));
 }
 
 export function renderExplanationSegments(value:ExplanationSegments,evidence:GuideEvidence[]):string{
@@ -87,10 +101,10 @@ export function resolveGuideReferences(context:GuideContext,question:string):Gui
 
 function sourceList(ids:string[]){return ids.flatMap(id=>SOURCES[id]?[SOURCES[id]]:[]).map(({title,url})=>({title,url}));}
 function quantityEvidence(id:string,label:string,field:Quantity):GuideEvidence{
-  return {id,label,value:field.value===null?'Unavailable':`${field.value} ${field.unit}`,quality:field.value===null?'unavailable':field.quality,note:field.value===null?field.missingReason??'Not imported':field.note,sources:sourceList(field.sourceIds)};
+  return {id,label,value:field.value===null?'Unavailable':`${field.value} ${field.unit}`,quality:field.value===null?'unavailable':field.quality,note:field.value===null?field.missingReason??'Not imported':field.note,sources:sourceList(field.sourceIds),sourceClass:'project-structured',claimKey:id};
 }
 function educationEvidence(id:string,label:string,value:string,body:CatalogBody):GuideEvidence{
-  return {id,label,value,quality:body.education?.reviewStatus??'legacy-curated',note:body.education?.reviewedAt?`Reviewed ${body.education.reviewedAt}.`:'Retained educational summary; not a live observation.',sources:body.education?[{title:`NASA ${body.name}`,url:body.education.source}]:[]};
+  return {id,label,value,quality:body.education?.reviewStatus??'legacy-curated',note:body.education?.reviewedAt?`Reviewed ${body.education.reviewedAt}.`:'Retained educational summary; not a live observation.',sources:body.education?[{title:`NASA ${body.name}`,url:body.education.source}]:[],sourceClass:'project-curated',claimKey:id};
 }
 function addPhysicalEvidence(evidence:GuideEvidence[],body:CatalogBody,prefix=''){
   const id=(field:string)=>prefix?`${prefix}-${field}`:field;
@@ -173,5 +187,5 @@ export function answerContextGuide(context:GuideContext,question:string):GuideRe
     }
   }
 
-  return {subject:resolution.subjectName,atUtcMs:context.navigation.atUtcMs,explanation,evidence:evidence.slice(0,GUIDE_LIMITS.evidenceItems),contextNote,mode:'local',resolution};
+  return {subject:resolution.subjectName,atUtcMs:context.navigation.atUtcMs,explanation,evidence:evidence.slice(0,GUIDE_LIMITS.evidenceItems).map(item=>({...item,sourceClass:item.sourceClass??'project-structured'})),contextNote,mode:'local',resolution};
 }

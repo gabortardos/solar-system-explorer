@@ -162,7 +162,7 @@ Status: implemented and verified in source on 2026-09-14.
 
 ### UI/graphics checkpoints requested by owner
 
-A, Step 17 and Step 18 corrections implemented: orbital timelapse, path contrast, desktop HUD cleanup/hide/restore, input and label treatment, sticky panel exit, stable time selector, compact small-body disclosure, improved Canvas Saturn close-ups, keyboard-safe mobile search and iOS-stable guide entry. B next: target-visible travel/arrival choreography and full rendered interaction matrix. Milky Way context and streamed surface detail remain scoped proposals awaiting agreement, not active implementation. See `docs/UI_GRAPHICS_PLAN.md`.
+A and the September 2026 UI maintenance corrections are implemented: orbital timelapse, path contrast, desktop HUD cleanup/hide/restore, input and label treatment, sticky panel exit, stable time selector, compact small-body disclosure, improved Canvas Saturn close-ups, keyboard-safe mobile search and iOS-stable guide entry. These are not official numbered roadmap steps. B next: target-visible travel/arrival choreography and full rendered interaction matrix. See `docs/UI_GRAPHICS_PLAN.md`.
 
 ### Step 16 — AI astronomy guide foundation
 
@@ -177,6 +177,17 @@ Status: completed and published on 2026-09-21.
 - Preserved strict evidence/citation separation, bounded output, no tools, no retries, timeout handling and deterministic Local guide fallback.
 - Added request-time resolution for “here,” “this moon,” “this planet” and “that planet,” plus structured two-object comparisons.
 - Production acceptance passed for planets, moons, distance, habitability, missions, water and comparisons. Build/lint and all 76 tests pass. See `docs/AI_GUIDE.md`.
+
+### Step 18 — AI SOURCE AND FACT CHECKING
+
+Status: implementation published; final production acceptance pending on 2026-09-21.
+
+- Added the enforced hierarchy: project-structured data → authoritative external evidence → model general knowledge.
+- Added one-source, allowlisted, server-side retrieval for current/mission questions after D1 quota reservation, with strict timeout, response-size and excerpt limits.
+- Added validated citation IDs, actual retrieved URLs/dates, source-class labels, retrieval-failure disclosure and explicit uncertainty instructions.
+- Added conflict detection for overlapping typed claims; project values remain authoritative until a separate dataset review.
+- Preserved natural conversation, server-only secrets, all Step 17 cost/rate/output limits and deterministic Local fallback.
+- Automated acceptance covers structured radius, contextual distance, qualitative/general knowledge, habitability, current Mars missions, uncertainty, source conflict, citation integrity and failure fallback. Production confirmed allowlisted NASA retrieval; repeat one current-Mars-mission paid answer after the call allowance resets, then mark complete. Build/lint and all 86 tests pass. See `docs/STEP_18_CHECKPOINT.md`.
 
 ### V1.2 — Flight and navigation quality
 

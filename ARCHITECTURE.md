@@ -6,12 +6,12 @@ This document explains the current V1.1 implementation. Future aspirations belon
 
 ## System overview
 
-Solar System Explorer is currently a client-focused React application with an imperative simulation/rendering engine behind a responsive HUD. It has no active application database, authentication, analytics, paid API, or server-side product API.
+Solar System Explorer is a client-focused React application with an imperative simulation/rendering engine behind a responsive HUD plus a narrow server-side Astronomy Guide boundary. D1 stores only guide quota/budget reservations; the Worker calls OpenAI and, for explicit freshness-sensitive questions, one allowlisted authoritative science source. There is no product authentication or analytics.
 
 ```mermaid
 flowchart TD
   UI["React UI and state"] --> Engine["Scene engine"]
-  UI --> Guide["Offline guide"]
+  UI --> Guide["Live guide + Local fallback"]
   UI --> Store["localStorage progress"]
   Engine --> Model["Astronomy model"]
   Engine --> WebGL["Three.js/WebGL"]
@@ -171,6 +171,8 @@ No runtime external API or new dependency was introduced. Pure position results 
 Step 16: `guide-context.ts` consumes the scene's read-only `getGuideNavigation()` snapshot; `guide-assistant.ts` separates local explanation from typed evidence/citations. The UI retains answer subject/time independently of current selection.
 
 Step 17: `app/guide-client.ts` submits the captured snapshot to `POST /api/guide`. `worker/guide/endpoint.ts` validates it, rebuilds canonical context/evidence, resolves contextual references, reserves quota through `worker/guide/limits.ts`, and makes one bounded `gpt-5.6-luna` Responses API call. Strict evidence-ID output validation keeps provider prose separate from trusted measurements and citations. Every provider, validation, timeout, network, quota or budget failure returns the deterministic Local guide.
+
+Step 18: `worker/guide/authoritative-sources.ts` detects freshness-sensitive mission/current questions and selects a canonical URL from a fixed official-source registry. Only after D1 reservation, the Worker may retrieve one NASA/ESA/JPL/USGS page under fixed timeout/byte/excerpt limits. Retrieved evidence is typed separately, includes the actual URL and retrieval time, and never modifies canonical data. The model can return only supplied citation IDs; URL text is rejected. Typed source conflicts are disclosed while the project value remains authoritative.
 
 The Worker still delegates application rendering to Vinext and supports framework image optimization. D1 binding `DB` stores only guide request/budget accounting through `0000_guide_limits.sql`; R2 remains disabled. `OPENAI_API_KEY` is a server-only Sites secret. No authentication, analytics or runtime astronomy API is active. See `docs/AI_GUIDE.md` for the exact limits and trust boundary.
 

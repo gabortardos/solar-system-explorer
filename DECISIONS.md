@@ -1,5 +1,12 @@
 # Solar System Explorer — Decision Record
 
+## D036 — Layered facts and bounded authoritative retrieval (2026-09-21)
+
+- **Decision:** Resolve guide answers through project-structured data first, one bounded server-selected authoritative external source second when freshness is required, and model general knowledge third for qualitative explanation. Validate every citation ID against supplied evidence and preserve project values when a typed external claim conflicts.
+- **Reason:** Natural conversation should not require every sentence to be prewritten, but current mission status cannot safely depend on model memory and canonical measurements cannot be silently displaced by a web page.
+- **Impact:** Explicit questions may trigger one four-second, one-megabyte retrieval from an allowlisted NASA/ESA/JPL/USGS URL after D1 quota reservation. Retrieved evidence carries its actual URL/date and is labelled separately. Retrieval failure is disclosed; it does not create a background retry or mutate the dataset.
+- **Preserve:** Never accept browser/model URLs, perform unrestricted browsing, retrieve on camera/selection/time changes, treat model prose as verified data, hide source conflicts, or update canonical values without a separate data-maintenance decision.
+
 ## D035 — Mobile search and input stability (2026-09-15)
 
 On phones, the catalogue search dialog is anchored below the safe area and uses a bounded internal result list; it must not retain Dialog's vertical-centering transform. Text-entry controls use at least a 16px computed font size on iOS-sized layouts, preventing Safari's automatic page magnification while preserving user pinch zoom. This applies to the guide's question field and catalogue search input.

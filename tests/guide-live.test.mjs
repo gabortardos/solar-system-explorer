@@ -8,6 +8,7 @@ after(()=>vite.close());
 const {buildGuideContext}=await vite.ssrLoadModule('/app/guide-context.ts');
 const {answerContextGuide}=await vite.ssrLoadModule('/app/guide-assistant.ts');
 const {handleGuideRequest}=await vite.ssrLoadModule('/worker/guide/endpoint.ts');
+const {retrieveAuthoritativeEvidence}=await vite.ssrLoadModule('/worker/guide/authoritative-sources.ts');
 
 const nav={atUtcMs:Date.UTC(2026,8,21),positionAU:[1,0,0],basis:'navigation-estimate',anchorId:'earth',note:'untrusted client note',selectedMinor:null};
 const allowed=async()=>({allowed:true,reason:'reserved'});
@@ -17,8 +18,9 @@ function request(selectedId,question,extra={}){
  sequence++;
  return new Request('https://example.test/api/guide',{method:'POST',headers:{'content-type':'application/json','cf-connecting-ip':'203.0.113.7'},body:JSON.stringify({requestId:`00000000-0000-4000-8000-${String(sequence).padStart(12,'0')}`,selectedId,question,navigation:{...nav,...extra}})});
 }
-function provider(output={segments:[{text:'The structured evidence supports this answer.'},{evidenceId:'habitability'}]}){
- return async()=>new Response(JSON.stringify({output:[{type:'message',content:[{type:'output_text',text:JSON.stringify(output)}]}],usage:{input_tokens:420,output_tokens:32}}),{status:200,headers:{'content-type':'application/json'}});
+function provider(output={segments:[{text:'The structured evidence supports this answer.'},{evidenceId:'habitability'}],citationIds:[]}){
+ const normalized={citationIds:[],...output};
+ return async()=>new Response(JSON.stringify({output:[{type:'message',content:[{type:'output_text',text:JSON.stringify(normalized)}]}],usage:{input_tokens:420,output_tokens:32}}),{status:200,headers:{'content-type':'application/json'}});
 }
 
 test('here resolves to the captured selected planet',()=>{
@@ -53,7 +55,7 @@ test('live endpoint calls Responses API once without sending the API key in its 
  const response=await handleGuideRequest(request('mars','Could I live here?'),{DB:db,OPENAI_API_KEY:'server-secret'},{fetchImpl,reserve:allowed});
  const result=await response.json();
  assert.equal(response.status,200);assert.equal(result.mode,'live');assert.equal(result.model,'gpt-5.6-luna');assert.equal(calls,1);assert.doesNotMatch(captured,/server-secret/);
- assert.match(captured,/ordinary general scientific or common knowledge/);
+ assert.match(captured,/ordinary general scientific knowledge/);
 });
 test('natural qualitative answers work across the requested planet and moon examples',async()=>{
  const examples=[
@@ -71,6 +73,41 @@ test('natural qualitative answers work across the requested planet and moon exam
 test('current Mars distance remains structured and only cited evidence is returned',async()=>{
  const response=await handleGuideRequest(request('mars','How far is this planet from Earth right now?'),{DB:db,OPENAI_API_KEY:'server-secret'},{fetchImpl:provider({segments:[{text:'At the captured simulation time, the modeled center-to-center distance is:'},{evidenceId:'body-distance'}]}),reserve:allowed});
  const result=await response.json();assert.equal(result.mode,'live');assert.equal(result.resolution.subjectId,'mars');assert.equal(result.evidence.length,1);assert.equal(result.evidence[0].id,'body-distance');assert.match(result.explanation,/Distance from Earth: .* km/);
+});
+test('structured radius remains project-authoritative',async()=>{
+ const response=await handleGuideRequest(request('mars',"What is Mars's radius?"),{DB:db,OPENAI_API_KEY:'server-secret'},{fetchImpl:provider({segments:[{text:'The project value is:'},{evidenceId:'radius'}],citationIds:['radius']}),reserve:allowed});
+ const result=await response.json();assert.equal(result.mode,'live');assert.equal(result.evidence.length,1);assert.equal(result.evidence[0].id,'radius');assert.equal(result.evidence[0].sourceClass,'project-structured');assert.match(result.explanation,/Mars radius: .* km/);
+});
+test('current mission answers use retrieved authoritative evidence and actual citations',async()=>{
+ let captured='';
+ const external={id:'external-mars-official',label:'Current official information for Mars',value:'NASA lists Perseverance and Curiosity as active surface missions, with active orbiters supporting science and communications.',quality:'authoritative external snapshot',note:'Retrieved from NASA.',sources:[{title:'NASA Mars',url:'https://science.nasa.gov/mars/'}],sourceClass:'authoritative-external',retrievedAt:'2026-09-21T00:00:00.000Z'};
+ const fetchImpl=async(_url,options)=>{captured=String(options.body);return provider({segments:[{text:'NASA currently identifies Perseverance and Curiosity as active Mars rovers, alongside active orbiters.'}],citationIds:[external.id]})(_url,options)};
+ const response=await handleGuideRequest(request('mars','What is the latest active mission at Mars?'),{DB:db,OPENAI_API_KEY:'server-secret'},{fetchImpl,reserve:allowed,retrieve:async()=>({status:'retrieved',note:'Retrieved NASA.',retrievedAt:external.retrievedAt,evidence:[external]})});
+ const result=await response.json();assert.equal(result.mode,'live');assert.equal(result.external.status,'retrieved');assert.equal(result.evidence.length,1);assert.equal(result.evidence[0].sources[0].url,'https://science.nasa.gov/mars/');assert.match(captured,/project-structured.*authoritative-external.*model-general-knowledge/);
+});
+test('retrieval is bounded to the registered official source and records freshness',async()=>{
+ const local=answerContextGuide(buildGuideContext('mars',nav),'What is the latest active mission at Mars?');
+ let requested='';
+ const result=await retrieveAuthoritativeEvidence('What is the latest active mission at Mars?',local,async url=>{requested=String(url);return new Response('<html><body><h2>How We Explore Mars</h2><p>Perseverance Mars Rover | Active Mission</p><p>Curiosity Mars Rover | Active Mission</p><p>Mars Reconnaissance Orbiter | Active Mission</p></body></html>',{status:200,headers:{'content-type':'text/html'}})},Date.UTC(2026,8,21));
+ assert.equal(requested,'https://science.nasa.gov/mars/');assert.equal(result.status,'retrieved');assert.equal(result.evidence.length,1);assert.equal(result.evidence[0].sourceClass,'authoritative-external');assert.equal(result.evidence[0].retrievedAt,'2026-09-21T00:00:00.000Z');
+});
+test('unavailable current retrieval is disclosed instead of guessed from memory',async()=>{
+ const response=await handleGuideRequest(request('mars','What missions are active at Mars now?'),{DB:db,OPENAI_API_KEY:'server-secret'},{fetchImpl:provider({segments:[{text:'I could not verify current mission status from the authoritative source, so I will not guess.'}],citationIds:[]}),reserve:allowed,retrieve:async()=>({status:'unavailable',note:'Current authoritative information could not be retrieved.',evidence:[]})});
+ const result=await response.json();assert.equal(result.mode,'live');assert.equal(result.external.status,'unavailable');assert.match(result.explanation,/could not verify/i);assert.deepEqual(result.evidence,[]);
+});
+test('source conflicts are explicit and project data remains authoritative',async()=>{
+ const external={id:'external-radius',label:'External Mars radius',value:'9999 km',quality:'authoritative external snapshot',note:'Synthetic conflict fixture.',sources:[{title:'NASA Mars',url:'https://science.nasa.gov/mars/'}],sourceClass:'authoritative-external',retrievedAt:'2026-09-21T00:00:00.000Z',claimKey:'radius'};
+ const response=await handleGuideRequest(request('mars','What is the current radius of Mars?'),{DB:db,OPENAI_API_KEY:'server-secret'},{fetchImpl:provider({segments:[{text:'The external snapshot differs, so the application preserves its reviewed project value:'},{evidenceId:'radius'}],citationIds:['radius','external-radius']}),reserve:allowed,retrieve:async()=>({status:'retrieved',note:'Synthetic conflict fixture.',retrievedAt:external.retrievedAt,evidence:[external]})});
+ const result=await response.json();assert.equal(result.mode,'live');assert.equal(result.sourceConflicts.length,1);assert.equal(result.sourceConflicts[0].projectEvidenceId,'radius');assert.match(result.explanation,/Mars radius: (?!9999)/);
+});
+test('scientific uncertainty remains explicit in natural prose',async()=>{
+ const answer='Scientists do not yet know whether life exists beneath Europa’s ice; the ocean is a promising environment, not evidence of life.';
+ const response=await handleGuideRequest(request('europa','Do scientists know whether life exists in Europa’s ocean?'),{DB:db,OPENAI_API_KEY:'server-secret'},{fetchImpl:provider({segments:[{text:answer}],citationIds:[]}),reserve:allowed});
+ const result=await response.json();assert.equal(result.mode,'live');assert.equal(result.explanation,answer);assert.match(result.explanation,/do not yet know/);
+});
+test('invented external citation IDs fail closed to the Local guide',async()=>{
+ const response=await handleGuideRequest(request('mars','What is the latest active mission at Mars?'),{DB:db,OPENAI_API_KEY:'server-secret'},{fetchImpl:provider({segments:[{text:'A mission is active.'}],citationIds:['https://made-up.example/source']}),reserve:allowed,retrieve:async()=>({status:'unavailable',note:'Unavailable.',evidence:[]})});
+ const result=await response.json();assert.equal(result.mode,'local');assert.equal(result.fallbackReason,'invalid_model_output');
 });
 test('provider failure returns deterministic Local guide without retry',async()=>{
  let calls=0;

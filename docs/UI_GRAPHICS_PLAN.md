@@ -14,7 +14,7 @@ Verification: 61 tests/build/lint pass after fixing the stale Step 16 `setAnswer
 
 The owner review exposed four presentation regressions. Canvas Saturn now raises sphere raster detail only for a large close-up and slightly lifts its compatibility-only night-side floor. The time-rate picker is a stable native selector, including the two lower timelapse entries. The permanent small-body legend is replaced by a labelled info disclosure beside Small-body regions; the same representative-marker and exaggeration warning remains available on click/tap. Static desktop spacecraft status and control hints are removed, while mobile flight mode retains its contextual status. The brand reads `STEP 17`. Production build, lint and 62 tests pass; physical-device and full-WebGL visual checks remain part of V1.2 QA.
 
-## Step 18 correction — implemented
+## September 2026 mobile input maintenance correction — implemented
 
 Owner iPhone evidence showed the mobile catalogue search retaining a vertical-centering transform after safe-area placement, leaving it clipped and unusable above the keyboard. The dialog is now top-anchored, constrained to a keyboard-safe internal result viewport, and remains horizontally centered. The guide's question field and the catalogue search input use 16px mobile text, preventing iOS Safari's automatic page zoom that could place the sheet exit out of reach. Production build, lint and 63 tests pass. Full physical-device confirmation remains part of V1.2 QA.
 

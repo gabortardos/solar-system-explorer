@@ -27,10 +27,14 @@ test('missing position and unsupported subject are explicit',()=>{
 });
 test('provider output allows natural prose but refuses unsupported exact values and fabricated citations',()=>{
  const evidence=answerContextGuide(buildGuideContext('earth',nav),'gravity').evidence;
- assert.equal(validateExplanation({segments:[{evidenceId:'radius'}]},evidence),true);
- assert.equal(validateExplanation({segments:[{text:'Yes. Dogs live on Earth alongside people, and they have done so for a very long time.'}]},evidence),true);
- assert.equal(validateExplanation({segments:[{text:'One reason Mars looks red is iron-rich dust on its surface.'}]},evidence),true);
- for(const segments of [[{text:'Radius is 42 km'}],[{text:'forty million miles'}],[{text:'Jupiter has ninety moons.'}],[{evidenceId:'invented'}]])assert.equal(validateExplanation({segments},evidence),false);
+ assert.equal(validateExplanation({segments:[{evidenceId:'radius'}],citationIds:['radius']},evidence),true);
+ assert.equal(validateExplanation({segments:[{text:'Yes. Dogs live on Earth alongside people, and they have done so for a very long time.'}],citationIds:[]},evidence),true);
+ assert.equal(validateExplanation({segments:[{text:'One reason Mars looks red is iron-rich dust on its surface.'}],citationIds:[]},evidence),true);
+ for(const segments of [[{text:'Radius is 42 km'}],[{text:'forty million miles'}],[{text:'Jupiter has ninety moons.'}],[{evidenceId:'invented'}]])assert.equal(validateExplanation({segments,citationIds:[]},evidence),false);
+ assert.equal(validateExplanation({segments:[{text:'A made-up source says so.'}],citationIds:['invented']},evidence),false);
+ const external={id:'external-mars',label:'NASA Mars status',value:'NASA has four active missions at Mars.',quality:'authoritative external snapshot',note:'Retrieved.',sources:[{title:'NASA Mars',url:'https://science.nasa.gov/mars/'}],sourceClass:'authoritative-external'};
+ assert.equal(validateExplanation({segments:[{text:'NASA reports four active missions at Mars.'}],citationIds:['external-mars']},[...evidence,external]),true);
+ assert.equal(validateExplanation({segments:[{text:'NASA reports five active missions at Mars.'}],citationIds:['external-mars']},[...evidence,external]),false);
  assert.throws(()=>answerContextGuide(buildGuideContext('earth',nav),'x'.repeat(601)));
 });
 test('explicit named world resolves without answering for the wrong selection',()=>{

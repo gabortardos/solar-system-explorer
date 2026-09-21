@@ -10,7 +10,9 @@ This is the fast handoff for **what exists now**. The repository and deployed ap
 
 Step 17 — **CONNECT THE LIVE AI** is complete and published. The Astronomy Guide uses server-side `gpt-5.6-luna` with D1-backed rate/budget reservations, strict structured-output validation, request-time context resolution, evidence/citation separation and deterministic Local guide fallback. Its two-class trust policy now allows natural qualitative and common-knowledge explanations while keeping exact measurements, calculated distances and scene state tied to trusted structured evidence. `OPENAI_API_KEY` remains a Sites secret. See `docs/AI_GUIDE.md`.
 
-Step 18 mobile input correction remains complete: search is an anchored, bounded sheet above the keyboard rather than a vertically centered dialog, and mobile text fields use 16px text so iOS does not zoom the page. The brand displays the latest completed development step. Travel visibility choreography remains the next checkpoint. See `docs/UI_GRAPHICS_PLAN.md`; Milky Way/surface-depth ideas are proposals only.
+Step 18 — **AI SOURCE AND FACT CHECKING** is **in final production acceptance**. The implementation is published: project-structured data remains first, current/mission questions may retrieve one server-selected NASA/ESA/JPL/USGS source after D1 reservation, citation IDs are validated, source conflicts preserve project values, and uncertainty is explicit. Production proved NASA retrieval works; one post-fix paid current-mission answer remains after the paid-call allowance resets. See `docs/STEP_18_CHECKPOINT.md`.
+
+The earlier work previously called “Step 18 mobile input correction” is reclassified as the **September 2026 mobile input maintenance correction**. Its behavior remains complete: mobile search is keyboard-safe and text inputs prevent iOS auto-zoom. It is not an official numbered roadmap milestone.
 
 Step 16's request-time context/evidence foundation remains the deterministic fallback beneath the completed Step 17 live connection. Step 15 was published as Site version 15; its source/live mismatch was resolved.
 
@@ -18,7 +20,7 @@ Step 15 — **ASTEROID BELT AND KUIPER BELT VISUALIZATION** adds renderer-only r
 
 Latest verification:
 
-- Production build, lint and all 79 automated tests pass. Live-guide natural-answer, numerical grounding, integration, security and cost contracts plus Step 18 source/interaction contracts are covered; full WebGL and physical-device appearance QA remain open.
+- Production build, lint and all 86 automated tests pass. Live-guide natural answers, numerical grounding, authoritative retrieval, uncertainty, conflict handling, citation integrity, security and cost contracts are covered; full WebGL and physical-device appearance QA remain open.
 - Tests cover catalogue integrity, every activated moon's parent-relative source-ellipse bounds, explicit illustrative-quality metadata, scale ordering, distances, clock behavior, rendering contracts, mobile HUD and bounded search.
 - Desktop compatibility-renderer QA passed for Io/Jupiter search and focus, moon orbit toggling, Charon's information-only panel and application console errors.
 - Full WebGL and physical-device mobile QA remain open.
@@ -35,7 +37,7 @@ Latest verification:
 - Exploration Scale and Scientific Scale; displayed scientific measurements always use uncompressed canonical data.
 - Optional planetary and relevant moon-system orbit paths.
 - UTC simulation clock with pause, real time, 10×, 100×, 1,000×, 1 day/second and 30 days/second.
-- Live Astronomy Guide using `gpt-5.6-luna`, natural qualitative/general-knowledge prose, selectively displayed structured evidence and citations, plus deterministic Local guide fallback. Exact and scene-dependent values remain application-owned; unsupported precise values are not invented.
+- Live Astronomy Guide using `gpt-5.6-luna`, natural qualitative/general-knowledge prose, selectively displayed project/retrieved evidence and validated citations, plus deterministic Local guide fallback. Exact and scene-dependent values remain application-owned; current facts use bounded official-source retrieval when required.
 - Canvas compatibility renderer when WebGL is unavailable.
 - Optional small-body region layer with four bounded point draws, centralized scale projection, camera-relative precision and an accessible on-demand disclosure beside its view control. A dedicated Small-body regions view frames the Asteroid Belt, Jupiter Trojan regions and Kuiper Belt in either scale.
 - V1.2 flight smoothing is now implemented: translation accelerates and decelerates with frame-rate-independent response, combined axes are normalized, arrow-key steering eases in and out, collision correction removes inward drift, and brake/focus/overview transitions clear residual motion.
@@ -48,7 +50,7 @@ Latest verification:
 - Physical, orbital, calculated position, dynamic result and educational layers remain separate.
 - `app/scale.ts` owns presentation scale. `app/render-space.ts` performs camera-relative Float64-to-Float32 projection only at render time.
 - `app/search.ts`, `app/object-information.tsx` and `app/distance-comparison.tsx` remain reusable provider/presenter boundaries.
-- D1 is used only for atomic Live Guide quota/budget accounting. There is no product authentication, analytics or runtime astronomy API.
+- D1 is used only for atomic Live Guide quota/budget accounting. Bounded server-side reads from allowlisted official science pages support current guide questions; there is no product authentication or analytics.
 
 ## Data and position systems
 
@@ -90,7 +92,7 @@ Latest verification:
 
 ## Current milestone and next task
 
-**Current delivered increments:** Step 17 — Live AI connection, and Step 18 — mobile search and guide input correction. **Still open:** V1.2 flight/device QA.
+**Current delivered increment:** Step 17 — Live AI connection. **In final acceptance:** Step 18 — AI source and fact checking. **Still open afterward:** V1.2 flight/device QA. The mobile search/guide input fix is preserved as September 2026 maintenance, not a numbered milestone.
 
 Step 15 is implemented and verified in source. The current unfinished work returns to body-aware assisted-arrival review, full WebGL/physical-device mobile QA (including population sparsity in both scales), and evidence-led bundle/startup and shadow-cost measurement. Do not claim release confidence until those checks are complete.
 
