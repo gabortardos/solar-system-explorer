@@ -1,6 +1,6 @@
 # STEP 18 CHECKPOINT — AI SOURCE AND FACT CHECKING
 
-Status: **IN PROGRESS — implementation complete, one production acceptance call pending**
+Status: **COMPLETE — implementation, production acceptance, publication and continuity sync complete**
 
 Date: 2026-09-21 UTC
 
@@ -23,7 +23,10 @@ Date: 2026-09-21 UTC
 - Production question: “What is the latest active mission at Mars?”
 - Result: NASA retrieval succeeded with a real retrieval date, but model output was rejected by the old all-numbers validator and safely returned Local guide.
 - Root cause fixed: model-written numeric phrases are now accepted only when the exact phrase appears in cited authoritative external evidence. Uncited numbers and project measurement prose remain blocked.
-- The corrected validator is covered by targeted tests and is published in the next Site version.
+- The corrected validator is covered by targeted tests and was published in Site version 28.
+- Final production acceptance on 2026-09-21 returned HTTP 200 with `mode: live` and `external.status: retrieved`.
+- The returned evidence used `sourceClass: authoritative-external` and the actually retrieved NASA Mars URL: `https://science.nasa.gov/mars/`.
+- The answer separated current NASA-sourced mission status from project context and contained no fabricated URL or unsupported precise value.
 
 ## Files changed
 
@@ -42,29 +45,21 @@ Date: 2026-09-21 UTC
 - `KNOWN_ISSUES.md`
 - `docs/UI_GRAPHICS_PLAN.md`
 
-## Remaining test
+## Final acceptance
 
-After the paid-call allowance resets, make exactly one production request with Mars selected:
+Mars selected: `What is the latest active mission at Mars?`
 
-`What is the latest active mission at Mars?`
-
-Pass criteria:
-
-- `mode` is `live`;
-- `external.status` is `retrieved`;
-- at least one returned evidence card has `sourceClass: authoritative-external`;
-- its URL is the actually retrieved NASA Mars URL;
-- the answer distinguishes current sourced facts from project-curated context;
-- no fabricated URL or unsupported precise value appears.
-
-If it passes, update `docs/AI_GUIDE.md`, `PROJECT_STATE.md`, `ROADMAP.md` and this checkpoint to **COMPLETE**, then publish and sync the documentation-only closeout. If it fails, inspect the recorded fallback reason, fix only that issue, rerun targeted guide tests, and repeat one paid call only when allowed.
+- Live response: PASS
+- Authoritative retrieval: PASS
+- Actual NASA citation: PASS
+- Source-class integrity: PASS
+- Fact/context separation: PASS
+- No fabricated URL or unsupported precision: PASS
 
 ## Known blocker
 
-The explicit real-paid-request ceiling has been reached. Do not bypass it or change network identity/rate controls.
+None for Step 18.
 
 ## Exact next action
 
-Repeat the single Mars current-mission production request after the paid-call allowance resets.
-
-Recommended continuation model: **Sol High / high reasoning**, because the remaining work is a narrow production-validation and evidence-integrity check, not an architecture redesign.
+None. Step 18 is complete. Do not start Step 19 unless separately requested.

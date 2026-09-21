@@ -1,6 +1,6 @@
 # Steps 17–18 — Live Astronomy Guide and Source Verification
 
-Status: **Step 17 complete; Step 18 in final production acceptance** on 2026-09-21. The Step 18 implementation is published, but one paid current-mission answer must be repeated after the paid-call allowance resets. See `docs/STEP_18_CHECKPOINT.md`.
+Status: **Steps 17 and 18 complete and published** on 2026-09-21. Production uses `gpt-5.6-luna` through the OpenAI Responses API, bounded authoritative-source retrieval and a deterministic Local guide fallback.
 
 ## Request and trust boundary
 
@@ -85,4 +85,4 @@ Automated checks cover provider failure, timeout, malformed/model-invalid output
 
 The natural-answer update adds targeted coverage for Earth dogs, Mars color, Europa habitability, Jupiter's moons, jumping on the Moon and the current modeled Mars–Earth distance. Qualitative answers can be AI-composed without irrelevant cards; the distance answer must cite `body-distance`, and unsupported exact numbers still fail validation to the deterministic Local guide. The production UI keeps the answer first and places grounding details under **Sources & data**.
 
-Step 18 acceptance adds project-authoritative radius, contextual distance, current Mars mission retrieval, scientific uncertainty, synthetic source conflict, citation-integrity, retrieval-failure and fallback coverage. Production confirmed that the allowlisted NASA retrieval succeeds. Its first model answer fell back because the Step 17 validator rejected a cited current-source number; the validator now permits an exact numeric phrase only when it appears in cited authoritative external evidence. Build, lint and all 86 tests pass. One post-fix paid production repetition remains.
+Step 18 acceptance adds project-authoritative radius, contextual distance, current Mars mission retrieval, scientific uncertainty, synthetic source conflict, citation-integrity, retrieval-failure and fallback coverage. The final production request, “What is the latest active mission at Mars?”, returned `mode: live`, `external.status: retrieved`, and an `authoritative-external` evidence record whose URL was the actually retrieved NASA Mars page. The answer kept current NASA facts separate from project context and contained no fabricated URL or unsupported precise value. The earlier all-numbers validator issue remains fixed by allowing a numeric phrase only when it appears exactly in cited authoritative external evidence. Build, lint and all 86 tests pass.

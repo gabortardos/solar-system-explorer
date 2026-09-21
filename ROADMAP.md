@@ -180,14 +180,14 @@ Status: completed and published on 2026-09-21.
 
 ### Step 18 — AI SOURCE AND FACT CHECKING
 
-Status: implementation published; final production acceptance pending on 2026-09-21.
+Status: completed and published on 2026-09-21.
 
 - Added the enforced hierarchy: project-structured data → authoritative external evidence → model general knowledge.
 - Added one-source, allowlisted, server-side retrieval for current/mission questions after D1 quota reservation, with strict timeout, response-size and excerpt limits.
 - Added validated citation IDs, actual retrieved URLs/dates, source-class labels, retrieval-failure disclosure and explicit uncertainty instructions.
 - Added conflict detection for overlapping typed claims; project values remain authoritative until a separate dataset review.
 - Preserved natural conversation, server-only secrets, all Step 17 cost/rate/output limits and deterministic Local fallback.
-- Automated acceptance covers structured radius, contextual distance, qualitative/general knowledge, habitability, current Mars missions, uncertainty, source conflict, citation integrity and failure fallback. Production confirmed allowlisted NASA retrieval; repeat one current-Mars-mission paid answer after the call allowance resets, then mark complete. Build/lint and all 86 tests pass. See `docs/STEP_18_CHECKPOINT.md`.
+- Automated acceptance covers structured radius, contextual distance, qualitative/general knowledge, habitability, current Mars missions, uncertainty, source conflict, citation integrity and failure fallback. Final production acceptance returned a Live AI current-Mars-mission answer grounded in the actually retrieved NASA Mars source, with no fabricated citation or unsupported precise value. Build/lint and all 86 tests pass. See `docs/AI_GUIDE.md`.
 
 ### V1.2 — Flight and navigation quality
 

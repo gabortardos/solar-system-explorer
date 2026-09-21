@@ -10,7 +10,7 @@ This is the fast handoff for **what exists now**. The repository and deployed ap
 
 Step 17 — **CONNECT THE LIVE AI** is complete and published. The Astronomy Guide uses server-side `gpt-5.6-luna` with D1-backed rate/budget reservations, strict structured-output validation, request-time context resolution, evidence/citation separation and deterministic Local guide fallback. Its two-class trust policy now allows natural qualitative and common-knowledge explanations while keeping exact measurements, calculated distances and scene state tied to trusted structured evidence. `OPENAI_API_KEY` remains a Sites secret. See `docs/AI_GUIDE.md`.
 
-Step 18 — **AI SOURCE AND FACT CHECKING** is **in final production acceptance**. The implementation is published: project-structured data remains first, current/mission questions may retrieve one server-selected NASA/ESA/JPL/USGS source after D1 reservation, citation IDs are validated, source conflicts preserve project values, and uncertainty is explicit. Production proved NASA retrieval works; one post-fix paid current-mission answer remains after the paid-call allowance resets. See `docs/STEP_18_CHECKPOINT.md`.
+Step 18 — **AI SOURCE AND FACT CHECKING** is complete and published. Project-structured data remains first, current/mission questions may retrieve one server-selected NASA/ESA/JPL/USGS source after D1 reservation, citation IDs are validated, source conflicts preserve project values, and uncertainty is explicit. Final production acceptance returned a Live AI answer for the current Mars-mission question with an actually retrieved NASA source and no fabricated citation or unsupported precise value. See `docs/AI_GUIDE.md`.
 
 The earlier work previously called “Step 18 mobile input correction” is reclassified as the **September 2026 mobile input maintenance correction**. Its behavior remains complete: mobile search is keyboard-safe and text inputs prevent iOS auto-zoom. It is not an official numbered roadmap milestone.
 
@@ -92,7 +92,7 @@ Latest verification:
 
 ## Current milestone and next task
 
-**Current delivered increment:** Step 17 — Live AI connection. **In final acceptance:** Step 18 — AI source and fact checking. **Still open afterward:** V1.2 flight/device QA. The mobile search/guide input fix is preserved as September 2026 maintenance, not a numbered milestone.
+**Current delivered increments:** Step 17 — Live AI connection, and Step 18 — AI source and fact checking. **Still open:** V1.2 flight/device QA. The mobile search/guide input fix is preserved as September 2026 maintenance, not a numbered milestone.
 
 Step 15 is implemented and verified in source. The current unfinished work returns to body-aware assisted-arrival review, full WebGL/physical-device mobile QA (including population sparsity in both scales), and evidence-led bundle/startup and shadow-cost measurement. Do not claim release confidence until those checks are complete.
 
