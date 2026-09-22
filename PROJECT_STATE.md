@@ -22,7 +22,7 @@ Step 15 — **ASTEROID BELT AND KUIPER BELT VISUALIZATION** adds renderer-only r
 
 Latest verification:
 
-- Production build, lint and all 86 automated tests pass. Live-guide natural answers, numerical grounding, authoritative retrieval, uncertainty, conflict handling, citation integrity, security and cost contracts are covered; full WebGL and physical-device appearance QA remain open.
+- Production build, lint and all 89 automated tests pass. Live-guide natural answers, numerical grounding, authoritative retrieval, uncertainty, conflict handling, citation integrity, owner/public quota behavior, server-derived usage/reset state and free local presets are covered; full WebGL and physical-device appearance QA remain open.
 - Tests cover catalogue integrity, every activated moon's parent-relative source-ellipse bounds, explicit illustrative-quality metadata, scale ordering, distances, clock behavior, rendering contracts, mobile HUD and bounded search.
 - Desktop compatibility-renderer QA passed for Io/Jupiter search and focus, moon orbit toggling, Charon's information-only panel and application console errors.
 - Full WebGL and physical-device mobile QA remain open.
