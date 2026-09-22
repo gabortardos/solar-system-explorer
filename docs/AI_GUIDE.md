@@ -13,7 +13,7 @@ Status: **Steps 17 and 18 complete and published** on 2026-09-21. Production use
 7. Strict JSON output may contain natural qualitative text, structured-value references and citation IDs. Citation IDs must match evidence actually supplied by the server. The server rejects unsupported numerical prose, URLs, invented/unknown citations, malformed JSON and oversized output.
 8. The browser receives the answer and only the evidence records materially referenced by that answer, never `OPENAI_API_KEY`. A visible badge identifies `Live AI` or `Local guide`.
 
-`GET /api/guide` is a non-paid health check. It reports the model, provider configuration, D1 readiness and bounded retrieval mode; it never returns the secret.
+`GET /api/guide` is a non-paid health check. It reports the model, provider configuration, D1 readiness, bounded retrieval mode and the current viewer's safe quota summary; it never returns the secret, viewer hash, network address or database details.
 
 ## Contextual-reference policy
 
@@ -48,16 +48,26 @@ External source titles, URLs and retrieval dates come from the retrieval result,
 
 ## Cost and abuse controls
 
+Development policy: the project owner may sign in through the Site's platform-owned ChatGPT sign-in flow. The Worker compares the trusted server-injected authenticated email with a server-only owner setting. Matching owner requests bypass per-viewer and global request-count ceilings, but they are still inserted into D1, reserve the same worst-case cost, and remain subject to rolling/lifetime application budgets and the OpenAI project hard limit. No IP whitelist or browser secret is used.
+
+Current public policy: anonymous and non-owner visitors receive 10 Live AI reservations per minute and 50 per rolling 24 hours. Public traffic remains subject to the global and monetary protections below. Developer rows are recorded with a one-way identity hash and excluded only from public/global request-count calculations.
+
+The guide shows the public viewer's current rolling count from the same D1 rows used by reservation enforcement, refreshes it after each server request and shows the server-calculated minute/day availability time when a viewer limit is reached. The authenticated owner instead sees **Developer access · no request-count limit**. Limit fallbacks remain usable Local-guide answers, but the visible notice makes the reason and retry timing explicit.
+
+The displayed preset question buttons are explicitly routed to the deterministic Local guide in the browser. They make no `/api/guide` request, reserve no D1 row, consume no public Live AI allowance and perform no external retrieval. User-written questions continue through the Live AI boundary. A future preset that genuinely requires current information must be deliberately configured for the live route rather than inferred from its wording.
+
 - Request body: 6,000 UTF-8 bytes maximum.
 - Question: 600 characters maximum.
 - Estimated provider input: 2,000 tokens maximum.
 - Provider output: 400 tokens maximum.
 - Timeout: 10 seconds; no automatic paid retry.
-- Per network address: 2 reservations per minute and 10 per rolling 24 hours.
-- Global: 5 per minute, 100 per rolling 24 hours and 1,000 per rolling 31 days.
+- Per public network address: 10 reservations per minute and 50 per rolling 24 hours.
+- Global public traffic: 10 per minute, 100 per rolling 24 hours and 1,000 per rolling 31 days.
 - Reservation: $0.002 worst-case per attempted provider call.
 - Application caps: $2 rolling 31 days and $4 lifetime reserved spend.
 - The separate OpenAI project has the owner-configured $5 hard spend limit.
+
+Future policy: the temporary owner/public distinction will be replaced by user-account, membership and subscription-based limits when those product systems are deliberately introduced.
 
 `drizzle/0000_guide_limits.sql` creates `guide_requests`, `guide_budget_totals`, indexes and the `guide_requests_budget_insert` trigger. A single conditional insert reserves quota atomically. Duplicate request UUIDs are blocked. Failed, timed-out and invalid responses retain their reservation so failures cannot bypass the budget.
 
@@ -80,6 +90,8 @@ Published production checks passed for:
 - Earth — “How does this compare with Mars?” (`Live AI` after bounding comparison output)
 
 The production database recorded 10 provider requests during implementation and acceptance: 7 final successful answer categories plus 3 safe-fallback diagnostics used to correct comparison output. The conservative approved per-request estimate places total OpenAI API cost below $0.009; D1 reserved $0.020 of application budget. A subsequent request returned `Local guide` with `viewer_day` before any provider call, confirming the deployed daily limit.
+
+Post-Step-18 diagnosis confirmed that repeated Local-guide responses were caused by the former 10-per-day public viewer ceiling, not an OpenAI or D1 failure. The public policy was raised to 10/minute and 50/rolling-day, authenticated owner development access was added without weakening monetary controls, and the UI now exposes D1-backed usage/reset state. Local presets are the explicit free path and leave that counter unchanged.
 
 Automated checks cover provider failure, timeout, malformed/model-invalid output, oversized requests, rate refusal, application-budget refusal, one-call/no-retry behavior, key non-disclosure, reference resolution and structured two-object evidence.
 

@@ -1,5 +1,12 @@
 # Solar System Explorer — Decision Record
 
+## D037 — Authenticated owner development access preserves monetary safety (2026-09-21)
+
+- **Decision:** Use the Site platform's server-injected authenticated email to recognize the configured project owner. Owner requests bypass viewer and global request-count ceilings, but remain D1-recorded, cost-reserved and subject to all application/OpenAI monetary caps. Public visitors receive 10 requests/minute and 50/rolling-day; public global limits remain 10/minute, 100/day and 1,000/31-days.
+- **Reason:** The former 10/day viewer ceiling correctly caused Local-guide fallback but blocked legitimate owner development despite negligible spend. Platform authentication is safer than an IP allowlist or client secret.
+- **Impact:** The guide exposes a compact platform-owned owner sign-in. Developer rows use a one-way identity hash and do not consume public/global request-count capacity. Public viewers see a safe D1-backed rolling count and reset notice. Explicit preset buttons stay on the deterministic free path and therefore do not reserve quota; typed questions use Live AI. This is a temporary pre-account policy.
+- **Preserve:** Never bypass rolling/lifetime budget caps, the OpenAI project hard limit, D1 recording, provider failure fallback or API-key secrecy. Replace this temporary distinction with explicit account/membership/subscription limits when those systems are built.
+
 ## D036 — Layered facts and bounded authoritative retrieval (2026-09-21)
 
 - **Decision:** Resolve guide answers through project-structured data first, one bounded server-selected authoritative external source second when freshness is required, and model general knowledge third for qualitative explanation. Validate every citation ID against supplied evidence and preserve project values when a typed external claim conflicts.

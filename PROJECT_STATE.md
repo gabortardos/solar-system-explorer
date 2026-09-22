@@ -12,6 +12,8 @@ Step 17 — **CONNECT THE LIVE AI** is complete and published. The Astronomy Gui
 
 Step 18 — **AI SOURCE AND FACT CHECKING** is complete and published. Project-structured data remains first, current/mission questions may retrieve one server-selected NASA/ESA/JPL/USGS source after D1 reservation, citation IDs are validated, source conflicts preserve project values, and uncertainty is explicit. Final production acceptance returned a Live AI answer for the current Mars-mission question with an actually retrieved NASA source and no fabricated citation or unsupported precise value. See `docs/AI_GUIDE.md`.
 
+Post-Step-18 Live Guide maintenance provides public visitors 10 requests per minute and 50 per rolling 24 hours. A compact D1-backed counter shows the real rolling allowance, refreshes after server requests and gives clear server-derived reset timing when a viewer limit is reached. Preset buttons explicitly use the free deterministic Local guide and do not call OpenAI, reserve D1 usage or change the counter; typed questions retain the Live path. The authenticated project owner has a server-verified request-count bypass for development/testing. Owner calls remain fully recorded and cost-reserved; the $2 rolling application cap, $4 lifetime application cap and separate OpenAI $5 hard limit remain active. A compact owner sign-in uses the platform-owned ChatGPT flow; there is no IP whitelist or client-side developer secret. Future accounts, memberships and subscriptions will replace this temporary access model.
+
 The earlier work previously called “Step 18 mobile input correction” is reclassified as the **September 2026 mobile input maintenance correction**. Its behavior remains complete: mobile search is keyboard-safe and text inputs prevent iOS auto-zoom. It is not an official numbered roadmap milestone.
 
 Step 16's request-time context/evidence foundation remains the deterministic fallback beneath the completed Step 17 live connection. Step 15 was published as Site version 15; its source/live mismatch was resolved.
@@ -37,7 +39,7 @@ Latest verification:
 - Exploration Scale and Scientific Scale; displayed scientific measurements always use uncompressed canonical data.
 - Optional planetary and relevant moon-system orbit paths.
 - UTC simulation clock with pause, real time, 10×, 100×, 1,000×, 1 day/second and 30 days/second.
-- Live Astronomy Guide using `gpt-5.6-luna`, natural qualitative/general-knowledge prose, selectively displayed project/retrieved evidence and validated citations, plus deterministic Local guide fallback. Exact and scene-dependent values remain application-owned; current facts use bounded official-source retrieval when required.
+- Live Astronomy Guide using `gpt-5.6-luna`, natural qualitative/general-knowledge prose, selectively displayed project/retrieved evidence and validated citations, plus deterministic Local guide fallback. Exact and scene-dependent values remain application-owned; current facts use bounded official-source retrieval when required. Public limits are 10/minute and 50/rolling-day with a D1-backed usage/reset display; authenticated owner development calls bypass request counts but not cost controls. Preset buttons are intentionally local/free, while typed questions use Live AI.
 - Canvas compatibility renderer when WebGL is unavailable.
 - Optional small-body region layer with four bounded point draws, centralized scale projection, camera-relative precision and an accessible on-demand disclosure beside its view control. A dedicated Small-body regions view frames the Asteroid Belt, Jupiter Trojan regions and Kuiper Belt in either scale.
 - V1.2 flight smoothing is now implemented: translation accelerates and decelerates with frame-rate-independent response, combined axes are normalized, arrow-key steering eases in and out, collision correction removes inward drift, and brake/focus/overview transitions clear residual motion.
@@ -50,7 +52,7 @@ Latest verification:
 - Physical, orbital, calculated position, dynamic result and educational layers remain separate.
 - `app/scale.ts` owns presentation scale. `app/render-space.ts` performs camera-relative Float64-to-Float32 projection only at render time.
 - `app/search.ts`, `app/object-information.tsx` and `app/distance-comparison.tsx` remain reusable provider/presenter boundaries.
-- D1 is used only for atomic Live Guide quota/budget accounting. Bounded server-side reads from allowlisted official science pages support current guide questions; there is no product authentication or analytics.
+- D1 is used only for atomic Live Guide quota/budget accounting. Bounded server-side reads from allowlisted official science pages support current guide questions. Platform-provided ChatGPT identity is used only to recognize the configured owner for development access; there is no app-owned authentication stack or analytics.
 
 ## Data and position systems
 

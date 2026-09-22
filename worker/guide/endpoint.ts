@@ -2,12 +2,12 @@ import {getBody} from '../../app/data/catalog';
 import {answerContextGuide,renderExplanationSegments,validateExplanation,type ExplanationSegments,type GuideResponse} from '../../app/guide-assistant';
 import {buildGuideContext,type GuideNavigation} from '../../app/guide-context';
 import {detectSourceConflicts,retrieveAuthoritativeEvidence,type ExternalRetrieval} from './authoritative-sources';
-import {finishGuideRequest,hashViewer,LIVE_GUIDE_LIMITS,LIVE_GUIDE_MODEL,reserveGuideRequest,type LimitResult} from './limits';
+import {finishGuideRequest,hashViewer,LIVE_GUIDE_LIMITS,LIVE_GUIDE_MODEL,readGuideQuotaState,reserveGuideRequest,type GuideQuotaState,type GuideReservationPolicy,type LimitResult} from './limits';
 
-export type GuideEnv={DB?:D1Database;OPENAI_API_KEY?:string};
+export type GuideEnv={DB?:D1Database;OPENAI_API_KEY?:string;GUIDE_OWNER_EMAIL?:string};
 type GuideRequestBody={requestId:string;question:string;selectedId:string;navigation:{atUtcMs:number;positionAU:[number,number,number]|null;basis:GuideNavigation['basis'];anchorId:string;note?:string}};
 type ProviderResult={output:unknown;usage:{inputTokens?:number;outputTokens?:number}};
-type EndpointDependencies={fetchImpl?:typeof fetch;externalFetchImpl?:typeof fetch;now?:()=>number;timeoutMs?:number;reserve?:(db:D1Database,requestId:string,viewerHash:string,nowMs:number)=>Promise<LimitResult>;retrieve?:(question:string,local:GuideResponse,fetchImpl:typeof fetch,nowMs:number)=>Promise<ExternalRetrieval>};
+type EndpointDependencies={fetchImpl?:typeof fetch;externalFetchImpl?:typeof fetch;now?:()=>number;timeoutMs?:number;reserve?:(db:D1Database,requestId:string,viewerHash:string,nowMs:number,policy?:GuideReservationPolicy)=>Promise<LimitResult>;retrieve?:(question:string,local:GuideResponse,fetchImpl:typeof fetch,nowMs:number)=>Promise<ExternalRetrieval>};
 
 const explanationSchema={
   type:'object',additionalProperties:false,required:['segments','citationIds'],properties:{
@@ -21,9 +21,20 @@ const explanationSchema={
 
 const jsonHeaders={'content-type':'application/json; charset=utf-8','cache-control':'no-store','x-content-type-options':'nosniff'};
 const uuidPattern=/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const authenticatedEmailHeader='oai-authenticated-user-email';
 
 function json(value:unknown,status=200){return new Response(JSON.stringify(value),{status,headers:jsonHeaders});}
 function requestError(message:string,status:number){return json({error:message},status);}
+function normalizedEmail(value:string|undefined|null){return value?.trim().toLowerCase()??'';}
+export function isGuideDeveloper(request:Request,env:GuideEnv):boolean{
+  const configured=normalizedEmail(env.GUIDE_OWNER_EMAIL);
+  return Boolean(configured)&&normalizedEmail(request.headers.get(authenticatedEmailHeader))===configured;
+}
+async function developerViewerHash(request:Request):Promise<string>{
+  const email=normalizedEmail(request.headers.get(authenticatedEmailHeader));
+  const bytes=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(`solar-guide-developer-v1:${email}`));
+  return `developer:${[...new Uint8Array(bytes)].slice(0,16).map(value=>value.toString(16).padStart(2,'0')).join('')}`;
+}
 function canonicalNavigation(value:GuideRequestBody['navigation']):GuideNavigation|null{
   if(!value||!Number.isFinite(value.atUtcMs)||value.atUtcMs<Date.UTC(1800,0,1)||value.atUtcMs>=Date.UTC(2050,0,1))return null;
   if(!['linear-camera','navigation-estimate','unavailable'].includes(value.basis))return null;
@@ -42,8 +53,8 @@ function parseBody(raw:string):GuideRequestBody|null{
   if(!navigation)return null;
   return {requestId:body.requestId,question:body.question,selectedId:body.selectedId,navigation};
 }
-function fallback(local:GuideResponse,reason:string):GuideResponse{
-  return {...local,evidence:local.evidence.filter(item=>item.sourceClass!=='authoritative-external'),mode:'local',fallbackReason:reason,contextNote:`${local.contextNote} Live AI was unavailable, so this answer used the deterministic Local guide.`};
+function fallback(local:GuideResponse,reason:string,quota?:GuideQuotaState):GuideResponse{
+  return {...local,evidence:local.evidence.filter(item=>item.sourceClass!=='authoritative-external'),mode:'local',fallbackReason:reason,quota,contextNote:`${local.contextNote} Live AI was unavailable, so this answer used the deterministic Local guide.`};
 }
 function providerText(value:unknown):string|null{
   if(!value||typeof value!=='object')return null;
@@ -99,7 +110,7 @@ async function callOpenAI(apiKey:string,question:string,local:GuideResponse,fetc
   }finally{clearTimeout(timer);}
 }
 
-export async function guideHealth(env:GuideEnv):Promise<Response>{
+export async function guideHealth(request:Request,env:GuideEnv):Promise<Response>{
   let tables=false,trigger=false;
   if(env.DB){
     try{
@@ -109,7 +120,13 @@ export async function guideHealth(env:GuideEnv):Promise<Response>{
       trigger=records.some(row=>row.name==='guide_requests_budget_insert'&&row.type==='trigger');
     }catch{/* Report unavailable without exposing diagnostics or secrets. */}
   }
-  return json({service:'astronomy-guide',status:env.OPENAI_API_KEY&&tables&&trigger?'ready':'local-only',model:LIVE_GUIDE_MODEL,providerConfigured:Boolean(env.OPENAI_API_KEY),database:{binding:'DB',tables,trigger},externalRetrieval:{mode:'allowlisted-authoritative-only',maxSourcesPerQuestion:1}});
+  const authenticated=Boolean(request.headers.get(authenticatedEmailHeader));
+  const developer=isGuideDeveloper(request,env);
+  let quota:GuideQuotaState|undefined;
+  if(env.DB&&tables){
+    try{quota=await readGuideQuotaState(env.DB,developer?await developerViewerHash(request):await hashViewer(request),Date.now(),developer);}catch{/* Keep health safe and useful if quota telemetry is temporarily unavailable. */}
+  }
+  return json({service:'astronomy-guide',status:env.OPENAI_API_KEY&&tables&&trigger?'ready':'local-only',model:LIVE_GUIDE_MODEL,providerConfigured:Boolean(env.OPENAI_API_KEY),database:{binding:'DB',tables,trigger},access:{authenticated,developer},quota,limits:{public:{perMinute:LIVE_GUIDE_LIMITS.viewerPerMinute,rolling24Hours:LIVE_GUIDE_LIMITS.viewerPerDay},developerRequestCountBypass:true},externalRetrieval:{mode:'allowlisted-authoritative-only',maxSourcesPerQuestion:1}});
 }
 
 export async function handleGuideRequest(request:Request,env:GuideEnv,deps:EndpointDependencies={}):Promise<Response>{
@@ -129,10 +146,11 @@ export async function handleGuideRequest(request:Request,env:GuideEnv,deps:Endpo
   if(!env.OPENAI_API_KEY)return json(fallback(local,'provider_not_configured'));
   if(!env.DB)return json(fallback(local,'database_unavailable'));
 
-  const viewerHash=await hashViewer(request);
+  const developer=isGuideDeveloper(request,env);
+  const viewerHash=developer?await developerViewerHash(request):await hashViewer(request);
   const reserve=deps.reserve??reserveGuideRequest;
-  const limit=await reserve(env.DB,body.requestId,viewerHash,(deps.now??Date.now)());
-  if(!limit.allowed)return json(fallback(local,limit.reason));
+  const limit=await reserve(env.DB,body.requestId,viewerHash,(deps.now??Date.now)(),{bypassRequestCounts:developer});
+  if(!limit.allowed)return json(fallback(local,limit.reason,limit.quota));
 
   try{
     const nowMs=(deps.now??Date.now)();
@@ -142,20 +160,20 @@ export async function handleGuideRequest(request:Request,env:GuideEnv,deps:Endpo
     const provider=await callOpenAI(env.OPENAI_API_KEY,question,grounded,deps.fetchImpl??fetch,deps.timeoutMs??LIVE_GUIDE_LIMITS.timeoutMs);
     if(!validateExplanation(provider.output,grounded.evidence)){
       await finishGuideRequest(env.DB,body.requestId,'invalid_output',provider.usage,'invalid_output');
-      return json(fallback(grounded,'invalid_model_output'));
+      return json(fallback(grounded,'invalid_model_output',limit.quota));
     }
     const validated=provider.output as ExplanationSegments;
     const explanation=renderExplanationSegments(validated,grounded.evidence);
     if(!explanation){
       await finishGuideRequest(env.DB,body.requestId,'invalid_output',provider.usage,'empty_output');
-      return json(fallback(grounded,'invalid_model_output'));
+      return json(fallback(grounded,'invalid_model_output',limit.quota));
     }
     const usedEvidenceIds=new Set([...validated.citationIds,...validated.segments.flatMap(segment=>'evidenceId' in segment?[segment.evidenceId]:[])]);
     await finishGuideRequest(env.DB,body.requestId,'succeeded',provider.usage);
-    return json({...grounded,explanation,evidence:grounded.evidence.filter(item=>usedEvidenceIds.has(item.id)),mode:'live',model:LIVE_GUIDE_MODEL});
+    return json({...grounded,explanation,evidence:grounded.evidence.filter(item=>usedEvidenceIds.has(item.id)),mode:'live',model:LIVE_GUIDE_MODEL,quota:limit.quota});
   }catch(error){
     const code=error instanceof Error?error.message:'provider_error';
     await finishGuideRequest(env.DB,body.requestId,code==='provider_timeout'?'timeout':'provider_error',undefined,code.slice(0,80));
-    return json(fallback(local,code));
+    return json(fallback(local,code,limit.quota));
   }
 }

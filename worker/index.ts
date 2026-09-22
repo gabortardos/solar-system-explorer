@@ -7,6 +7,7 @@ interface Env {
   ASSETS: Fetcher;
   DB?: D1Database;
   OPENAI_API_KEY?: string;
+  GUIDE_OWNER_EMAIL?: string;
   IMAGES: {
     input(stream: ReadableStream): {
       transform(options: Record<string, unknown>): {
@@ -32,7 +33,7 @@ const worker = {
     const url = new URL(request.url);
 
     if (url.pathname === "/api/guide") {
-      if (request.method === "GET") return guideHealth(env);
+      if (request.method === "GET") return guideHealth(request, env);
       if (request.method === "POST") return handleGuideRequest(request, env);
       return Response.json(
         { error: "Method not allowed." },

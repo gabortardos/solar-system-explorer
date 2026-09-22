@@ -11,7 +11,8 @@ export type GuideEvidence={id:string;label:string;value:string;quality:string;no
 export type GuideResolution={selectedId:string|null;subjectId:string|null;subjectName:string;comparisonId:string|null;interpretation:string};
 export type GuideExternalStatus='not-needed'|'retrieved'|'unavailable'|'unsupported';
 export type GuideSourceConflict={claimKey:string;projectEvidenceId:string;externalEvidenceId:string;note:string};
-export type GuideResponse={subject:string;atUtcMs:number;explanation:string;evidence:GuideEvidence[];contextNote:string;mode:'local'|'live';resolution:GuideResolution;model?:string;fallbackReason?:string;external?:{status:GuideExternalStatus;note:string;retrievedAt?:string};sourceConflicts?:GuideSourceConflict[]};
+export type GuideQuotaState={developer:boolean;public:{minuteUsed:number;minuteLimit:number;rolling24HoursUsed:number;rolling24HoursLimit:number;minuteResetAt:number|null;rolling24HoursResetAt:number|null}|null};
+export type GuideResponse={subject:string;atUtcMs:number;explanation:string;evidence:GuideEvidence[];contextNote:string;mode:'local'|'live';resolution:GuideResolution;model?:string;fallbackReason?:string;external?:{status:GuideExternalStatus;note:string;retrievedAt?:string};sourceConflicts?:GuideSourceConflict[];quota?:GuideQuotaState};
 export const GUIDE_LIMITS={questionCharacters:600,evidenceItems:12,nearby:5,paidEnabled:true} as const;
 export type ExplanationSegments={segments:({text:string}|{evidenceId:string})[];citationIds:string[]};
 

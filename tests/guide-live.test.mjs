@@ -7,8 +7,9 @@ const vite=await createServer({configFile:false,server:{middlewareMode:true},app
 after(()=>vite.close());
 const {buildGuideContext}=await vite.ssrLoadModule('/app/guide-context.ts');
 const {answerContextGuide}=await vite.ssrLoadModule('/app/guide-assistant.ts');
-const {handleGuideRequest}=await vite.ssrLoadModule('/worker/guide/endpoint.ts');
+const {guideHealth,handleGuideRequest}=await vite.ssrLoadModule('/worker/guide/endpoint.ts');
 const {retrieveAuthoritativeEvidence}=await vite.ssrLoadModule('/worker/guide/authoritative-sources.ts');
+const {LIVE_GUIDE_LIMITS,readGuideQuotaState,reserveGuideRequest}=await vite.ssrLoadModule('/worker/guide/limits.ts');
 
 const nav={atUtcMs:Date.UTC(2026,8,21),positionAU:[1,0,0],basis:'navigation-estimate',anchorId:'earth',note:'untrusted client note',selectedMinor:null};
 const allowed=async()=>({allowed:true,reason:'reserved'});
@@ -21,6 +22,20 @@ function request(selectedId,question,extra={}){
 function provider(output={segments:[{text:'The structured evidence supports this answer.'},{evidenceId:'habitability'}],citationIds:[]}){
  const normalized={citationIds:[],...output};
  return async()=>new Response(JSON.stringify({output:[{type:'message',content:[{type:'output_text',text:JSON.stringify(normalized)}]}],usage:{input_tokens:420,output_tokens:32}}),{status:200,headers:{'content-type':'application/json'}});
+}
+function quotaDb(stats,inserted=true){
+ return {
+  prepare(sql){return {
+   bind(){return {
+    async first(){
+     if(sql.startsWith('SELECT request_id'))return null;
+     if(sql.includes('AS viewer_minute'))return stats;
+     if(sql.startsWith('INSERT INTO guide_requests'))return inserted?{request_id:'reserved'}:null;
+     return null;
+    },
+   };},
+  };},
+ };
 }
 
 test('here resolves to the captured selected planet',()=>{
@@ -56,6 +71,32 @@ test('live endpoint calls Responses API once without sending the API key in its 
  const result=await response.json();
  assert.equal(response.status,200);assert.equal(result.mode,'live');assert.equal(result.model,'gpt-5.6-luna');assert.equal(calls,1);assert.doesNotMatch(captured,/server-secret/);
  assert.match(captured,/ordinary general scientific knowledge/);
+});
+test('authenticated owner bypasses request counts while public and monetary limits remain enforced',async()=>{
+ assert.equal(LIVE_GUIDE_LIMITS.viewerPerMinute,10);assert.equal(LIVE_GUIDE_LIMITS.viewerPerDay,50);assert.equal(LIVE_GUIDE_LIMITS.globalPerMinute,10);
+ assert.equal(LIVE_GUIDE_LIMITS.rolling31DayMicrousd,2_000_000);assert.equal(LIVE_GUIDE_LIMITS.lifetimeMicrousd,4_000_000);
+ const saturated={viewer_minute:10,viewer_day:50,global_minute:10,global_day:100,global_month:1_000,rolling_cost:0,lifetime_cost:0};
+ assert.equal((await reserveGuideRequest(quotaDb(saturated),'public-request','public-hash',Date.now())).reason,'viewer_minute');
+ assert.equal((await reserveGuideRequest(quotaDb(saturated),'developer-request','developer:owner-hash',Date.now(),{bypassRequestCounts:true})).allowed,true);
+ assert.equal((await reserveGuideRequest(quotaDb(saturated),'forged-bypass','public-hash',Date.now(),{bypassRequestCounts:true})).allowed,false);
+ const budgetFull={...saturated,rolling_cost:LIVE_GUIDE_LIMITS.rolling31DayMicrousd};
+ assert.equal((await reserveGuideRequest(quotaDb(budgetFull),'developer-budget','developer:owner-hash',Date.now(),{bypassRequestCounts:true})).reason,'rolling_budget');
+
+ const ownerRequest=request('mars','Could I live here?');ownerRequest.headers.set('oai-authenticated-user-email','owner@example.com');
+ let ownerPolicy,ownerViewerHash='';
+ const response=await handleGuideRequest(ownerRequest,{DB:db,OPENAI_API_KEY:'server-secret',GUIDE_OWNER_EMAIL:'OWNER@example.com'},{fetchImpl:provider(),reserve:async(_db,_id,viewerHash,_now,policy)=>{ownerViewerHash=viewerHash;ownerPolicy=policy;return allowed();}});
+ assert.equal((await response.json()).mode,'live');assert.match(ownerViewerHash,/^developer:/);assert.equal(ownerPolicy.bypassRequestCounts,true);
+ const health=await guideHealth(ownerRequest,{DB:db,OPENAI_API_KEY:'server-secret',GUIDE_OWNER_EMAIL:'owner@example.com'});
+ assert.equal((await health.json()).access.developer,true);
+});
+test('server quota state reports real rolling counts and reset times without identifiers',async()=>{
+ const now=Date.UTC(2026,8,22,14,0),minuteOldest=now-25_000,dayOldest=now-3_600_000;
+ const stats={viewer_minute:10,viewer_day:50,minute_oldest:minuteOldest,day_oldest:dayOldest,global_minute:0,global_day:0,global_month:0,rolling_cost:0,lifetime_cost:0};
+ const refused=await reserveGuideRequest(quotaDb(stats),'quota-refusal','public-hash',now);
+ assert.equal(refused.reason,'viewer_minute');assert.deepEqual(refused.quota.public,{minuteUsed:10,minuteLimit:10,rolling24HoursUsed:50,rolling24HoursLimit:50,minuteResetAt:minuteOldest+60_000,rolling24HoursResetAt:dayOldest+86_400_000});
+ const current=await readGuideQuotaState(quotaDb(stats),'public-hash',now);
+ assert.deepEqual(current,refused.quota);assert.doesNotMatch(JSON.stringify(current),/public-hash|viewer_hash|database/i);
+ assert.deepEqual(await readGuideQuotaState(quotaDb(stats),'developer:owner',now,true),{developer:true,public:null});
 });
 test('natural qualitative answers work across the requested planet and moon examples',async()=>{
  const examples=[
@@ -143,4 +184,15 @@ test('guide UI keeps the answer primary and grounds details in an expandable sec
  const page=await readFile(new URL('../app/page.tsx',import.meta.url),'utf8');
  assert.match(page,/guide-answer-copy/);assert.match(page,/<details className="guide-grounding">/);assert.match(page,/Sources &amp; data/);
  assert.ok(page.indexOf('guide-answer-copy')<page.indexOf('<details className="guide-grounding">'));
+});
+test('guide UI uses server quota state, clear reset messages, and local-only preset routing',async()=>{
+ const page=await readFile(new URL('../app/page.tsx',import.meta.url),'utf8');
+ assert.match(page,/Live AI:.*rolling24HoursUsed.*rolling24HoursLimit/);
+ assert.match(page,/Developer access · no request-count limit/);
+ assert.match(page,/Live AI limit reached.*requests in the last 24 hours/);
+ assert.match(page,/temporarily rate-limited.*seconds/);
+ assert.match(page,/LOCAL_GUIDE_PRESETS\.map/);
+ assert.match(page,/onClick=\{\(\) => askLocalPreset\(q\)\}/);
+ const localPresetBody=page.slice(page.indexOf('const askLocalPreset'),page.indexOf('const touchMove'));
+ assert.match(localPresetBody,/answerContextGuide/);assert.doesNotMatch(localPresetBody,/requestGuide|fetch\(/);
 });

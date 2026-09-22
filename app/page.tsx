@@ -1,7 +1,7 @@
 "use client";
 /* eslint-disable react-hooks/set-state-in-effect -- these effects hydrate browser state and initialize the imperative scene adapter */
 import { useEffect, useRef, useState } from "react";
-import type { GuideResponse } from './guide-assistant';
+import type { GuideQuotaState, GuideResponse } from './guide-assistant';
 import Link from "next/link";
 import {MinorBodyPanel} from './minor-body-panel';
 import type {MinorBody} from './minor-bodies';
@@ -102,6 +102,36 @@ function Picker({
       </SelectContent>
     </Select>
   );
+}
+function guideFallbackMessage(reason?:string){
+  if(reason==='viewer_minute'||reason==='viewer_day')return 'The public Live AI request limit has been reached.';
+  if(reason==='global_minute'||reason==='global_day'||reason==='global_month')return 'The shared Live AI traffic limit is temporarily active.';
+  if(reason==='rolling_budget'||reason==='lifetime_budget')return 'The application’s monetary safety limit is active.';
+  if(reason?.startsWith('provider_'))return 'The Live AI provider was unavailable, so the Local guide answered safely.';
+  return reason?'Live AI was unavailable for this request.':'The deterministic Local guide answered this question.';
+}
+const LOCAL_GUIDE_PRESETS=[
+  "Could humans live here?",
+  "How hot or cold is it?",
+  "What missions explored it?",
+  "Does it have water?",
+  "How long are its day and year?",
+  "How far is it from Earth?",
+  "What objects are nearest to me?",
+  "Where am I?",
+  "What is the simulated date and time?",
+] as const;
+function guideLimitMessage(result:GuideResponse){
+  const quota=result.quota?.public;
+  if(result.fallbackReason==='viewer_minute'){
+    const seconds=quota?.minuteResetAt?Math.max(1,Math.ceil((quota.minuteResetAt-Date.now())/1000)):60;
+    return `Live AI is temporarily rate-limited. Try again in about ${seconds} seconds. The Local guide is still available meanwhile.`;
+  }
+  if(result.fallbackReason==='viewer_day'){
+    const reset=quota?.rolling24HoursResetAt?new Date(quota.rolling24HoursResetAt).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):'after the rolling window resets';
+    return `Live AI limit reached. You’ve used ${quota?.rolling24HoursUsed??50} / ${quota?.rolling24HoursLimit??50} requests in the last 24 hours. Live AI will be available again at ${reset}. The Local guide is still available meanwhile.`;
+  }
+  return null;
 }
 const rateLabel = (rate: SimulationRate) =>
   rate === 0
@@ -253,7 +283,9 @@ export default function Home() {
   });
   const [question, setQuestion] = useState(""),
     [guideResult, setGuideResult] = useState<GuideResponse|null>(null),
-    [guideBusy, setGuideBusy] = useState(false);
+    [guideBusy, setGuideBusy] = useState(false),
+    [guideAccess, setGuideAccess] = useState<'checking'|'developer'|'public'>('checking'),
+    [guideQuota,setGuideQuota]=useState<GuideQuotaState|null>(null);
   const b = bodies.find((b) => b.id === selected)!,
     detailsBody = bodies.find((body) => body.id === detailsId),
     objectInfo = buildObjectInformation(detailsId)!;
@@ -302,6 +334,14 @@ export default function Home() {
   useEffect(() => {
     if (panel || search) engine.current?.brake();
   }, [panel, search]);
+  useEffect(()=>{
+    if(panel!=='guide')return;
+    let current=true;
+    fetch('/api/guide',{cache:'no-store'}).then(response=>response.json()).then((value:{access?:{developer?:boolean};quota?:GuideQuotaState})=>{
+      if(current){setGuideAccess(value.access?.developer?'developer':'public');setGuideQuota(value.quota??null);}
+    }).catch(()=>{if(current)setGuideAccess('public');});
+    return()=>{current=false;};
+  },[panel]);
   useEffect(() => {
     setQuestion("");
   }, [selected]);
@@ -404,12 +444,28 @@ export default function Home() {
       const [{requestGuide},{buildGuideContext}]=await Promise.all([import('./guide-client'),import('./guide-context')]);
       if(!navigation)throw new Error('The scene is not ready. Please try again.');
       const context=buildGuideContext(selectedId,navigation);
-      setGuideResult(await requestGuide(context,q));
+      const result=await requestGuide(context,q);
+      setGuideResult(result);
+      if(result.quota)setGuideQuota(result.quota);
     } catch(error) {
       setGuideResult({subject:'Guide unavailable',atUtcMs:time,explanation:error instanceof Error?error.message:'Please retry.',evidence:[],contextNote:'No answer was generated.',mode:'local',resolution:{selectedId,subjectId:selectedId,subjectName:b.name,comparisonId:null,interpretation:'The guide request could not be interpreted.'}});
     } finally {
       setGuideBusy(false);
     }
+  };
+  const askLocalPreset = async (q:string) => {
+    if(guideBusy)return;
+    const selectedId=b.id;
+    const navigation=engine.current?.getGuideNavigation();
+    setQuestion(q);
+    setGuideBusy(true);
+    try{
+      if(!navigation)throw new Error('The scene is not ready. Please try again.');
+      const [{answerContextGuide},{buildGuideContext}]=await Promise.all([import('./guide-assistant'),import('./guide-context')]);
+      setGuideResult(answerContextGuide(buildGuideContext(selectedId,navigation),q));
+    }catch(error){
+      setGuideResult({subject:'Guide unavailable',atUtcMs:time,explanation:error instanceof Error?error.message:'Please retry.',evidence:[],contextNote:'No answer was generated.',mode:'local',resolution:{selectedId,subjectId:selectedId,subjectName:b.name,comparisonId:null,interpretation:'The guide request could not be interpreted.'}});
+    }finally{setGuideBusy(false);}
   };
   const touchMove = (code: string, active: boolean) =>
     engine.current?.setMovement(code, active);
@@ -1007,20 +1063,11 @@ export default function Home() {
                 deterministic Local guide answers instead. “Here” means the
                 selected object, not your spacecraft location.
               </div>
+              {guideAccess==='developer'?<div className="guide-usage"><strong>Developer access · no request-count limit</strong><span>Usage and cost accounting continue; monetary safeguards remain.</span></div>:<><div className="guide-usage"><strong>{guideQuota?.public?`Live AI: ${guideQuota.public.rolling24HoursUsed} / ${guideQuota.public.rolling24HoursLimit} today`:'Live AI usage: checking…'}</strong><span>Rolling 24-hour allowance · up to 10 per minute</span></div><a className="guide-developer-access" href="/signin-with-chatgpt?return_to=%2F" target="_top">Project owner sign-in for development access</a></>}
               <h3>What would you like to know?</h3>
               <div className="suggestions">
-                {[
-                  "Could humans live here?",
-                  "How hot or cold is it?",
-                  "What missions explored it?",
-                  "Does it have water?",
-                  "How long are its day and year?",
-                  "How far is it from Earth?",
-                  "What objects are nearest to me?",
-                  "Where am I?",
-                  "What is the simulated date and time?",
-                ].map((q) => (
-                  <button key={q} disabled={guideBusy} onClick={() => ask(q)}>
+                {LOCAL_GUIDE_PRESETS.map((q) => (
+                  <button key={q} disabled={guideBusy} onClick={() => askLocalPreset(q)}>
                     {q}
                     <MoveUpRight size={15} />
                   </button>
@@ -1055,10 +1102,12 @@ export default function Home() {
                 <div className="guide-answer" aria-live="polite">
                   <div className="guide-answer-heading"><span className="eyebrow">ABOUT {guideResult.subject.toUpperCase()}</span><span className={`guide-mode guide-mode-${guideResult.mode}`}>{guideResult.mode==='live'?'Live AI':'Local guide'}</span></div>
                   <p className="guide-answer-copy">{guideResult.explanation}</p>
+                  {guideLimitMessage(guideResult)&&<p className="guide-limit-message" role="status">{guideLimitMessage(guideResult)}</p>}
                   <details className="guide-grounding">
                     <summary>Sources &amp; data</summary>
                     <div className="guide-grounding-content">
                       <p>{guideResult.mode==='live'?(guideResult.evidence.length?'The cited cards below identify the project or retrieved authoritative data used. The surrounding explanation is AI-composed.':'This answer uses AI explanatory or general knowledge and does not present unsupported claims as verified application data.'):'This answer was generated by the deterministic Local guide.'}</p>
+                      {guideResult.mode==='local'&&<p><strong>Live AI status:</strong> {guideFallbackMessage(guideResult.fallbackReason)}</p>}
                       {guideResult.external&&guideResult.external.status!=='not-needed'&&<p><strong>External verification:</strong> {guideResult.external.note}</p>}
                       {guideResult.sourceConflicts?.map(conflict=><p key={`${conflict.projectEvidenceId}-${conflict.externalEvidenceId}`} className="guide-conflict"><strong>Source discrepancy:</strong> {conflict.note}</p>)}
                       <p>{guideResult.contextNote}</p>
