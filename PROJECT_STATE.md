@@ -1,6 +1,6 @@
 # Solar System Explorer — Current Project State
 
-Last verified: 2026-09-22 UTC
+Last verified: 2026-09-26 UTC
 
 Stable product version: V1.1. Production URL: `https://solar-system-explorer-gabor.gabortardos.chatgpt.site`.
 
@@ -28,6 +28,7 @@ Latest verification:
 - Tests cover catalogue integrity, every activated moon's parent-relative source-ellipse bounds, explicit illustrative-quality metadata, scale ordering, distances, clock behavior, rendering contracts, mobile HUD and bounded search.
 - Desktop compatibility-renderer QA passed for Io/Jupiter search and focus, moon orbit toggling, Charon's information-only panel and application console errors.
 - Step 19: all eight bodies inspected at far/medium/close range in the compatibility renderer, with Earth night-side and Saturn ring corrections verified. Full WebGL and physical-device mobile QA remain open.
+- Public Site version 32 matches the canonical Step 19 implementation tree. The same tree is mirrored to GitHub `main` at `8c13a3e92d43700b70d86880ac9ea0f4f8d80cb4`. A 2026-09-26 build, lint and 100-test rerun passed; the live inspection browser still reports `data-renderer="compatibility"`.
 
 ## Working features
 

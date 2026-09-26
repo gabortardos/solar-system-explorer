@@ -1,4 +1,4 @@
-# Step 19 checkpoint — 2026-09-22
+# Step 19 checkpoint — updated 2026-09-26
 
 **STEP 19 COMPLETE: NO. Implementation and compatibility visual inspection are complete; WebGL/mobile sign-off is the remaining gate. Do not start Step 20.**
 
@@ -22,7 +22,8 @@ The interrupted shared LOD design and downloaded assets were retained. All eight
 - Full automated suite: **100/100 PASS**, including 11 new LOD/resource tests.
 - No OpenAI requests, database migrations, account-policy or secret changes.
 - Standalone TypeScript ambient-type/narrowing gaps were already known; do not confuse the successful release build with a clean standalone `tsc` run.
-- Publish this source as an implementation checkpoint on the existing public Site and mirror it to GitHub. Publication/version identifiers are available from Sites and Git history; this document does not invent a self-referential commit hash.
+- The implementation was published as public Site version 32 on 2026-09-22 from Sites source `271c62bb30d242da6bafc11f6956096ac9ea7bf6`. On 2026-09-26, the same tracked source tree was mirrored to GitHub `main` as `8c13a3e92d43700b70d86880ac9ea0f4f8d80cb4` (tree `710182d35d15d8908557b7d3203dff6962153099`). Sites remains canonical.
+- The unchanged implementation was rebuilt and retested on 2026-09-26: production build, lint and all 100 tests pass. The live Site still exposes `data-renderer="compatibility"` in the available browser, so this is a verified checkpoint, not Step 19 sign-off.
 
 ## Remaining work / genuine environment blocker
 
