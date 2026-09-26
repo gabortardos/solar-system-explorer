@@ -185,3 +185,8 @@ The population layer is visualization metadata, not a new astronomical catalogue
 The dots have no identity, orbital elements, epoch position, completeness or population-count meaning. Uniform sampling does not reproduce real density, resonances, Kirkwood gaps, asteroid families or Kuiper sub-populations. Radial position and modest vertical spread exist only to communicate a sparse three-dimensional region. Scientific calculations never consume these samples.
 
 References: [NASA Kuiper Belt facts](https://science.nasa.gov/solar-system/kuiper-belt/facts/), [NASA Solar System glossary — Trojan asteroids](https://science.nasa.gov/universe/glossary/), and [NASA asteroid facts](https://science.nasa.gov/solar-system/asteroids/facts/).
+
+
+## Step 19 presentation maps
+
+Earth/Mars/Jupiter/Saturn use attributed Solar System Scope/INOVE visualization maps; Moon uses NASA LROC/LOLA; Europa and Enceladus use NASA Science model textures. Exact sources, transformations and limitations are in `docs/CLOSE_APPROACH.md` and asset hashes in `docs/BODY_TEXTURE_MANIFEST.json`. These are static presentation assets, not ephemerides or current weather. Titan remains opaque atmospheric color/haze, without an invented visible surface. Relief is sourced lunar bump shading only; no fabricated craters, ice fractures, displacement or landing terrain. Canonical data and numerical evidence are unchanged.

@@ -1,0 +1,224 @@
+{
+  "preparedUtc": "2026-09-22",
+  "format": "WebP",
+  "processing": "Pillow Lanczos resampling, RGB. Color quality 84 (512px: 78), clouds/night quality 85; lunar DEM normalized over its global range and encoded losslessly. No invented terrain or generative imagery.",
+  "files": [
+    {
+      "file": "earth-1024.webp",
+      "width": 1024,
+      "height": 512,
+      "bytes": 49662,
+      "sha256": "de073f072d54f76a8c0a71ef955056abede5c37e7600c9bf0d35a91251511f84"
+    },
+    {
+      "file": "earth-2048.webp",
+      "width": 2048,
+      "height": 1024,
+      "bytes": 156436,
+      "sha256": "6b05c77b7cf92ea392ecec13e6a96bcfbd6ce9b0644480972d3406e81c64fd0b"
+    },
+    {
+      "file": "earth-4096.webp",
+      "width": 4096,
+      "height": 2048,
+      "bytes": 514928,
+      "sha256": "ffaffd7fe0460b7b944e22ac9c359dd831e9402d6ce08dcf67ffb1404af6bf8c"
+    },
+    {
+      "file": "earth-512.webp",
+      "width": 512,
+      "height": 256,
+      "bytes": 12958,
+      "sha256": "34adfcfd0ecd0c40a8753100b71e0ca90c052113a560260720794e5dbb04002f"
+    },
+    {
+      "file": "earth-clouds.webp",
+      "width": 1024,
+      "height": 512,
+      "bytes": 148732,
+      "sha256": "5cc5797252aed0f47399aa179435f3aec2721b71e14632356f80376e61602de6"
+    },
+    {
+      "file": "earth-night.webp",
+      "width": 1024,
+      "height": 512,
+      "bytes": 20496,
+      "sha256": "764ce4400c22f33e94eefd25515b5c63a0f46a552ef6961c4ccc0473d6c5612d"
+    },
+    {
+      "file": "enceladus-1024.webp",
+      "width": 1024,
+      "height": 512,
+      "bytes": 165844,
+      "sha256": "284776177eaf3ac5dbaf6d0136849c6425f9b6ab876142ceb94a2836a0369e34"
+    },
+    {
+      "file": "enceladus-2048.webp",
+      "width": 2048,
+      "height": 1024,
+      "bytes": 717110,
+      "sha256": "9a00f5c704e033a152c8ded3bdbad83c8d4c3d8078da94a849002c1be01732b7"
+    },
+    {
+      "file": "enceladus-4096.webp",
+      "width": 4096,
+      "height": 2048,
+      "bytes": 2537498,
+      "sha256": "f0cc69b62e9fbb68979dcd3e0ffcd8a7ca90fe6be9f5c304485057dd9cafef44"
+    },
+    {
+      "file": "enceladus-512.webp",
+      "width": 512,
+      "height": 256,
+      "bytes": 24034,
+      "sha256": "35fd64e49beea6818d98bf23d7d4ebf4ea7008ec40500394ebc1bf832269289a"
+    },
+    {
+      "file": "europa-1024.webp",
+      "width": 1024,
+      "height": 512,
+      "bytes": 68820,
+      "sha256": "2fee34c19302847d7f5b73cd65258650abb0bfb9a4b4059edaf8951739b34438"
+    },
+    {
+      "file": "europa-2048.webp",
+      "width": 2048,
+      "height": 1024,
+      "bytes": 266142,
+      "sha256": "806d01f7841b78f983308f5a4933ea0a11ece42a09dbef546252d8bc50827d6c"
+    },
+    {
+      "file": "europa-4096.webp",
+      "width": 4096,
+      "height": 2048,
+      "bytes": 775436,
+      "sha256": "bb46b1c494177e149d1ccbf8af3dc698898065a61ec95e7ab9124b1955fcf5c7"
+    },
+    {
+      "file": "europa-512.webp",
+      "width": 512,
+      "height": 256,
+      "bytes": 11584,
+      "sha256": "c8997300d9c295c8dc09342b4a6f022554be17f55763712c318a330ca96b226a"
+    },
+    {
+      "file": "jupiter-1024.webp",
+      "width": 1024,
+      "height": 512,
+      "bytes": 47794,
+      "sha256": "3714bc777a94fb1c4aba65f6a0c3a75c3d31b4b96284c2a16146e6633fad60ce"
+    },
+    {
+      "file": "jupiter-2048.webp",
+      "width": 2048,
+      "height": 1024,
+      "bytes": 130642,
+      "sha256": "4518b145be2f8b95d38f50b4a7345c8d123cc89698b445268777f32bd2728e90"
+    },
+    {
+      "file": "jupiter-4096.webp",
+      "width": 4096,
+      "height": 2048,
+      "bytes": 368394,
+      "sha256": "c6c77d51051f62e587f3c20ba2931e3b1e8807ac1af6f6ab9c09020799294047"
+    },
+    {
+      "file": "jupiter-512.webp",
+      "width": 512,
+      "height": 256,
+      "bytes": 10442,
+      "sha256": "840a1c045a83438d4330904478dd0f951324fa9cf0cd9b7d0af6f4fd40900e86"
+    },
+    {
+      "file": "mars-1024.webp",
+      "width": 1024,
+      "height": 512,
+      "bytes": 69590,
+      "sha256": "200a955e57cabc07ba523d73a47462ec6c3ef5217ff5c8f7c29a4bdd280a0625"
+    },
+    {
+      "file": "mars-2048.webp",
+      "width": 2048,
+      "height": 1024,
+      "bytes": 240586,
+      "sha256": "e5240df00be10dead971ab01aa3dd425045541222650c601535c7a0ce469f14e"
+    },
+    {
+      "file": "mars-4096.webp",
+      "width": 4096,
+      "height": 2048,
+      "bytes": 840556,
+      "sha256": "6a8e7039bfeb4eca0d8c1876308b17d1d2ca1723a3472aba20590dbd0b14aceb"
+    },
+    {
+      "file": "mars-512.webp",
+      "width": 512,
+      "height": 256,
+      "bytes": 15236,
+      "sha256": "76f6d9ccac67c3757a3dd35417efbb234dc337d55549cdb951b9b06e5b43abc4"
+    },
+    {
+      "file": "moon-1024.webp",
+      "width": 1024,
+      "height": 512,
+      "bytes": 75804,
+      "sha256": "b3c6fa12294413ce99e59ad6038ae1f0b28005435c4621fbfb3f264f16af74bd"
+    },
+    {
+      "file": "moon-2048.webp",
+      "width": 2048,
+      "height": 1024,
+      "bytes": 277852,
+      "sha256": "975eb8cc7ca81d0b76e0498967be07c27de7f824d61f4d6b7a37442cdb64969f"
+    },
+    {
+      "file": "moon-4096.webp",
+      "width": 4096,
+      "height": 2048,
+      "bytes": 1150158,
+      "sha256": "79913d599d68b6ba33dfa258b03b84a1a5e90ac516a2f6cf3bd5287f9b369b53"
+    },
+    {
+      "file": "moon-512.webp",
+      "width": 512,
+      "height": 256,
+      "bytes": 14148,
+      "sha256": "3a9852fed419d499b14b50403e3769231f5334bba1b5ec143517eb6d7dc0b194"
+    },
+    {
+      "file": "moon-height.webp",
+      "width": 2048,
+      "height": 1024,
+      "bytes": 812250,
+      "sha256": "9ec8ea07b189e41252548e8027391dca01fb227fc9f9bcad8f2712d4b6ccf490"
+    },
+    {
+      "file": "saturn-1024.webp",
+      "width": 1024,
+      "height": 512,
+      "bytes": 10512,
+      "sha256": "60448f8ece7d2def5de0ac10ccd1fe941f811e85e8787ac228c7dd3168e4d190"
+    },
+    {
+      "file": "saturn-2048.webp",
+      "width": 2048,
+      "height": 1024,
+      "bytes": 34674,
+      "sha256": "31ffb6bb93ece7e96199af88095cbf73e03c9923eba927893fa661a82012c70b"
+    },
+    {
+      "file": "saturn-4096.webp",
+      "width": 4096,
+      "height": 2048,
+      "bytes": 106498,
+      "sha256": "171904275c2aa2345937f8a99b3157b868847c88264662ac912cb33e01735bca"
+    },
+    {
+      "file": "saturn-512.webp",
+      "width": 512,
+      "height": 256,
+      "bytes": 2438,
+      "sha256": "ba097d0d4fc8f2e911f6e20365b234afda755744869ddbebdcbae5b451e37b66"
+    }
+  ]
+}

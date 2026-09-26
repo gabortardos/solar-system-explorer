@@ -1,12 +1,14 @@
 # Solar System Explorer — Current Project State
 
-Last verified: 2026-09-21 UTC
+Last verified: 2026-09-22 UTC
 
 Stable product version: V1.1. Production URL: `https://solar-system-explorer-gabor.gabortardos.chatgpt.site`.
 
 This is the fast handoff for **what exists now**. The repository and deployed application are the source of truth. Read the specialized documents for product direction, architecture, UX, astronomy, roadmap, decisions and issues. Do not rebuild from a starter or replace working architecture merely because a new Work chat begins.
 
 ## Current reality
+
+**Step 19 — Close-approach planet experience is implemented for all eight priority bodies, with compatibility-renderer visual QA completed. It is NOT yet marked complete: WebGL and physical mobile rendering/performance sign-off remain unavailable.** The shared screen-size LOD, smooth texture fades, sourced map tiers and bounded evictable cache are preserved. Read `docs/STEP_19_CHECKPOINT.md` and `docs/CLOSE_APPROACH.md` before continuing; do not redo assets/design or start Step 20.
 
 Step 17 — **CONNECT THE LIVE AI** is complete and published. The Astronomy Guide uses server-side `gpt-5.6-luna` with D1-backed rate/budget reservations, strict structured-output validation, request-time context resolution, evidence/citation separation and deterministic Local guide fallback. Its two-class trust policy now allows natural qualitative and common-knowledge explanations while keeping exact measurements, calculated distances and scene state tied to trusted structured evidence. `OPENAI_API_KEY` remains a Sites secret. See `docs/AI_GUIDE.md`.
 
@@ -22,10 +24,10 @@ Step 15 — **ASTEROID BELT AND KUIPER BELT VISUALIZATION** adds renderer-only r
 
 Latest verification:
 
-- Production build, lint and all 89 automated tests pass. Live-guide natural answers, numerical grounding, authoritative retrieval, uncertainty, conflict handling, citation integrity, owner/public quota behavior, server-derived usage/reset state and free local presets are covered; full WebGL and physical-device appearance QA remain open.
+- Production build, lint and all 100 automated tests pass (including 11 LOD/resource tests). Live-guide natural answers, numerical grounding, authoritative retrieval, uncertainty, conflict handling, citation integrity, owner/public quota behavior, server-derived usage/reset state and free local presets are covered; full WebGL and physical-device appearance QA remain open.
 - Tests cover catalogue integrity, every activated moon's parent-relative source-ellipse bounds, explicit illustrative-quality metadata, scale ordering, distances, clock behavior, rendering contracts, mobile HUD and bounded search.
 - Desktop compatibility-renderer QA passed for Io/Jupiter search and focus, moon orbit toggling, Charon's information-only panel and application console errors.
-- Full WebGL and physical-device mobile QA remain open.
+- Step 19: all eight bodies inspected at far/medium/close range in the compatibility renderer, with Earth night-side and Saturn ring corrections verified. Full WebGL and physical-device mobile QA remain open.
 
 ## Working features
 
@@ -65,7 +67,7 @@ Latest verification:
 
 ## Visual and scale systems
 
-- Textured primary bodies; lightweight color materials and lower-segment geometry for newly activated moons, avoiding new texture downloads.
+- Shared close-approach LOD for Earth, Moon, Mars, Jupiter, Saturn, Europa, Titan and Enceladus: lazy 512/1024/4096px maps (2048px mobile cap), two desktop or one mobile/compatibility detail bundles, focus priority, fades, abort/disposal and sourced moon imagery. Titan remains opaque haze with no invented surface. Other moons retain lightweight colors.
 - Warm Sun light, restrained ambient fill, ACES tone mapping, soft WebGL shadows, Earth clouds/night lights/atmosphere, Saturn rings, Sun corona and deterministic decorative stars.
 - Scientific Scale is linear at 100 units/AU for centers. Bodies remain enlarged for visibility.
 - Exploration Scale compresses heliocentric radius continuously. Moon systems use a centralized monotonic parent-local radial compression preserving phase, direction and orbit ordering.
@@ -94,9 +96,9 @@ Latest verification:
 
 ## Current milestone and next task
 
-**Current delivered increments:** Step 17 — Live AI connection, and Step 18 — AI source and fact checking. **Still open:** V1.2 flight/device QA. The mobile search/guide input fix is preserved as September 2026 maintenance, not a numbered milestone.
+**Current implementation checkpoint:** Step 19 close-approach rendering, pending WebGL/device sign-off. Steps 17 and 18 remain complete. **Still open:** V1.2 flight/device QA. The mobile search/guide input fix is preserved as September 2026 maintenance, not a numbered milestone.
 
-Step 15 is implemented and verified in source. The current unfinished work returns to body-aware assisted-arrival review, full WebGL/physical-device mobile QA (including population sparsity in both scales), and evidence-led bundle/startup and shadow-cost measurement. Do not claim release confidence until those checks are complete.
+Next action: follow `docs/STEP_19_CHECKPOINT.md` in a WebGL-capable browser. Validate the existing eight-body implementation, shader appearance, transitions, shadow cost and bounded memory on desktop/mobile; fix only observed defects. Full WebGL was unavailable in the current inspection browser. Step 20 remains out of scope.
 
 ## Step 14 data and release notes
 

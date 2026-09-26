@@ -17,6 +17,10 @@ Before work begins on the next substantial milestone:
 4. Create and push a stable repository checkpoint when repository access is available.
 5. Report which documents changed, the next milestone, and whether a fresh Work chat can continue safely.
 
+## Current numbered milestone — Step 19
+
+**Close-approach planet experience: implementation checkpoint, not complete.** All eight priority bodies use the shared screen-size LOD/cache and sourced maps (Titan uses opaque atmosphere). Far/medium/close compatibility-renderer inspection and targeted resource tests are complete. Actual WebGL shader/shadow/performance and mobile-device sign-off are still required; the available browser exposes no WebGL context. Resume from `docs/STEP_19_CHECKPOINT.md`; do not repeat asset research or start Step 20.
+
 ## Completed milestones
 
 ### V1 — First playable prototype

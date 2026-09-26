@@ -236,3 +236,8 @@ The browser contract scales independently of catalogue size, but the sample gene
 The layer is limited to four `THREE.Points` draws and 1,100 one-pixel markers. It does not alter the canonical catalogue, minor-body provider, search, raycasting, collision, distance, travel or visit systems. `worldPointGeometry()` extends the camera-relative Float64-to-Float32 snapshot boundary; point containers are not translated a second time. The Canvas renderer draws the same bounded markers and includes visibility/buffer state in its render cache signature.
 
 The compatibility renderer normally rasterizes body spheres at 128 × 128. A close Saturn presentation switches only that sphere to a bounded 256 × 256 raster to prevent magnified terminator stair-stepping without multiplying the cost of every visible body.
+
+
+## Step 19 implementation checkpoint — shared body detail
+
+`app/body-lod.ts` centralizes projected-pixel thresholds, hysteresis, tiers and atmospheric profiles. `app/body-detail.ts` streams same-origin map bundles into existing meshes, blends texture uniforms, upgrades/restores sphere geometry, prioritizes visible focus, and disposes evicted/aborted resources. At most two desktop or one mobile/Canvas detail bundles remain allocated; seven small bases can remain cached. Existing scale, navigation, astronomy and AI boundaries are unchanged. Canvas shares the LOD state and drops decoded texture pixels on disposal. `data-detail` and `data-render-stats` expose non-sensitive renderer diagnostics. See `docs/CLOSE_APPROACH.md` for budgets and the outstanding WebGL/device gate.

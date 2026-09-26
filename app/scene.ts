@@ -1,4 +1,6 @@
 import * as THREE from "three";
+import { BodyDetailManager, createAtmosphere, type DetailLayer } from "./body-detail";
+import { DETAIL_BODIES } from "./body-lod";
 import { SoftwareRenderer } from "./software-renderer";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { bodies, position, Body, AU } from "./astronomy";
@@ -157,6 +159,7 @@ export function createScene(
       THREE.MeshBasicMaterial | THREE.MeshStandardMaterial
     >();
   const loadedSurfaces = new Set<string>();
+  const bodyDetails = new BodyDetailManager(mobile, renderer instanceof SoftwareRenderer, Math.min(mobile ? 4 : 8, renderer.capabilities.getMaxAnisotropy()));
   const orbits = new THREE.Group(),
     satelliteOrbits = new THREE.Group(),
     orbitMaterials = new Map<string, THREE.LineBasicMaterial>(),
@@ -356,43 +359,29 @@ export function createScene(
       nightMaterial = new THREE.ShaderMaterial({
         uniforms: {
           nightMap: { value: null },
+          detailStrength: { value: 0 },
           sunPosition: { value: renderSunPosition },
         },
         vertexShader:
           "varying vec2 vUv;varying vec3 worldNormal;varying vec3 worldPosition;void main(){vUv=uv;worldNormal=normalize(mat3(modelMatrix)*normal);worldPosition=(modelMatrix*vec4(position,1.)).xyz;gl_Position=projectionMatrix*viewMatrix*vec4(worldPosition,1.);}",
         fragmentShader:
-          "uniform sampler2D nightMap;uniform vec3 sunPosition;varying vec2 vUv;varying vec3 worldNormal;varying vec3 worldPosition;void main(){float sunward=dot(normalize(worldNormal),normalize(sunPosition-worldPosition));float night=1.-smoothstep(-.12,.18,sunward);vec3 lights=texture2D(nightMap,vUv).rgb;float intensity=night*night*.72;gl_FragColor=vec4(lights*intensity,max(max(lights.r,lights.g),lights.b)*intensity);}",
+          "uniform sampler2D nightMap;uniform float detailStrength;uniform vec3 sunPosition;varying vec2 vUv;varying vec3 worldNormal;varying vec3 worldPosition;void main(){float sunward=dot(normalize(worldNormal),normalize(sunPosition-worldPosition));float night=1.-smoothstep(-.12,.18,sunward);vec3 lights=texture2D(nightMap,vUv).rgb;float intensity=night*night*.72*detailStrength;gl_FragColor=vec4(lights*intensity,max(max(lights.r,lights.g),lights.b)*intensity);}",
         transparent: true,
         depthWrite: false,
         blending: THREE.AdditiveBlending,
       });
       const night = new THREE.Mesh(
-        new THREE.SphereGeometry(r * 1.002, mobile ? 48 : 72, mobile ? 32 : 48),
+        new THREE.SphereGeometry(r * 1.004, mobile ? 64 : 96, mobile ? 48 : 64),
         nightMaterial,
       );
       night.name = "earth-night-lights";
       m.add(night);
-      const glow = new THREE.Mesh(
-        new THREE.SphereGeometry(r * 1.035, 64, 48),
-        new THREE.ShaderMaterial({
-          uniforms: {
-            tint: { value: new THREE.Color("#54a8e8") },
-            sunPosition: { value: renderSunPosition },
-          },
-          vertexShader:
-            "varying vec3 n;varying vec3 v;varying vec3 wp;void main(){wp=(modelMatrix*vec4(position,1.)).xyz;n=normalize(mat3(modelMatrix)*normal);v=normalize(cameraPosition-wp);gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}",
-          fragmentShader:
-            "varying vec3 n;varying vec3 v;varying vec3 wp;uniform vec3 tint;uniform vec3 sunPosition;void main(){float rim=pow(1.-max(dot(normalize(n),normalize(v)),0.),3.5);float day=smoothstep(-.28,.18,dot(normalize(n),normalize(sunPosition-wp)));gl_FragColor=vec4(tint,rim*(.055+.32*day));}",
-          side: THREE.BackSide,
-          transparent: true,
-          depthWrite: false,
-          blending: THREE.AdditiveBlending,
-        }),
-      );
-      g.add(glow);
+
     }
+    const atmosphere = createAtmosphere(b.id, r, renderSunPosition);
+    if (atmosphere) g.add(atmosphere);
     if (b.id === "saturn") {
-      const ringGeo = new THREE.RingGeometry(r * 1.24, r * 2.3, 192, 4);
+      const ringGeo = new THREE.RingGeometry(r * 1.24, r * 2.3, mobile ? 192 : 384, 1);
       const uv = ringGeo.attributes.uv,
         p = ringGeo.attributes.position;
       for (let i = 0; i < p.count; i++) {
@@ -418,6 +407,22 @@ export function createScene(
       tilt.add(ring);
       g.add(tilt);
     }
+    const detailLayers: DetailLayer[] = [];
+    if (b.id === "earth") {
+      detailLayers.push({ path: "/textures/detail/earth-clouds.webp", linear: true,
+        apply: texture => { cloudMaterial!.alphaMap = texture; cloudMaterial!.needsUpdate = true; },
+        fade: amount => { cloudMaterial!.opacity = 0.62 * amount; } });
+      detailLayers.push({ path: "/textures/detail/earth-night.webp",
+        apply: texture => { nightMaterial!.uniforms.nightMap.value = texture; },
+        fade: amount => { nightMaterial!.uniforms.detailStrength.value = amount; } });
+    }
+    if (b.id === "moon" && material instanceof THREE.MeshStandardMaterial && renderer instanceof THREE.WebGLRenderer) {
+      detailLayers.push({ path: "/textures/detail/moon-height.webp", linear: true,
+        apply: texture => { material.bumpMap = texture; material.needsUpdate = true; },
+        // LOLA global elevation span ~20 km on a 1737 km radius; shading only.
+        fade: amount => { material.bumpScale = r * 0.0115 * amount; } });
+    }
+    bodyDetails.register(b.id, m, r, detailLayers);
     const label = document.createElement("button");
     label.className = "world-label";
     label.textContent = b.name;
@@ -450,29 +455,12 @@ export function createScene(
     const material = surfaceMaterials.get(id);
     if (!body || !material) return;
     loadedSurfaces.add(id);
-    if (body.texture)
+    if (body.texture && !DETAIL_BODIES.some(detailId => detailId === id))
       loadTexture(body.texture + ".jpg", (texture) => {
         material.map = texture;
         material.color.set("#ffffff");
         material.needsUpdate = true;
       });
-    if (id === "earth" && cloudMaterial) {
-      loadTexture(
-        "earth_clouds.jpg",
-        (texture) => {
-          if (!cloudMaterial) return;
-          cloudMaterial.alphaMap = texture;
-          cloudMaterial.opacity = 0.62;
-          cloudMaterial.needsUpdate = true;
-        },
-        THREE.NoColorSpace,
-      );
-      loadTexture("earth_nightmap.jpg", (texture) => {
-        if (!nightMaterial) return;
-        nightMaterial.uniforms.nightMap.value = texture;
-        nightMaterial.needsUpdate = true;
-      });
-    }
     if (id === "saturn" && ringMaterial)
       loadTexture("saturn_ring_alpha.png", (texture) => {
         if (!ringMaterial) return;
@@ -1011,6 +999,7 @@ export function createScene(
     }
     camera.updateMatrixWorld(true);
     scene.updateMatrixWorld(true);
+    bodyDetails.update(camera, host.clientHeight, Math.min(elapsed, 0.25), focused);
     const viewDirection = new THREE.Vector3();
     camera.getWorldDirection(viewDirection);
     bodies.forEach((b, i) => {
@@ -1041,6 +1030,11 @@ export function createScene(
       );
     if (now - lastNotify > 500) {
       lastNotify = now;
+      const detailState = bodyDetails.diagnostics();
+      if (detailState.bodies.some(body => body.id === "saturn" && body.pixels > 3)) preload("saturn");
+      host.dataset.detail = JSON.stringify(detailState);
+      if (renderer instanceof THREE.WebGLRenderer) host.dataset.renderStats = JSON.stringify({ calls: renderer.info.render.calls, triangles: renderer.info.render.triangles, textures: renderer.info.memory.textures, geometries: renderer.info.memory.geometries });
+      if (renderer instanceof SoftwareRenderer) host.dataset.renderStats = JSON.stringify(renderer.stats);
       onTime(time);
     }
   }
@@ -1214,6 +1208,7 @@ export function createScene(
       window.removeEventListener("keyup", up);
       window.removeEventListener("blur", blur);
       controls.dispose();
+      bodyDetails.dispose();
       textures.forEach((t) => t.dispose());
       scene.traverse((o) => {
         const m = o as THREE.Mesh;

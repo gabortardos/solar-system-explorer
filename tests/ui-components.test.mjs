@@ -106,13 +106,13 @@ test("preserves the restrained cinematic rendering treatment", async () => {
   assert.match(scene, /withRenderOrigin/);
   assert.match(scene, /projectPosition/);
   assert.match(scene, /MeshStandardMaterial/);
-  assert.match(scene, /earth_nightmap\.jpg/);
-  assert.match(scene, /BackSide/);
+  assert.match(scene, /earth-night\.webp/);
+  assert.match(scene, /createAtmosphere/);
   assert.match(scene, /Math\.pow\(-2 \* t \+ 2, 5\) \/ 2/);
   assert.match(fallback, /createRadialGradient/);
   assert.match(fallback, /nightMap/);
-  assert.match(fallback, /front\?\.82:\.6/);
-  assert.match(fallback, /id==='saturn'&&size>128\?256:128/);
+  assert.match(fallback, /mid\.sub\(center\)\.dot\(ringView\)>0/);
+  assert.match(fallback, /size>160\?320:size>70\?192/);
 });
 
 test("keeps the mobile scene clear with a compact, optional HUD", async () => {

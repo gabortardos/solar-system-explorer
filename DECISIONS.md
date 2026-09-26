@@ -250,3 +250,8 @@ Status: partially superseded by D028 after the satellite reference-plane transfo
 - **Reason:** Educational context benefits from visible regions, but a torus, dense haze or pseudo-catalogue would falsely imply solid belts, true density, current positions or complete counts.
 - **Impact:** Both renderers show sparse one-pixel samples without expanding search, selection, collision, navigation or canonical data. Marker count, size, distribution and vertical spread are presentation choices.
 - **Preserve:** Do not turn region dots into objects, measurements or census data; remove the exaggeration disclosure; derive Trojan geometry from compressed coordinates; add glow/opaque fills; or increase budgets without measured device evidence.
+
+
+## 2026-09-22 — Shared bounded close-approach LOD
+
+Preserve the imperative Three.js engine and scientific coordinate pipeline. Use one screen-space LOD/cache manager for eight priority bodies, two desktop / one mobile-or-Canvas detail bundles, lazy map tiers, focus priority, elapsed-time fades, and explicit abort/disposal. Use sourced maps rather than generated terrain. Titan is opaque atmosphere; unsupported relief is not invented. Keep Step 19 open until actual WebGL and mobile validation; compatibility-only screenshots do not certify GPU shaders or performance. Full detail/provenance and exact continuation are in `docs/CLOSE_APPROACH.md` and `docs/STEP_19_CHECKPOINT.md`.

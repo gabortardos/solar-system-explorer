@@ -103,3 +103,8 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the branch, review, test, and release
 Open search and choose “Explore asteroids, comets and distant objects” to browse 19 sourced JPL sample objects, search names/aliases, open information, show markers, travel, or find nearby objects around simulated Earth. Pages, cache, nearby candidates and active markers are bounded independently of catalogue size. At most 12 minor markers are retained. Orbits are illustrative two-body calculations, not precision ephemerides or impact predictions.
 
 See `ARCHITECTURE.md` for storage/index growth plans and `ASTRONOMY_DATA.md` for snapshot provenance. Bulk ingestion and million-object end-to-end performance are future work.
+
+
+## Close-approach rendering (Step 19 checkpoint)
+
+Eight bodies share lazy screen-size detail tiers and a bounded texture cache. Earth clouds/night lights, sourced lunar relief, mapped icy moons, planetary haze and Saturn rings improve as you approach; Titan remains opaque. Asset attribution and limits: [Close-approach guide](docs/CLOSE_APPROACH.md). Implementation and compatibility visual QA are complete; full WebGL/mobile validation remains open. Resume via [Step 19 checkpoint](docs/STEP_19_CHECKPOINT.md).

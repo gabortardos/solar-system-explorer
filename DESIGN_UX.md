@@ -189,3 +189,8 @@ The Step 16 guide shows selected-object meaning, captured UTC time, explanation 
 - Keep the statistical-region exaggeration disclosure behind the labelled info control beside Small-body regions. It must remain keyboard and touch operable and close on a second activation.
 - Show/Travel closes the sheet to reveal the scene. Only requested markers appear; one selected label states “illustrative orbit”. Neutral stone/ice marker colors are symbolic; no fabricated shape textures or comet tails.
 - Keep NEO/PHA labels factual and understated. Nearby Earth shows its sampled simulation timestamp and whether the bounded sample is complete.
+
+
+## Step 19 close-approach presentation
+
+Existing selection, travel and scroll/pinch controls reveal progressively finer maps. Detail follows apparent size, with focus priority and hysteresis; textures fade through a small base during tier replacement. Technical renderer diagnostics stay out of the HUD. Saturn rings load naturally when exploring its moons. Titan stays an opaque hazy world. No landing controls or UI redesign. Compatibility views were inspected for all eight priority bodies; GPU/mobile sign-off remains open in `docs/STEP_19_CHECKPOINT.md`.

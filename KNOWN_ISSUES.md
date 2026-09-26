@@ -72,3 +72,8 @@ Step 16: context-aware local guide is implemented, but open-ended/multi-turn LLM
 - **KI-024 — Minor ephemeris accuracy (Medium, open, astronomy):** Fixed osculating ellipses omit perturbations/outgassing and have no validated error bounds. UI labels them illustrative; replace with validated bounded ephemerides where required.
 - **KI-025 — Minor presentation integration (Low, open, UX/rendering):** Minor markers have dedicated selection cards, details and navigation, but do not enter the primary destination progress/guide/distance-comparison controls. No physical shape assets or tails. Use the minor catalogue and its heliocentric distance; later unify presenter/selection contracts without eager loading.
 - **KI-026 — Spatial query completeness (Low, by design, catalogue):** Dense radial shells may exceed the 64-candidate budget. UI reports incomplete samples; use search for known objects. Add finer conservative spatial partitioning before large imports.
+
+
+## Step 19 sign-off gate — 2026-09-22
+
+All eight priority implementations and compatibility-distance inspections exist. The inspection browser cannot create WebGL, so GPU shader compilation/appearance, Moon bump strength, Earth atmospheric/night depth, Saturn ring shadows, real draw-call/texture cost and physical mobile performance remain unverified. This prevents marking Step 19 complete. Canvas remains a reduced-detail ~9-redraw/s fallback with approximate ring occlusion and static/baked source lighting; imagery does not validate orientation or real-time weather. See `docs/STEP_19_CHECKPOINT.md` for the exact next action. No known source-level test failure is accepted as completion.
