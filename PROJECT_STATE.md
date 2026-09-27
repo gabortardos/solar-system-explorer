@@ -1,6 +1,6 @@
 # Solar System Explorer — Current Project State
 
-Last verified: 2026-09-26 UTC
+Last verified: 2026-09-27 UTC
 
 Stable product version: V1.1. Production URL: `https://solar-system-explorer-gabor.gabortardos.chatgpt.site`.
 
@@ -8,7 +8,7 @@ This is the fast handoff for **what exists now**. The repository and deployed ap
 
 ## Current reality
 
-**Step 19 — Close-approach planet experience is implemented for all eight priority bodies, with compatibility-renderer visual QA completed. It is NOT yet marked complete: WebGL and physical mobile rendering/performance sign-off remain unavailable.** The shared screen-size LOD, smooth texture fades, sourced map tiers and bounded evictable cache are preserved. Read `docs/STEP_19_CHECKPOINT.md` and `docs/CLOSE_APPROACH.md` before continuing; do not redo assets/design or start Step 20.
+**Step 19 — Close-approach planet experience is implemented for all eight priority bodies.** The owner supplied real mobile/WebGL findings; the resulting Jupiter-moon and Saturn black-shadow corrections are implemented and release-verified. Step 19 remains open only for post-fix confirmation on the same real mobile path. The shared screen-size LOD, smooth texture fades, sourced map tiers and bounded evictable cache are preserved. Read `docs/STEP_19_CHECKPOINT.md` and `docs/CLOSE_APPROACH.md` before continuing; do not redo assets/design or start Step 20.
 
 Step 17 — **CONNECT THE LIVE AI** is complete and published. The Astronomy Guide uses server-side `gpt-5.6-luna` with D1-backed rate/budget reservations, strict structured-output validation, request-time context resolution, evidence/citation separation and deterministic Local guide fallback. Its two-class trust policy now allows natural qualitative and common-knowledge explanations while keeping exact measurements, calculated distances and scene state tied to trusted structured evidence. `OPENAI_API_KEY` remains a Sites secret. See `docs/AI_GUIDE.md`.
 
@@ -29,6 +29,7 @@ Latest verification:
 - Desktop compatibility-renderer QA passed for Io/Jupiter search and focus, moon orbit toggling, Charon's information-only panel and application console errors.
 - Step 19: all eight bodies inspected at far/medium/close range in the compatibility renderer, with Earth night-side and Saturn ring corrections verified. Full WebGL and physical-device mobile QA remain open.
 - Public Site version 32 matches the canonical Step 19 implementation tree. The same tree is mirrored to GitHub `main` at `8c13a3e92d43700b70d86880ac9ea0f4f8d80cb4`. A 2026-09-26 build, lint and 100-test rerun passed; the live inspection browser still reports `data-renderer="compatibility"`.
+- The 2026-09-27 mobile/WebGL correction prevents enlarged illustrative moons and Saturn's alpha ring sheet from casting misleading coarse shadows onto planetary globes. Direct solar lighting remains; Saturn still shades its rings. Build, lint, the complete suite and new shadow-policy regressions pass. Post-fix real-mobile confirmation is the only Step 19 gate.
 
 ## Working features
 
@@ -97,7 +98,7 @@ Latest verification:
 
 ## Current milestone and next task
 
-**Current implementation checkpoint:** Step 19 close-approach rendering, pending WebGL/device sign-off. Steps 17 and 18 remain complete. **Still open:** V1.2 flight/device QA. The mobile search/guide input fix is preserved as September 2026 maintenance, not a numbered milestone.
+**Current implementation checkpoint:** Step 19 close-approach rendering, pending one post-fix real-mobile/WebGL confirmation. Steps 17 and 18 remain complete. **Still open:** V1.2 flight/device QA. The mobile search/guide input fix is preserved as September 2026 maintenance, not a numbered milestone.
 
 Next action: follow `docs/STEP_19_CHECKPOINT.md` in a WebGL-capable browser. Validate the existing eight-body implementation, shader appearance, transitions, shadow cost and bounded memory on desktop/mobile; fix only observed defects. Full WebGL was unavailable in the current inspection browser. Step 20 remains out of scope.
 

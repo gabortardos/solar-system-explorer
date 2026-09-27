@@ -24,6 +24,7 @@ import {
 } from "./navigation-motion";
 import {minorScenePosition,minorLOD,MINOR_BUDGET,type MinorBody} from './minor-bodies';
 import { buildPopulationSamples, projectPopulation, type PopulationId } from "./populations";
+import { SATURN_RING_SHADOWS, surfaceShadowParticipation } from "./shadow-policy";
 export type SceneOptions = {
   scientific: boolean;
   orbits: boolean;
@@ -119,7 +120,8 @@ export function createScene(
     sunlight.shadow.mapSize.set(mobile ? 512 : 1024, mobile ? 512 : 1024);
     sunlight.shadow.camera.near = 0.1;
     sunlight.shadow.camera.far = 4500;
-    sunlight.shadow.bias = -0.00035;
+    sunlight.shadow.bias = -0.00012;
+    sunlight.shadow.normalBias = 0.025;
   }
   let options: SceneOptions = {
     scientific: false,
@@ -312,8 +314,9 @@ export function createScene(
         Math.PI) /
       180;
     m.userData.id = b.id;
-    m.castShadow = b.id !== "sun";
-    m.receiveShadow = b.id !== "sun";
+    const bodyShadows = surfaceShadowParticipation(b.id, b.category);
+    m.castShadow = bodyShadows.cast;
+    m.receiveShadow = bodyShadows.receive;
     g.add(m);
     meshes.push(m);
     if (b.id === "sun") {
@@ -400,8 +403,8 @@ export function createScene(
       });
       const ring = new THREE.Mesh(ringGeo, ringMaterial);
       ring.rotation.x = -Math.PI / 2;
-      ring.castShadow = true;
-      ring.receiveShadow = true;
+      ring.castShadow = SATURN_RING_SHADOWS.cast;
+      ring.receiveShadow = SATURN_RING_SHADOWS.receive;
       const tilt = new THREE.Group();
       tilt.rotation.z = (26.7 * Math.PI) / 180;
       tilt.add(ring);

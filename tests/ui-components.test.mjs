@@ -103,6 +103,8 @@ test("preserves the restrained cinematic rendering treatment", async () => {
 
   assert.match(scene, /PCFSoftShadowMap/);
   assert.match(scene, /logarithmicDepthBuffer:\s*true/);
+  assert.match(scene, /surfaceShadowParticipation\(b\.id, b\.category\)/);
+  assert.match(scene, /shadow\.normalBias\s*=\s*0\.025/);
   assert.match(scene, /withRenderOrigin/);
   assert.match(scene, /projectPosition/);
   assert.match(scene, /MeshStandardMaterial/);

@@ -255,3 +255,7 @@ Status: partially superseded by D028 after the satellite reference-plane transfo
 ## 2026-09-22 — Shared bounded close-approach LOD
 
 Preserve the imperative Three.js engine and scientific coordinate pipeline. Use one screen-space LOD/cache manager for eight priority bodies, two desktop / one mobile-or-Canvas detail bundles, lazy map tiers, focus priority, elapsed-time fades, and explicit abort/disposal. Use sourced maps rather than generated terrain. Titan is opaque atmosphere; unsupported relief is not invented. Keep Step 19 open until actual WebGL and mobile validation; compatibility-only screenshots do not certify GPU shaders or performance. Full detail/provenance and exact continuation are in `docs/CLOSE_APPROACH.md` and `docs/STEP_19_CHECKPOINT.md`.
+
+## 2026-09-27 — Shadow maps follow presentation validity
+
+Exploration Scale enlarges moons and compresses their orbit systems, so those meshes must not cast or receive eclipse shadows that look physically authoritative. Keep direct Sun/PBR lighting for every body. Major planets may cast only onto explicit receivers; Saturn's ring receives Saturn's shadow but its simplified transparent sheet does not cast onto the planet. This prevents coarse mobile moon/ring/self-shadow artifacts without flattening legitimate day/night lighting. Do not re-enable catalogue-wide shadow participation unless the geometry, scale and shadow budget are appropriate and verified on mobile WebGL.
