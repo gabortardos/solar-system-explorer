@@ -1,6 +1,6 @@
 # Step 19 checkpoint — updated 2026-09-27
 
-**STEP 19 COMPLETE: NO. The existing shadow mitigation and new mobile-search repair pass source/release checks. The GPU root causes and post-fix appearance are not verified; mobile search also needs rendered phone/keyboard confirmation. Do not start Step 20.**
+**STEP 19 COMPLETE: YES. Owner acceptance on 2026-09-27 used production Site version 35 in a real mobile WebGL browser. Do not start Step 20.**
 
 ## Resume without restarting
 
@@ -46,10 +46,10 @@ The interrupted shared LOD design and downloaded assets were retained. All eight
 - The implementation was published as public Site version 32 on 2026-09-22 from Sites source `271c62bb30d242da6bafc11f6956096ac9ea7bf6`. On 2026-09-26, the same tracked source tree was mirrored to GitHub `main` as `8c13a3e92d43700b70d86880ac9ea0f4f8d80cb4` (tree `710182d35d15d8908557b7d3203dff6962153099`). Sites remains canonical.
 - The unchanged implementation was rebuilt and retested on 2026-09-26: production build, lint and all 100 tests pass. The live Site still exposes `data-renderer="compatibility"` in the available browser, so this is a verified checkpoint, not Step 19 sign-off.
 
-## Remaining sign-off action
+## Owner WebGL acceptance — 2026-09-27
 
-The owner reproduced the original defects on real mobile/WebGL. Earlier inspection reported `data-renderer="compatibility"`; this continuation could not run the required managed browser workflow. The existing mitigation must not be treated as a confirmed root-cause repair. Step 19 remains open for real WebGL reproduction/reinspection and mobile search visual/interaction verification.
+The owner rechecked production version 35 on a real mobile WebGL browser: Jupiter and all four Galilean moons through orbital/rotational motion; Saturn, rings and shadows; Earth, Moon, Titan and LOD transitions. The previously reported Jupiter-moon black artifacts and Saturn black/pixelated shadow no longer reproduce. This is the required Step 19 real-device acceptance evidence.
 
-Exact next action: on the same mobile/WebGL path, revisit the four Galilean moons and Saturn long enough to cover rotation/orbit motion. Confirm the black moon patches and large pixelated Saturn shadow no longer appear, and quickly check rings, Earth, Titan, Moon, Jupiter and LOD transitions. At phone width, open search, type with the keyboard visible, scroll, use Show/Travel/Information and Close, then check desktop keyboard navigation. If defects persist, capture renderer/device, target, view and simulation time and diagnose on that path. Mark complete only after those checks pass.
+The source-level rationale for the shadow policy remains documented as a hypothesis; acceptance is based on the observed absence of the defects on the intended rendering path. Mobile catalogue search remains a separate maintenance item and does not block the close-approach rendering milestone.
 
 Known presentation limits: static source maps and illustrative spin/orientation; some baked lighting and uneven source resolution; Canvas is deliberately reduced detail and roughly 9 redraws/second; ring occlusion is approximate. No surface landing, walkable terrain, rover physics, procedural invented features or Step 20 features were added.

@@ -19,7 +19,7 @@ Before work begins on the next substantial milestone:
 
 ## Current numbered milestone — Step 19
 
-**Close-approach planet experience: implementation checkpoint, not complete.** All eight priority bodies use the shared screen-size LOD/cache and sourced maps (Titan uses opaque atmosphere). Far/medium/close compatibility-renderer inspection and targeted resource tests are complete. Actual WebGL shader/shadow/performance and mobile-device sign-off are still required; the available browser exposes no WebGL context. Resume from `docs/STEP_19_CHECKPOINT.md`; do not repeat asset research or start Step 20.
+**Close-approach planet experience: complete.** All eight priority bodies use the shared screen-size LOD/cache and sourced maps (Titan uses opaque atmosphere). Far/medium/close compatibility-renderer inspection and targeted resource tests are complete. Owner acceptance on 2026-09-27 used production version 35 on real mobile WebGL and confirmed Jupiter/Galilean-moon motion, Saturn rings/shadows, Earth, Moon, Titan and LOD transitions without the prior black artifacts. See `docs/STEP_19_CHECKPOINT.md`. Do not start Step 20 in this closeout.
 
 ## Completed milestones
 

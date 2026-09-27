@@ -8,7 +8,7 @@ This is the fast handoff for **what exists now**. The repository and deployed ap
 
 ## Current reality
 
-**Step 19 — Close-approach planet experience is implemented for all eight priority bodies but is NOT COMPLETE.** The owner supplied real mobile/WebGL findings; the existing Jupiter-moon/Saturn shadow mitigation is source-tested, not GPU-confirmed. The latest continuation repairs the mobile search's independent CSS translate conflict, keyboard sizing and result interactions. Real WebGL and rendered phone-search sign-off remain open. The shared LOD, assets and bounded cache are preserved. Read `docs/STEP_19_CHECKPOINT.md` and `docs/CLOSE_APPROACH.md`; do not restart or begin Step 20.
+**Step 19 — Close-approach planet experience is COMPLETE for all eight priority bodies.** Owner acceptance on 2026-09-27 used production Site version 35 on a real mobile WebGL browser and confirmed that the Jupiter-moon black artifacts and Saturn black/pixelated shadow no longer reproduce. Earth, Moon, Titan and LOD transitions were also rechecked. The shared LOD, sourced assets and bounded cache are preserved. Mobile catalogue search is a separate maintenance item, not a Step 19 gate. Do not begin Step 20 in this closeout.
 
 Step 17 — **CONNECT THE LIVE AI** is complete and published. The Astronomy Guide uses server-side `gpt-5.6-luna` with D1-backed rate/budget reservations, strict structured-output validation, request-time context resolution, evidence/citation separation and deterministic Local guide fallback. Its two-class trust policy now allows natural qualitative and common-knowledge explanations while keeping exact measurements, calculated distances and scene state tied to trusted structured evidence. `OPENAI_API_KEY` remains a Sites secret. See `docs/AI_GUIDE.md`.
 
@@ -24,12 +24,11 @@ Step 15 — **ASTEROID BELT AND KUIPER BELT VISUALIZATION** adds renderer-only r
 
 Latest verification:
 
-- Production build, lint and all 100 automated tests pass (including 11 LOD/resource tests). Live-guide natural answers, numerical grounding, authoritative retrieval, uncertainty, conflict handling, citation integrity, owner/public quota behavior, server-derived usage/reset state and free local presets are covered; full WebGL and physical-device appearance QA remain open.
+- Production build, lint and all 105 automated tests pass (including LOD/resource and mobile-search viewport checks). Live-guide natural answers, numerical grounding, authoritative retrieval, uncertainty, conflict handling, citation integrity, owner/public quota behavior, server-derived usage/reset state and free local presets are covered.
 - Tests cover catalogue integrity, every activated moon's parent-relative source-ellipse bounds, explicit illustrative-quality metadata, scale ordering, distances, clock behavior, rendering contracts, mobile HUD and bounded search.
 - Desktop compatibility-renderer QA passed for Io/Jupiter search and focus, moon orbit toggling, Charon's information-only panel and application console errors.
-- Step 19: all eight bodies inspected at far/medium/close range in the compatibility renderer, with Earth night-side and Saturn ring corrections verified. Full WebGL and physical-device mobile QA remain open.
-- Public Site version 32 matches the canonical Step 19 implementation tree. The same tree is mirrored to GitHub `main` at `8c13a3e92d43700b70d86880ac9ea0f4f8d80cb4`. A 2026-09-26 build, lint and 100-test rerun passed; the live inspection browser still reports `data-renderer="compatibility"`.
-- The v34 shadow policy excludes illustrative moon/ring-sheet shadows on globes while preserving direct solar lighting and Saturn-on-ring shading. This is an unverified mitigation, not an established GPU root-cause fix. Latest continuation adds mobile-search viewport/composition fixes; build, 105 tests and lint pass. Managed browser QA is unavailable because its required browser skill is missing. Real-mobile/WebGL and phone search confirmation remain gates.
+- Step 19: all eight bodies were inspected at far/medium/close range in compatibility rendering. Owner real mobile/WebGL acceptance on production version 35 then confirmed Jupiter and all four Galilean moons during motion, Saturn rings/shadows, Earth, Moon, Titan and LOD transitions; the prior black artifacts no longer reproduce.
+- Version 35 contains the shadow-policy and mobile-search maintenance release. Its source is mirrored to GitHub `main` at `c24106d0610ee48d645012d42cb7005a8d7137dc`. The documentation-only closeout follows this recorded owner acceptance.
 
 ## Working features
 
@@ -98,9 +97,9 @@ Latest verification:
 
 ## Current milestone and next task
 
-**Current implementation checkpoint:** Step 19 close-approach rendering, pending real-mobile/WebGL and phone-search confirmation. Steps 17 and 18 remain complete. **Still open:** V1.2 flight/device QA. The latest mobile search repair is included in the Step 19 defect checkpoint, not a new numbered milestone.
+**Current implementation checkpoint:** Step 19 close-approach rendering is complete. Steps 17 and 18 remain complete. **Still open:** V1.2 flight/device QA and separate mobile UI maintenance. Do not start Step 20 in this task.
 
-Next action: follow `docs/STEP_19_CHECKPOINT.md` in a WebGL-capable browser. Validate the existing eight-body implementation, shader appearance, transitions, shadow cost and bounded memory on desktop/mobile; fix only observed defects. Full WebGL was unavailable in the current inspection browser. Step 20 remains out of scope.
+Next action: retain the completed Step 19 implementation and address later work only under its own approved scope. Step 20 remains out of scope.
 
 ## Step 14 data and release notes
 
