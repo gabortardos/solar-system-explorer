@@ -49,13 +49,12 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import {
-  CommandDialog,
   CommandInput,
   CommandList,
-  CommandEmpty,
   CommandItem,
   CommandGroup,
 } from "@/components/ui/command";
+import { CatalogSearchDialog } from "./catalog-search-dialog";
 import { bodies, primaryBodies } from "./astronomy";
 import { DataProvenance } from "./data-provenance";
 import {
@@ -211,6 +210,7 @@ function SearchResultRow({
         className="search-result-actions"
         onPointerDown={stop}
         onClick={stop}
+        onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") event.stopPropagation(); }}
       >
         <button
           disabled={!result.sceneAvailable}
@@ -834,14 +834,12 @@ export default function Home() {
           <span>Show controls</span>
         </button>
       )}
-      <CommandDialog
-        className="catalog-search-dialog"
+      <CatalogSearchDialog
         open={search}
         onOpenChange={setSearch}
-        title="Search the Solar System"
-        description="Search names, aliases, object types and parent context across the current catalogue."
       >
         <CommandInput
+          aria-label="Search catalogue"
           value={searchQuery}
           onValueChange={setSearchQuery}
           placeholder="Search names, aliases or object types…"
@@ -851,7 +849,9 @@ export default function Home() {
           {searchBusy && (
             <div className="search-loading">Searching catalogue…</div>
           )}
-          <CommandEmpty>No matching catalogue object.</CommandEmpty>
+          {!searchBusy && searchData.results.length === 0 && (
+            <div className="search-loading" role="status">No matching catalogue object.</div>
+          )}
           <CommandGroup
             heading={`Solar System catalogue · ${searchData.total} result${searchData.total === 1 ? "" : "s"}`}
           >
@@ -871,7 +871,7 @@ export default function Home() {
             </p>
           )}
         </CommandList>
-      </CommandDialog>
+      </CatalogSearchDialog>
       <Sheet
         open={panel !== null}
         onOpenChange={(open) => {

@@ -152,8 +152,9 @@ test("keeps catalogue search bounded and separates information from scene select
   assert.match(search, /Math\.min\(options\?\.limit\?\?20,50\)/);
   assert.match(search, /server-side/);
   assert.match(css, /grid-template-columns:\s*repeat\(3/);
-  assert.match(css, /height:\s*min\(62dvh, 540px\)/);
-  assert.match(css, /transform:\s*translateX\(-50%\)/);
+  assert.match(css, /--search-height/);
+  assert.match(css, /translate:\s*none\s*!important/);
+  assert.match(css, /transform:\s*none\s*!important/);
   assert.match(css, /command-input.*font-size:\s*16px/s);
 });
 

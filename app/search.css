@@ -1,6 +1,28 @@
 .catalog-search-dialog {
   width: min(680px, calc(100vw - 28px)) !important;
   max-width: 680px !important;
+  padding: 0 !important;
+  gap: 0 !important;
+  overflow: hidden;
+}
+
+.catalog-search-header {
+  padding: 18px 54px 16px 16px;
+  flex: 0 0 auto;
+  text-align: left;
+}
+
+.catalog-search-dialog [data-slot="dialog-close"] {
+  min-width: 44px;
+  min-height: 44px;
+  top: 4px;
+  right: 4px;
+  display: grid;
+  place-items: center;
+}
+
+.catalog-search-dialog [data-slot="command-input-wrapper"] {
+  flex-shrink: 0;
 }
 
 .catalog-search-list {
@@ -82,13 +104,16 @@
 
 @media (max-width: 760px) {
   .catalog-search-dialog {
-    top: calc(10px + env(safe-area-inset-top)) !important;
-    left: 50% !important;
-    width: calc(100vw - 20px) !important;
+    top: calc(var(--search-top, 10px) + env(safe-area-inset-top)) !important;
+    left: var(--search-left, 10px) !important;
+    width: var(--search-width, calc(100vw - 20px)) !important;
     max-width: calc(100vw - 20px) !important;
-    height: min(62dvh, 540px) !important;
-    max-height: calc(100dvh - 20px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
-    transform: translateX(-50%) !important;
+    height: min(540px, calc(var(--search-height, calc(100dvh - 20px)) - env(safe-area-inset-top) - env(safe-area-inset-bottom))) !important;
+    max-height: calc(var(--search-height, calc(100dvh - 20px)) - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
+    /* Tailwind v4 uses independent translate; transform alone cannot reset it. */
+    translate: none !important;
+    transform: none !important;
+    animation: none !important;
     display: flex !important;
     flex-direction: column;
   }
@@ -102,6 +127,7 @@
 
   .catalog-search-dialog [data-slot="command"] {
     min-height: 0;
+    flex: 1 1 auto;
   }
 
   .catalog-search-dialog [data-slot="command-input"] {
@@ -109,7 +135,16 @@
   }
 
   .search-result-actions button {
+    min-width: 0;
+    min-height: 44px;
     font-size: 11px;
     padding-inline: 5px;
+    gap: 3px;
+  }
+
+  .search-result-actions button svg {
+    width: 14px !important;
+    height: 14px !important;
+    flex-shrink: 0;
   }
 }
