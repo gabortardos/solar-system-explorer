@@ -39,7 +39,7 @@ Step 16: context-aware local guide is implemented, but open-ended/multi-turn LLM
 
 ## Resolved/stabilized history
 
-- September 2026 mobile input maintenance correction: catalogue search no longer retains a vertical-centering transform after its mobile safe-area placement, and both search and guide text entry meet iOS's 16px no-auto-zoom threshold. This is not official roadmap Step 18; physical-device validation remains under KI-011.
+- September 2026 mobile input maintenance correction: owner iPhone 16 evidence showed that transform corrections did not make the centered search dialog reliable. Mobile search now uses a separate fixed, edge-to-edge sheet with safe-area padding, a persistent header/Close control and 16px input, plus internal result scrolling sized to the VisualViewport above the keyboard. Desktop search is unchanged. This is not official roadmap Step 18; physical-device validation remains under KI-011.
 
 - Step 17 owner-review corrections: the unstable animated time-rate picker was replaced by a native selector; the permanent population legend and desktop flight text were converted to compact/contextual UI; close Canvas Saturn uses a bounded higher-detail sphere raster; the brand now tracks completed development step 17. Build, lint and 62 tests pass. Physical-device/full-WebGL appearance remains covered by KI-002/KI-011.
 

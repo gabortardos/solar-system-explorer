@@ -166,7 +166,7 @@ Status: implemented and verified in source on 2026-09-14.
 
 ### UI/graphics checkpoints requested by owner
 
-A and the September 2026 UI maintenance corrections are implemented: orbital timelapse, path contrast, desktop HUD cleanup/hide/restore, input and label treatment, sticky panel exit, stable time selector, compact small-body disclosure, improved Canvas Saturn close-ups, keyboard-safe mobile search and iOS-stable guide entry. These are not official numbered roadmap steps. B next: target-visible travel/arrival choreography and full rendered interaction matrix. See `docs/UI_GRAPHICS_PLAN.md`.
+A and the September 2026 UI maintenance corrections are implemented: orbital timelapse, path contrast, desktop HUD cleanup/hide/restore, input and label treatment, sticky panel exit, stable time selector, compact small-body disclosure, improved Canvas Saturn close-ups, a dedicated fixed mobile search sheet and iOS-stable guide entry. These are not official numbered roadmap steps. B next: target-visible travel/arrival choreography and full rendered interaction matrix. See `docs/UI_GRAPHICS_PLAN.md`.
 
 ### Step 16 — AI astronomy guide foundation
 

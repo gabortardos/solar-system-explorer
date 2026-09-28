@@ -103,46 +103,145 @@
 }
 
 @media (max-width: 760px) {
-  .catalog-search-dialog {
-    top: calc(var(--search-top, 10px) + env(safe-area-inset-top)) !important;
-    left: var(--search-left, 10px) !important;
-    width: var(--search-width, calc(100vw - 20px)) !important;
-    max-width: calc(100vw - 20px) !important;
-    height: min(540px, calc(var(--search-height, calc(100dvh - 20px)) - env(safe-area-inset-top) - env(safe-area-inset-bottom))) !important;
-    max-height: calc(var(--search-height, calc(100dvh - 20px)) - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
-    /* Tailwind v4 uses independent translate; transform alone cannot reset it. */
-    translate: none !important;
-    transform: none !important;
-    animation: none !important;
-    display: flex !important;
-    flex-direction: column;
+  .catalog-search-mobile-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 70;
+    background: #01050bd9;
   }
 
-  .catalog-search-list {
-    flex: 1 1 auto;
-    min-height: 0;
-    max-height: none !important;
+  .catalog-search-mobile-sheet {
+    position: fixed;
+    top: var(--mobile-search-top, 0px);
+    right: 0;
+    bottom: auto;
+    left: 0;
+    z-index: 71;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: none;
+    height: var(--mobile-search-height, 100dvh);
+    margin: 0;
+    padding:
+      env(safe-area-inset-top)
+      max(12px, env(safe-area-inset-right))
+      env(safe-area-inset-bottom)
+      max(12px, env(safe-area-inset-left));
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 0;
+    border-radius: 0;
+    background: #0d1a24;
+    color: #dce9ed;
+    box-shadow: none;
     overscroll-behavior: contain;
   }
 
-  .catalog-search-dialog [data-slot="command"] {
-    min-height: 0;
-    flex: 1 1 auto;
+  .catalog-search-mobile-header {
+    min-width: 0;
+    min-height: 56px;
+    padding: 6px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex: 0 0 auto;
+    border-bottom: 1px solid #ffffff1f;
   }
 
-  .catalog-search-dialog [data-slot="command-input"] {
+  .catalog-search-mobile-title {
+    font-size: 17px;
+    line-height: 1.25;
+    font-weight: 600;
+  }
+
+  .catalog-search-mobile-close {
+    min-width: 76px;
+    min-height: 44px;
+    padding: 8px 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    flex: 0 0 auto;
+    border: 1px solid #ffffff26;
+    border-radius: 8px;
+    background: #152530;
+    color: #e5f0f2;
+    font-size: 14px;
+  }
+
+  .catalog-search-mobile-close svg {
+    width: 17px;
+    height: 17px;
+  }
+
+  .catalog-search-mobile-command {
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 0;
+    border-radius: 0 !important;
+    background: transparent !important;
+  }
+
+  .catalog-search-mobile-sheet [data-slot="command-input-wrapper"] {
+    width: 100%;
+    min-width: 0;
+    height: 56px !important;
+    padding-inline: 4px 8px;
+    flex: 0 0 auto;
+    box-sizing: border-box;
+  }
+
+  .catalog-search-mobile-sheet [data-slot="command-input"] {
+    min-width: 0;
     font-size: 16px !important;
   }
 
-  .search-result-actions button {
+  .catalog-search-mobile-sheet .catalog-search-list {
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+    max-height: none !important;
+    flex: 1 1 auto;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .catalog-search-mobile-sheet .catalog-search-result {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  .catalog-search-mobile-sheet .search-result-copy,
+  .catalog-search-mobile-sheet .search-result-copy span,
+  .catalog-search-mobile-sheet .search-result-copy small {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+
+  .catalog-search-mobile-sheet .search-result-actions {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .catalog-search-mobile-sheet .search-result-actions button {
     min-width: 0;
     min-height: 44px;
     font-size: 11px;
     padding-inline: 5px;
     gap: 3px;
+    line-height: 1.15;
+    white-space: normal;
+    overflow-wrap: anywhere;
   }
 
-  .search-result-actions button svg {
+  .catalog-search-mobile-sheet .search-result-actions button svg {
     width: 14px !important;
     height: 14px !important;
     flex-shrink: 0;
