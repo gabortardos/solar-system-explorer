@@ -6,6 +6,12 @@ Severity: **High** blocks a core path/risks serious regression; **Medium** mater
 
 ## Active issues
 
+- **Visual identity pass acceptance (2026-09-28):** new sourced moon maps and
+  Uranus/Neptune material treatment pass asset/resource checks, but actual
+  rendered/WebGL inspection is outstanding because the required preview
+  control is unavailable. Source gaps, baked lighting and spherical Phobos/Deimos
+  proxies are disclosed in `docs/VISUAL_IDENTITY.md`. This does not reopen Step 19.
+
 UI checkpoint A adds faster timelapse and contrast but does not claim every visual problem resolved. Moon motion is numerically verified; following the Moon masks its movement relative to the camera. High timelapse can alias fast satellites. Reported post-search guide dismissal remains a reproduction task; a sticky Back to space escape route is added. Target-visible travel is still pending. See `docs/UI_GRAPHICS_PLAN.md`.
 
 Step 16: context-aware local guide is implemented, but open-ended/multi-turn LLM conversation, durable paid-endpoint abuse/spend controls and refreshed legacy educational prose are not. The output validator is a format guard, not a scientific truth verifier. Paid activation is deliberately unavailable pending owner authorization and those safeguards (`docs/AI_GUIDE.md`).

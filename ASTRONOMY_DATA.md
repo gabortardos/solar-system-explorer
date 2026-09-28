@@ -2,6 +2,13 @@
 
 ## Scope
 
+The 2026-09-28 unnumbered visual identity pass changes presentation only. NASA
+and USGS/JPL moon mosaics have uneven coverage and baked lighting; missing
+Uranian northern regions use disclosed featureless neutral fill. Neptune's
+blue-green palette is qualitative, not calibrated reflectance. No new surface
+features, physical measurements, shape models or ephemerides are inferred.
+See `docs/VISUAL_IDENTITY.md` and its exact-source/hash manifests.
+
 This records the current scientific model, its limitations, and the intended data-growth path. Update it whenever object schemas, sources, coordinate logic, scale transformations, or scientific assumptions change.
 
 ## Local catalogue and source snapshot

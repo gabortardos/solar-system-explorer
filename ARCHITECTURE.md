@@ -53,7 +53,7 @@ It returns an imperative API: `focus`, `preload`, `overview`, `brake`, `setMovem
 
 The engine attempts WebGL2, then WebGL. When successful it creates a `THREE.WebGLRenderer` with logarithmic depth, antialiasing, capped device pixel ratio, sRGB output, ACES Filmic tone mapping, a point light at the Sun, and low ambient light.
 
-Each active body uses a `THREE.Group` positioned by the astronomy model. Primary bodies use textured spheres; newly activated moons use lower-segment color-material spheres with no new texture downloads. Earth adds a cloud sphere and atmosphere shader; Saturn adds a ring mesh. Separate groups hold heliocentric planet paths and parent-local moon paths. World labels are DOM buttons projected into screen space.
+Each active body uses a `THREE.Group` positioned by the astronomy model. Primary bodies and active moons use textured spheres. The shared `BodyDetailManager` keeps Step 19's eight-body close tiers and adds a lightweight 256/1024px identity policy for 18 secondary bodies, with the same total detail-slot budget. Earth adds cloud/night layers; applicable planets and Titan use restrained atmosphere shaders; Saturn adds its ring mesh. Separate groups hold heliocentric planet paths and parent-local moon paths. World labels are DOM buttons projected into screen space. See `docs/VISUAL_IDENTITY.md` for coverage and validation limits.
 
 `OrbitControls` handles orbit/pan/zoom and damping. Raycasting handles clicking visible body meshes.
 

@@ -1,0 +1,152 @@
+{
+  "retrieved": "2026-09-28",
+  "license": {
+    "url": "https://www.nasa.gov/nasa-brand-center/images-and-media/",
+    "summary": "NASA guidelines generally permit educational/informational reuse, including 3D texture maps and graphical simulations; credit NASA and avoid endorsement claims; third-party exceptions apply."
+  },
+  "appearanceReference": "https://www.ox.ac.uk/news/2024-01-05-new-images-reveal-what-neptune-and-uranus-really-look-0",
+  "entries": [
+    {
+      "body": "io",
+      "file": "io.glb",
+      "sourcePage": "https://science.nasa.gov/resource/io-3d-model/",
+      "downloadUrl": "https://assets.science.nasa.gov/content/dam/science/psd/solar/2023/09/i/Io_1_3643.glb",
+      "credit": "NASA Visualization Technology Applications and Development (VTAD)",
+      "caveat": "NASA visualization asset; source page does not document texture mosaic epochs, resolution, or gap-filling. Do not assert complete photographic coverage. Inspect embedded image and UV orientation before using."
+    },
+    {
+      "body": "ganymede",
+      "file": "ganymede.glb",
+      "sourcePage": "https://science.nasa.gov/resource/ganymede-3d-model/",
+      "downloadUrl": "https://assets.science.nasa.gov/content/dam/science/psd/solar/2023/09/g/Ganymede_1_5268.glb",
+      "credit": "NASA Visualization Technology Applications and Development (VTAD)",
+      "caveat": "NASA visualization asset; source page does not document texture mosaic epochs, resolution, or gap-filling. Do not assert complete photographic coverage. Inspect embedded image and UV orientation before using."
+    },
+    {
+      "body": "callisto",
+      "file": "callisto.glb",
+      "sourcePage": "https://science.nasa.gov/resource/callisto-3d-model/",
+      "downloadUrl": "https://assets.science.nasa.gov/content/dam/science/psd/solar/2023/09/c/Callisto_1_4821.glb",
+      "credit": "NASA Visualization Technology Applications and Development (VTAD)",
+      "caveat": "NASA visualization asset; source page does not document texture mosaic epochs, resolution, or gap-filling. Do not assert complete photographic coverage. Inspect embedded image and UV orientation before using."
+    },
+    {
+      "body": "tethys",
+      "file": "tethys.glb",
+      "sourcePage": "https://science.nasa.gov/resource/tethys-3d-model/",
+      "downloadUrl": "https://assets.science.nasa.gov/content/dam/science/psd/solar/2023/09/t/Tethys_1_1077-1.glb",
+      "credit": "NASA Visualization Technology Applications and Development (VTAD)",
+      "caveat": "NASA visualization asset; source page does not document texture mosaic epochs, resolution, or gap-filling. Do not assert complete photographic coverage. Inspect embedded image and UV orientation before using."
+    },
+    {
+      "body": "dione",
+      "file": "dione.glb",
+      "sourcePage": "https://science.nasa.gov/resource/dione-3d-model/",
+      "downloadUrl": "https://assets.science.nasa.gov/content/dam/science/psd/solar/2023/09/d/Dione_1_1123.glb",
+      "credit": "NASA Visualization Technology Applications and Development (VTAD)",
+      "caveat": "NASA visualization asset; source page does not document texture mosaic epochs, resolution, or gap-filling. Do not assert complete photographic coverage. Inspect embedded image and UV orientation before using."
+    },
+    {
+      "body": "rhea",
+      "file": "rhea.glb",
+      "sourcePage": "https://science.nasa.gov/resource/rhea-3d-model/",
+      "downloadUrl": "https://assets.science.nasa.gov/content/dam/science/psd/solar/2023/09/r/Rhea_1_1529.glb",
+      "credit": "NASA Visualization Technology Applications and Development (VTAD)",
+      "caveat": "NASA visualization asset; source page does not document texture mosaic epochs, resolution, or gap-filling. Do not assert complete photographic coverage. Inspect embedded image and UV orientation before using."
+    },
+    {
+      "body": "iapetus",
+      "file": "iapetus.glb",
+      "sourcePage": "https://science.nasa.gov/resource/iapetus-3d-model/",
+      "downloadUrl": "https://assets.science.nasa.gov/content/dam/science/psd/solar/2023/09/i/Iapetus_1_1471.glb",
+      "credit": "NASA Visualization Technology Applications and Development (VTAD)",
+      "caveat": "NASA visualization asset; source page does not document texture mosaic epochs, resolution, or gap-filling. Do not assert complete photographic coverage. Inspect embedded image and UV orientation before using."
+    },
+    {
+      "body": "triton",
+      "file": "triton.glb",
+      "sourcePage": "https://science.nasa.gov/resource/triton-3d-model/",
+      "downloadUrl": "https://assets.science.nasa.gov/content/dam/science/psd/solar/2023/09/t/Triton_1_2707.glb",
+      "credit": "NASA Visualization Technology Applications and Development (VTAD)",
+      "caveat": "NASA visualization asset; source page does not document texture mosaic epochs, resolution, or gap-filling. Do not assert complete photographic coverage. Inspect embedded image and UV orientation before using."
+    },
+    {
+      "body": "ariel",
+      "file": "ariel.jpg",
+      "sourcePage": "https://science.nasa.gov/3d-resources/uranus-ariel/",
+      "downloadUrl": "https://assets.science.nasa.gov/content/dam/science/cds/3d/resources/image/uranus---ariel/Uranus%20-%20Ariel.jpg",
+      "credit": "USGS/Tammy Becker & JPL/Caltech",
+      "caveat": "Northern hemisphere lacks Voyager 2 coverage; black denotes missing data, not dark surface. Preserve missing coverage or replace only with clearly labeled neutral unknown-area color."
+    },
+    {
+      "body": "miranda",
+      "file": "miranda.jpg",
+      "sourcePage": "https://science.nasa.gov/3d-resources/uranus-miranda/",
+      "downloadUrl": "https://assets.science.nasa.gov/content/dam/science/cds/3d/resources/image/uranus---miranda/Uranus%20-%20Miranda.jpg",
+      "credit": "USGS/Tammy Becker & JPL/Caltech",
+      "caveat": "Northern hemisphere lacks Voyager 2 coverage; black denotes missing data, not dark surface. Preserve missing coverage or replace only with clearly labeled neutral unknown-area color."
+    },
+    {
+      "body": "umbriel",
+      "file": "umbriel.jpg",
+      "sourcePage": "https://science.nasa.gov/3d-resources/uranus-umbriel/",
+      "downloadUrl": "https://assets.science.nasa.gov/content/dam/science/cds/3d/resources/image/uranus---umbriel/Uranus%20-%20Umbriel.jpg",
+      "credit": "USGS/Tammy Becker & JPL/Caltech",
+      "caveat": "Northern hemisphere lacks Voyager 2 coverage; black denotes missing data, not dark surface. Preserve missing coverage or replace only with clearly labeled neutral unknown-area color."
+    },
+    {
+      "body": "titania",
+      "file": "titania.jpg",
+      "sourcePage": "https://science.nasa.gov/3d-resources/uranus-titania/",
+      "downloadUrl": "https://assets.science.nasa.gov/content/dam/science/cds/3d/resources/image/uranus---titania/Uranus%20-%20Titania.jpg",
+      "credit": "USGS/Tammy Becker & JPL/Caltech",
+      "caveat": "Northern hemisphere lacks Voyager 2 coverage; black denotes missing data, not dark surface. Preserve missing coverage or replace only with clearly labeled neutral unknown-area color."
+    },
+    {
+      "body": "oberon",
+      "file": "oberon.tif",
+      "sourcePage": "https://science.nasa.gov/3d-resources/uranus-oberon/",
+      "downloadUrl": "https://assets.science.nasa.gov/content/dam/science/cds/3d/resources/image/uranus---oberon/Uranus%20-%20Oberon.tif",
+      "credit": "USGS/Tammy Becker & JPL/Caltech",
+      "caveat": "Use TIFF only: source page JPEG and preview mistakenly link Ariel. Northern hemisphere lacks Voyager 2 coverage; black denotes missing data, not dark surface."
+    },
+    {
+      "body": "mimas",
+      "file": "saturn-mimas.jpg",
+      "sourcePage": "https://science.nasa.gov/3d-resources/saturn-mimas/",
+      "downloadUrl": "https://assets.science.nasa.gov/content/dam/science/cds/3d/resources/image/saturn---mimas/Saturn%20-%20Mimas.jpg",
+      "credit": "NASA/JPL/Solar System Simulator",
+      "caveat": "Voyager-era partial coverage: white low-detail regions are missing/low-resolution areas, not uniform observed terrain."
+    },
+    {
+      "body": "phobos",
+      "file": "mars-phobos.jpg",
+      "sourcePage": "https://science.nasa.gov/3d-resources/mars-phobos/",
+      "downloadUrl": "https://assets.science.nasa.gov/content/dam/science/cds/3d/resources/image/mars---phobos/Mars%20-%20Phobos.jpg",
+      "credit": "NASA/JPL/Solar System Simulator",
+      "caveat": "Source page identifies visualization texture, not a complete current observational mosaic. Inspect missing regions and preserve scientific caveats."
+    },
+    {
+      "body": "deimos",
+      "file": "mars-deimos.jpg",
+      "sourcePage": "https://science.nasa.gov/3d-resources/mars-deimos/",
+      "downloadUrl": "https://assets.science.nasa.gov/content/dam/science/cds/3d/resources/image/mars---deimos/Mars%20-%20Deimos.jpg",
+      "credit": "NASA/JPL/Solar System Simulator",
+      "caveat": "Source page identifies visualization texture, not a complete current observational mosaic. Inspect missing regions and preserve scientific caveats."
+    },
+    {
+      "body": "uranus",
+      "file": "public/textures/uranus.jpg",
+      "sourcePage": "https://www.solarsystemscope.com/textures/",
+      "credit": "Solar System Scope / INOVE, CC BY 4.0",
+      "caveat": "Existing visualization cloud map; Neptune derivative has an approximate restrained blue-green palette, not a calibrated true-color reconstruction."
+    },
+    {
+      "body": "neptune",
+      "file": "public/textures/neptune.jpg",
+      "sourcePage": "https://www.solarsystemscope.com/textures/",
+      "credit": "Solar System Scope / INOVE, CC BY 4.0",
+      "caveat": "Existing visualization cloud map; Neptune derivative has an approximate restrained blue-green palette, not a calibrated true-color reconstruction."
+    }
+  ]
+}

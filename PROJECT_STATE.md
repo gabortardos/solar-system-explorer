@@ -1,12 +1,14 @@
 # Solar System Explorer — Current Project State
 
-Last verified: 2026-09-27 UTC
+Last updated: 2026-09-28 UTC
 
 Stable product version: V1.1. Production URL: `https://solar-system-explorer-gabor.gabortardos.chatgpt.site`.
 
 This is the fast handoff for **what exists now**. The repository and deployed application are the source of truth. Read the specialized documents for product direction, architecture, UX, astronomy, roadmap, decisions and issues. Do not rebuild from a starter or replace working architecture merely because a new Work chat begins.
 
 ## Current reality
+
+The unnumbered **Solar System visual identity pass** adds sourced identity maps for all 16 previously flat-color active moons and shared-cache cloud/atmosphere treatment for Uranus and Neptune. Eighteen secondary bodies use 256px bases and one 1024px tier within the existing two-desktop/one-mobile cache. No Step 19 priority assets or shadow policy changed. See `docs/VISUAL_IDENTITY.md` for provenance, coverage limits and the outstanding actual-rendered/WebGL acceptance check. Step 20 has not started.
 
 **Step 19 — Close-approach planet experience is COMPLETE for all eight priority bodies.** Owner acceptance on 2026-09-27 used production Site version 35 on a real mobile WebGL browser and confirmed that the Jupiter-moon black artifacts and Saturn black/pixelated shadow no longer reproduce. Earth, Moon, Titan and LOD transitions were also rechecked. The shared LOD, sourced assets and bounded cache are preserved. Mobile catalogue search is a separate maintenance item, not a Step 19 gate. Do not begin Step 20 in this closeout.
 
@@ -23,6 +25,8 @@ Step 16's request-time context/evidence foundation remains the deterministic fal
 Step 15 — **ASTEROID BELT AND KUIPER BELT VISUALIZATION** adds renderer-only representative regions for the main asteroid belt, the Kuiper Belt and Jupiter's leading/trailing Trojan clouds. Step 14's separate on-demand 19-object JPL minor-body sample remains intact. The bounded active scene still contains 29 destinations; population dots are not catalogue objects, destinations, counts or ephemerides.
 
 Latest verification:
+
+- Visual identity release (2026-09-28): production build, lint and all 109 automated tests pass, including all 18 identity bodies, source hashes, bounded shared-cache allocation and disposal. Actual application-rendered/WebGL acceptance remains outstanding as recorded in `docs/VISUAL_IDENTITY.md`.
 
 - Production build, lint and all 105 automated tests pass (including LOD/resource and mobile-search viewport checks). Live-guide natural answers, numerical grounding, authoritative retrieval, uncertainty, conflict handling, citation integrity, owner/public quota behavior, server-derived usage/reset state and free local presets are covered.
 - Tests cover catalogue integrity, every activated moon's parent-relative source-ellipse bounds, explicit illustrative-quality metadata, scale ordering, distances, clock behavior, rendering contracts, mobile HUD and bounded search.
@@ -68,7 +72,7 @@ Latest verification:
 
 ## Visual and scale systems
 
-- Shared close-approach LOD for Earth, Moon, Mars, Jupiter, Saturn, Europa, Titan and Enceladus: lazy 512/1024/4096px maps (2048px mobile cap), two desktop or one mobile/compatibility detail bundles, focus priority, fades, abort/disposal and sourced moon imagery. Titan remains opaque haze with no invented surface. Other moons retain lightweight colors.
+- Shared close-approach LOD for Earth, Moon, Mars, Jupiter, Saturn, Europa, Titan and Enceladus: lazy 512/1024/4096px maps (2048px mobile cap), two desktop or one mobile/compatibility detail bundles, focus priority, fades, abort/disposal and sourced moon imagery. Titan remains opaque haze with no invented surface. The visual identity pass extends that same cache to the other 16 active moons plus Uranus/Neptune at 256/1024px; partial coverage is disclosed and missing Uranian northern terrain is not invented.
 - Warm Sun light, restrained ambient fill, ACES tone mapping, soft WebGL shadows, Earth clouds/night lights/atmosphere, Saturn rings, Sun corona and deterministic decorative stars.
 - Scientific Scale is linear at 100 units/AU for centers. Bodies remain enlarged for visibility.
 - Exploration Scale compresses heliocentric radius continuously. Moon systems use a centralized monotonic parent-local radial compression preserving phase, direction and orbit ordering.

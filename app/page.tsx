@@ -1259,9 +1259,17 @@ export default function Home() {
               <h3>Surface imagery</h3>
               <p className="fineprint">
                 Maps by Solar System Scope / INOVE, based on NASA imagery; CC BY
-                4.0. Colors are enhanced and unmapped regions may contain
-                illustrative terrain. Surface maps load only when needed.
+                4.0. Moon maps also credit NASA VTAD, NASA/JPL, and USGS/Tammy
+                Becker. These are static visualization mosaics, not current
+                weather or complete surface surveys. Unmapped northern regions
+                of Uranus’s moons use featureless neutral color, not invented
+                terrain. Neptune’s blue-green palette is an approximation;
+                source colors and baked lighting vary. Maps load only when needed.
               </p>
+              <a className="source-link" href="https://science.nasa.gov/3d-resources/" target="_blank" rel="noreferrer">
+                NASA model and moon-map credits
+                <ArrowUpRight size={15} />
+              </a>
               <a
                 className="source-link"
                 href="https://www.solarsystemscope.com/textures/"

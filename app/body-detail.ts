@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { DETAIL_BODIES, DETAIL_POLICY, detailLevel, detailWidth, projectedRadius, textureBytes, ATMOSPHERES, type DetailBody, type DetailLevel } from './body-lod';
+import { DETAIL_BODIES, DETAIL_POLICY, detailLevel, detailWidth, isIdentityBody, projectedRadius, textureBytes, ATMOSPHERES, type DetailBody, type DetailLevel } from './body-lod';
 
 type Uniform<T> = { value: T };
 export type DetailLayer = { path: string; linear?: boolean; apply: (texture: THREE.Texture | null) => void; fade?: (amount: number) => void };
@@ -78,7 +78,7 @@ export class BodyDetailManager {
     if (entry.baseReady || entry.basePending || this.disposed) return;
     entry.basePending = true;
     const controller = new AbortController(); this.baseControllers.add(controller);
-    void this.fetchTexture(`/textures/detail/${entry.id}-512.webp`, controller.signal).then(texture => {
+    void this.fetchTexture(`/textures/detail/${entry.id}-${detailWidth(entry.id, 0, this.mobile)}.webp`, controller.signal).then(texture => {
       if (this.disposed) { texture.dispose(); return; }
       texture.anisotropy = this.anisotropy;
       const old = entry.base; entry.base = texture; entry.baseReady = true;
@@ -112,7 +112,7 @@ export class BodyDetailManager {
       entry.layerTextures = loaded;
       entry.layers.forEach((layer, index) => layer.apply(loaded[index]));
       entry.map.value = entry.texture ?? entry.base;
-      const segments = this.mobile || this.software ? 64 : level === 2 ? 128 : 96;
+      const segments = this.mobile || this.software || isIdentityBody(entry.id) ? 64 : level === 2 ? 128 : 96;
       entry.detailGeometry = new THREE.SphereGeometry(entry.radius, segments, segments / 2);
       entry.mesh.geometry = entry.detailGeometry;
       entry.level = level;
@@ -138,6 +138,8 @@ export class BodyDetailManager {
         const visible = entry.mesh.parent?.visible && this.frustum.intersectsSphere(this.sphere);
         entry.pixels = visible ? projectedRadius(entry.radius, camera.position.distanceTo(this.center), camera.fov, height) : 0;
         entry.wanted = detailLevel(entry.pixels, entry.wanted);
+        // One identity tier: crossing the close threshold must not reload the same map.
+        if (isIdentityBody(entry.id) && entry.wanted === 2) entry.wanted = 1;
         if (entry.pixels > 3) this.base(entry);
       }
       const candidates = this.entries.filter(e => e.wanted > 0 && !e.error).sort((a, b) =>
@@ -169,7 +171,7 @@ export class BodyDetailManager {
       renderer: this.software ? 'compatibility' : 'webgl',
       slots: this.mobile || this.software ? 1 : 2,
       // Conservative allocated/reserved RGBA+mip estimate, not a GPU measurement.
-      estimatedTextureBytes: this.entries.reduce((sum, e) => sum + (e.baseReady ? textureBytes(e.id === 'titan' ? 1 : 512) : 4) + (e.width && e.id !== 'titan' ? textureBytes(e.width) : 0) + e.layerTextures.reduce((s, t) => { const image = t.image as { width: number; height: number }; return s + textureBytes(image.width, image.height); }, 0), 0),
+      estimatedTextureBytes: this.entries.reduce((sum, e) => sum + (e.baseReady ? textureBytes(e.id === 'titan' ? 1 : detailWidth(e.id, 0, this.mobile)) : 4) + (e.width && e.id !== 'titan' ? textureBytes(e.width) : 0) + e.layerTextures.reduce((s, t) => { const image = t.image as { width: number; height: number }; return s + textureBytes(image.width, image.height); }, 0), 0),
       bodies: this.entries.map(e => ({ id: e.id, level: e.level, wanted: e.wanted, pixels: Math.round(e.pixels), loading: !!e.pending, failed: e.error })),
     };
   }

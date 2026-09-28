@@ -1,5 +1,15 @@
 # Solar System Explorer — Decision Record
 
+## 2026-09-28 — Secondary-body identity shares the existing detail cache
+
+Use sourced 256px base/1024px identity maps for the 16 previously flat active
+moons plus Uranus/Neptune. They compete with Step 19 bodies for the same two
+desktop/one mobile detail slots; no second renderer/cache, invented surface
+features or new shape model. Preserve the eight priority treatments and accepted
+shadow policy. Disclose source coverage, neutral unknown-region fill and
+qualitative ice-giant colors. See `docs/VISUAL_IDENTITY.md`; actual rendered
+acceptance remains pending, and Step 20 has not started.
+
 ## D037 — Authenticated owner development access preserves monetary safety (2026-09-21)
 
 - **Decision:** Use the Site platform's server-injected authenticated email to recognize the configured project owner. Owner requests bypass viewer and global request-count ceilings, but remain D1-recorded, cost-reserved and subject to all application/OpenAI monetary caps. Public visitors receive 10 requests/minute and 50/rolling-day; public global limits remain 10/minute, 100/day and 1,000/31-days.

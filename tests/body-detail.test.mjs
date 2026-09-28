@@ -1,13 +1,26 @@
 import test, {after} from 'node:test';
 import assert from 'node:assert/strict';
-import {access} from 'node:fs/promises';
+import {access,readFile} from 'node:fs/promises';
+import {createHash} from 'node:crypto';
 import {createServer} from 'vite';
 import * as THREE from 'three';
 const vite=await createServer({configFile:false,appType:'custom',server:{middlewareMode:true,hmr:false}});
 after(()=>vite.close());
 const {BodyDetailManager}=await vite.ssrLoadModule('/app/body-detail.ts');
-const {DETAIL_BODIES,detailLevel,detailWidth,projectedRadius,textureBytes}=await vite.ssrLoadModule('/app/body-lod.ts');
+const {DETAIL_BODIES,CLOSE_APPROACH_BODIES,IDENTITY_BODIES,detailLevel,detailWidth,projectedRadius,textureBytes}=await vite.ssrLoadModule('/app/body-lod.ts');
 const settle=()=>new Promise(resolve=>setImmediate(resolve));
+test('identity assets match provenance hashes and stay within the transfer budget',async()=>{
+ const manifest=JSON.parse(await readFile('docs/IDENTITY_TEXTURE_MANIFEST.json','utf8'));
+ const sources=JSON.parse(await readFile('docs/IDENTITY_TEXTURE_SOURCES.json','utf8'));
+ assert.deepEqual(new Set(manifest.map(m=>m.body)),new Set(IDENTITY_BODIES));
+ assert.equal(manifest.length,IDENTITY_BODIES.length*2);
+ assert.ok(manifest.reduce((n,m)=>n+m.bytes,0)<2*1024*1024);
+ for(const item of manifest){
+  const bytes=await readFile(item.file);assert.equal(createHash('sha256').update(bytes).digest('hex'),item.sha256);
+  assert.equal(item.height,item.width/2);assert.ok([256,1024].includes(item.width));
+  assert.ok(sources.entries.some(s=>s.body===item.body&&s.credit&&s.sourcePage.startsWith('https://')));
+ }
+});
 function harness(mobile=false,fetcher){
  const textures=[],requests=[],scene=new THREE.Scene();
  const load=fetcher??(async(path,signal)=>{requests.push({path,signal});const width=Number(path.match(/-(\d+)\.webp/)?.[1]??1024);const t=new THREE.Texture({width,height:width/2});t.userData.disposed=false;t.addEventListener('dispose',()=>t.userData.disposed=true);textures.push(t);return t;});
@@ -26,9 +39,33 @@ test('LOD thresholds have hysteresis and finite near-body projection',()=>{
  assert.ok(textureBytes(4096)<45*1024*1024);
 });
 test('all image tiers exist; Titan has no invented surface map',async()=>{
- for(const id of DETAIL_BODIES.filter(id=>id!=='titan'))for(const width of [512,1024,2048,4096])await access(`public/textures/detail/${id}-${width}.webp`);
+ for(const id of CLOSE_APPROACH_BODIES.filter(id=>id!=='titan'))for(const width of [512,1024,2048,4096])await access(`public/textures/detail/${id}-${width}.webp`);
+ for(const id of IDENTITY_BODIES)for(const width of [256,1024])await access(`public/textures/detail/${id}-${width}.webp`);
  for(const path of ['earth-clouds','earth-night','moon-height'])await access(`public/textures/detail/${path}.webp`);
  await assert.rejects(access('public/textures/detail/titan-4096.webp'));
+});
+test('identity bodies share bounded streaming, never allocate 2K/4K, and retain no repeated close tier',async()=>{
+ const h=harness(true);
+ for(const id of IDENTITY_BODIES){
+  const index=DETAIL_BODIES.indexOf(id);h.view(index,8);await h.frames();
+  assert.equal(h.manager.diagnostics().bodies[index].level,1);
+  const geometry=h.meshes[index].geometry;h.view(index,3);await h.frames();
+  assert.equal(h.meshes[index].geometry,geometry);
+  assert.equal(h.requests.filter(r=>r.path.includes(`${id}-1024`)).length,1);
+  assert.ok(h.manager.diagnostics().bodies.filter(b=>b.level||b.loading).length<=1);
+ }
+ assert.ok(h.requests.every(r=>/-256\.webp$|-1024\.webp$/.test(r.path)));
+ assert.ok(h.manager.diagnostics().estimatedTextureBytes<6*1024*1024);
+ h.manager.dispose();assert.ok(h.textures.every(t=>t.userData.disposed));
+});
+test('identity and Step 19 compete for the same mobile slot; old detail is disposed',async()=>{
+ const h=harness(true);h.view(0,3);await h.frames();const earth=h.textures.find(t=>t.image.width===2048);
+ const io=DETAIL_BODIES.indexOf('io');h.meshes[io].parent.position.set(.4,0,0);
+ for(let i=0;i<15;i++){h.scene.updateMatrixWorld(true);h.manager.update(h.camera,800,.15,'io');await settle();}
+ assert.equal(earth.userData.disposed,true);
+ assert.equal(h.manager.diagnostics().bodies[io].level,1);
+ assert.equal(h.manager.diagnostics().bodies[0].level,0);
+ h.manager.dispose();
 });
 test('loads only visible bodies, fades, evicts old detail and reuses small base',async()=>{
  const h=harness();h.view(0,3);await h.frames();

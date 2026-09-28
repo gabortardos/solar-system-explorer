@@ -1,5 +1,13 @@
 # Solar System Explorer — Roadmap
 
+## Unnumbered visual identity pass — 2026-09-28
+
+Sourced identity maps for 16 additional active moons, restrained Uranus/Neptune
+treatment and shared-cache 256/1024px policy are implemented. The eight Step 19
+priority treatments remain unchanged. Actual-rendered/WebGL acceptance is still
+pending because the required preview control is unavailable; see
+`docs/VISUAL_IDENTITY.md`. This is not Step 20, which has not started.
+
 ## Roadmap rules
 
 - Preserve a working, deployable baseline.
