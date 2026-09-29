@@ -1,5 +1,12 @@
 # Solar System Explorer — Decision Record
 
+## D038 — Contextual Guide entry and presets reduce navigation noise (2026-09-29)
+
+- **Decision:** Keep one System View action in the main controls, place the shared body-size/small-body exaggeration disclosure beside it, and preserve population visibility in Settings. Put Astronomy Guide directly with the selected-world actions. Generate Local-guide preset buttons from selected-object data and reviewed topic coverage; do not promote spacecraft-location prompts as defaults.
+- **Reason:** The former Small-body regions shortcut duplicated overview navigation, while a global preset list offered questions whose deterministic answer was unavailable or weak for many moons and dwarf planets.
+- **Impact:** The renderer and typed-question capabilities remain unchanged. Presets are more relevant, natural deterministic answers lead with the requested fact, and all preset clicks remain browser-local and quota-free.
+- **Preserve:** Do not remove the statistical population layer, route preset clicks to Live AI, hide technical provenance, or begin multi-turn conversation as part of this cleanup.
+
 ## 2026-09-28 — Secondary-body identity shares the existing detail cache
 
 Use sourced 256px base/1024px identity maps for the 16 previously flat active
@@ -30,7 +37,7 @@ On phones, the catalogue search dialog is anchored below the safe area and uses 
 
 ## D034 — Step-number branding and compact operational controls (2026-09-15)
 
-The top-left interface label reports the latest successfully completed development step, independently of the product release name and Sites deployment version. Use the browser-native simulation-rate selector because it remains open during clock rerenders. Keep Step 15's exaggeration disclosure available beside Small-body regions through a keyboard/touch-operable info disclosure rather than a permanent card. Desktop free-flight status and instructions are contextual help, not permanent scene furniture; mobile may still show status while its optional flight control is open. Canvas Saturn close-ups may use a bounded higher-resolution sphere raster while the rest of the compatibility scene retains the lower-cost buffer.
+The top-left interface label reports the latest successfully completed development step, independently of the product release name and Sites deployment version. Use the browser-native simulation-rate selector because it remains open during clock rerenders. Keep Step 15's exaggeration disclosure available beside System View through a keyboard/touch-operable info disclosure rather than a permanent card. Desktop free-flight status and instructions are contextual help, not permanent scene furniture; mobile may still show status while its optional flight control is open. Canvas Saturn close-ups may use a bounded higher-resolution sphere raster while the rest of the compatibility scene retains the lower-cost buffer.
 
 ## D033 — Explicit orbital timelapse and desktop clarity (2026-09-15)
 

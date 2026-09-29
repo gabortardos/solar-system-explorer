@@ -185,7 +185,9 @@ test("uses progressive disclosure and the completed development step in the desk
 
   assert.match(page, /EXPLORER \/ STEP 18/);
   assert.match(page, /<details className="population-info">/);
-  assert.match(page, /About small-body region markers/);
+  assert.match(page, /About visualization scale and small-body markers/);
+  assert.match(page, /className="system-view-control"/);
+  assert.doesNotMatch(page, /aria-label="Small-body regions overview"/);
   assert.doesNotMatch(page, /className="population-legend"/);
   assert.match(css, /\.control-hint\{display:none\}\.flight-status\{display:none\}/);
 });
@@ -211,9 +213,9 @@ test("labels schematic small-body regions and keeps them outside destination int
     readFile(path.join(root, "app/software-renderer.ts"), "utf8"),
   ]);
   assert.match(page, /Small-body regions/);
-  assert.match(page, /Small-body regions overview/);
-  assert.match(page, /Use Small-body regions view/);
-  assert.match(page, /Representative markers only\. Use Small-body regions view; size and density greatly enhanced/);
+  assert.doesNotMatch(page, /aria-label="Small-body regions overview"/);
+  assert.doesNotMatch(page, /engine\.current\?\.populationOverview/);
+  assert.match(page, /System View compresses spacing and enlarges worlds for visibility/);
   assert.match(page, /dots are not object counts or precise current positions/);
   assert.match(scene, /new THREE\.Points/);
   assert.match(scene, /overviewDistance/);
@@ -221,4 +223,13 @@ test("labels schematic small-body regions and keeps them outside destination int
   assert.match(scene, /userData\.population = true/);
   assert.match(scene, /sizeAttenuation: false,[\s\S]*opacity: Math\.min\(0\.72, style\.opacity \+ 0\.22\)/);
   assert.match(fallback, /userData\.population/);
+});
+
+test("places Astronomy Guide with the selected-world actions", async () => {
+  const page = await readFile(path.join(root, "app/page.tsx"), "utf8");
+  const targetActions = page.slice(page.indexOf('className="target-actions"'), page.indexOf('</aside>}', page.indexOf('className="target-actions"')));
+  assert.ok(targetActions.indexOf('Explore this world') < targetActions.indexOf('Astronomy guide'));
+  assert.match(targetActions, /setPanel\("guide"\)/);
+  const mobileActions = page.slice(page.indexOf('className="mobile-action-grid"'), page.indexOf('</div>', page.indexOf('className="mobile-action-grid"')));
+  assert.ok(mobileActions.indexOf('Explore this world') < mobileActions.indexOf('Astronomy guide'));
 });

@@ -112,6 +112,25 @@ function addPhysicalEvidence(evidence:GuideEvidence[],body:CatalogBody,prefix=''
   evidence.push(quantityEvidence(id('radius'),`${body.name} radius`,body.physical.radiusKm),quantityEvidence(id('gravity'),`${body.name} gravity`,body.physical.gravityMS2),quantityEvidence(id('mass'),`${body.name} mass`,body.physical.massKg),quantityEvidence(id('rotation'),`${body.name} rotation`,body.physical.rotationHours),quantityEvidence(id('period'),`${body.name} orbital period`,body.orbit.periodDays));
 }
 
+function simulationTimeLabel(atUtcMs:number){
+  if(!Number.isFinite(atUtcMs))return 'unavailable';
+  return new Intl.DateTimeFormat('en-GB',{timeZone:'UTC',day:'numeric',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'}).format(new Date(atUtcMs))+' UTC';
+}
+function naturalRotation(body:CatalogBody){
+  const hours=body.physical.rotationHours.value;
+  if(hours===null)return null;
+  if(body.id==='sun')return 'The Sun rotates at different rates by latitude: about 25 Earth days at the equator and about 36 days near the poles.';
+  const absolute=Math.abs(hours),duration=absolute>=48?`${(absolute/24).toLocaleString('en-US',{maximumSignificantDigits:5})} Earth days`:`${absolute.toLocaleString('en-US',{maximumSignificantDigits:5})} hours`;
+  return `One sidereal rotation on ${body.name} takes about ${duration}${hours<0?', in the retrograde direction':''}.`;
+}
+function naturalOrbit(body:CatalogBody){
+  const days=body.orbit.periodDays.value;
+  if(days===null)return null;
+  const duration=days>=730?`${(days/365.25).toLocaleString('en-US',{maximumSignificantDigits:5})} Earth years`:`${days.toLocaleString('en-US',{maximumSignificantDigits:5})} Earth days`;
+  const parent=body.parentId?getBody(body.parentId)?.name:null;
+  return `One orbit${parent?` of ${body.name} around ${parent}`:` of ${body.name}`} takes about ${duration}.`;
+}
+
 export function answerContextGuide(context:GuideContext,question:string):GuideResponse{
   if(!question.trim()||question.length>GUIDE_LIMITS.questionCharacters)throw new Error('Please ask a question of up to 600 characters.');
   const q=question.toLocaleLowerCase();
@@ -130,7 +149,9 @@ export function answerContextGuide(context:GuideContext,question:string):GuideRe
     explanation=context.navigation.note;
     evidence.push({id:'craft',label:'Spacecraft coordinates [X, Y, Z]',value:context.navigation.positionAU?context.navigation.positionAU.map(v=>v.toPrecision(6)).join(', ')+' AU':'Unavailable',quality:context.navigation.basis,note:'Heliocentric ecliptic J2000; converted camera coordinates, not a spacecraft ephemeris.',sources:[]});
   }else if(/date|time|when/.test(q)&&!/travel/.test(q)){
-    explanation='This is the simulation timestamp captured when you asked, not an observation timestamp.';
+    const label=simulationTimeLabel(context.navigation.atUtcMs);
+    explanation=label==='unavailable'?'The simulation date and time is unavailable.':`The simulation date and time is ${label}.`;
+    evidence.push({id:'simulation-time',label:'Simulation time',value:Number.isFinite(context.navigation.atUtcMs)?new Date(context.navigation.atUtcMs).toISOString():'Unavailable',quality:Number.isFinite(context.navigation.atUtcMs)?'request-time scene state':'unavailable',note:'Captured when the question was asked; this is not an observation timestamp.',sources:[]});
   }else if(!subject&&context.navigation.selectedMinor){
     const minor=context.navigation.selectedMinor;
     explanation=`${minor.name} is the selected minor body. Its sourced physical fields are shown where available. No planet answer is substituted.`;
@@ -156,11 +177,13 @@ export function answerContextGuide(context:GuideContext,question:string):GuideRe
     }else{
       const reference=mentionedBodies(question).find(body=>body.id!==subject.id)??getBody('earth')!;
       const distance=calculateDistance(subject.id,reference.id,context.navigation.atUtcMs);
-      explanation=`Simultaneous modeled center separation between ${subject.name} and ${reference.name}; this is not a flight path, travel duration or live observation.`;
+      explanation=distance.status==='available'?`At the selected simulation time, the modeled center-to-center distance from ${reference.name} to ${subject.name} is about ${distance.value.toLocaleString('en-US',{maximumSignificantDigits:6})} km.`:`The modeled distance from ${reference.name} to ${subject.name} is unavailable for this simulation time.`;
       evidence.push({id:'body-distance',label:`Distance from ${reference.name}`,value:distance.status==='available'?`${distance.value.toPrecision(6)} km`:'Unavailable',quality:distance.status==='available'?distance.quality:'unavailable',note:distance.status==='unavailable'?distance.reason:'Positions use the local dataset and captured simulation time.',sources:distance.status==='available'?sourceList(distance.sourceIds):[]});
     }
   }else if(/radius|diameter|size|big|gravity|mass|weigh|jump|fall|rotation|spin|day|year|period|orbit|facts?/.test(q)){
-    explanation='These values come directly from the local scientific dataset. Missing values remain unavailable; rotation and orbital periods are separate.';
+    const asksRotation=/rotation|spin|day/.test(q),asksOrbit=/year|period|orbit/.test(q);
+    const natural=[asksRotation?naturalRotation(subject):null,asksOrbit?naturalOrbit(subject):null].filter(Boolean);
+    explanation=natural.length?natural.join(' '):`Here are the available physical facts for ${subject.name}.`;
     addPhysicalEvidence(evidence,subject);
   }else{
     const topic=/live|life|survive|habit/.test(q)?'habitability':/temperature|hot|cold/.test(q)?'temperature':/water|ice|ocean/.test(q)?'water':/mission|spacecraft|probe|explor/.test(q)?'missions':/moon|ring/.test(q)?'companions':null;
@@ -169,14 +192,14 @@ export function answerContextGuide(context:GuideContext,question:string):GuideRe
       explanation=entry[topic];
       evidence.push(educationEvidence(topic,`${subject.name} ${topic}`,entry[topic],subject));
     }else if(topic==='habitability'){
-      explanation=subject.id==='earth'?'Earth is the only world in this catalogue where life is confirmed.':`A reviewed habitability summary has not been imported for ${subject.name}. Its sourced environment and physical fields are shown without inventing missing conditions.`;
+      explanation=subject.id==='earth'?'Earth is the only world in this catalogue where life is confirmed.':subject.education?`Unprotected humans could not live on ${subject.name}. ${subject.education.description} ${subject.education.atmosphere}`:`A reviewed habitability summary is not yet available for ${subject.name}.`;
       if(subject.education)evidence.push(educationEvidence('environment',`${subject.name} environment`,`${subject.education.description} ${subject.education.atmosphere}`,subject));
       evidence.push(quantityEvidence('gravity',`${subject.name} gravity`,subject.physical.gravityMS2));
     }else if(topic==='water'){
-      explanation=`The source-reviewed description for ${subject.name} is the available local evidence about water or ice; this guide does not infer more than that source states.`;
+      explanation=subject.education?`The reviewed overview for ${subject.name} says: ${subject.education.description} ${subject.education.fact}`:`Reviewed information about water or ice is not yet available for ${subject.name}.`;
       if(subject.education)evidence.push(educationEvidence('water-evidence',`${subject.name} water and surface evidence`,`${subject.education.description} ${subject.education.fact}`,subject));
     }else if(topic==='missions'){
-      explanation=`A reviewed mission summary has not been imported for ${subject.name}. The guide will not invent a visit list.`;
+      explanation=`No reviewed mission summary is stored for ${subject.name} yet, so the Local guide cannot provide a verified mission list.`;
       if(subject.education)evidence.push(educationEvidence('further-reading',`${subject.name} NASA overview`,'Mission-specific evidence unavailable in the local structured dataset.',subject));
     }else if(/atmosphere|air|breath/.test(q)){
       explanation=subject.education?.atmosphere??'Atmosphere data unavailable.';

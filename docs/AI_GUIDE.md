@@ -54,7 +54,7 @@ Current public policy: anonymous and non-owner visitors receive 10 Live AI reser
 
 The guide shows the public viewer's current rolling count from the same D1 rows used by reservation enforcement, refreshes it after each server request and shows the server-calculated minute/day availability time when a viewer limit is reached. The authenticated owner instead sees **Developer access · no request-count limit**. Limit fallbacks remain usable Local-guide answers, but the visible notice makes the reason and retry timing explicit.
 
-The displayed preset question buttons are explicitly routed to the deterministic Local guide in the browser. They make no `/api/guide` request, reserve no D1 row, consume no public Live AI allowance and perform no external retrieval. User-written questions continue through the Live AI boundary. A future preset that genuinely requires current information must be deliberately configured for the live route rather than inferred from its wording.
+The displayed preset question buttons are derived from the selected object's available data and reviewed topic coverage, then explicitly routed to the deterministic Local guide in the browser. Weak spacecraft-location defaults are not promoted, and unavailable temperature/mission topics are hidden rather than returning boilerplate. Presets make no `/api/guide` request, reserve no D1 row, consume no public Live AI allowance and perform no external retrieval. User-written questions continue through the Live AI boundary. A future preset that genuinely requires current information must be deliberately configured for the live route rather than inferred from its wording.
 
 - Request body: 6,000 UTF-8 bytes maximum.
 - Question: 600 characters maximum.

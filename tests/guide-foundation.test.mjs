@@ -6,6 +6,7 @@ const vite=await createServer({configFile:false,server:{middlewareMode:true},app
 after(()=>vite.close());
 const {buildGuideContext}=await vite.ssrLoadModule('/app/guide-context.ts');
 const {answerContextGuide,validateExplanation}=await vite.ssrLoadModule('/app/guide-assistant.ts');
+const {localGuidePresetsFor}=await vite.ssrLoadModule('/app/local-guide-presets.ts');
 const nav={atUtcMs:Date.UTC(2026,8,15),positionAU:[1,0,0],basis:'navigation-estimate',anchorId:'earth',note:'Navigation estimate',selectedMinor:null};
 test('here binds to selected world and answer retains request timestamp',()=>{
  const c=buildGuideContext('mars',nav),a=answerContextGuide(c,'Could I live here?');
@@ -24,6 +25,23 @@ test('new destination position and unsupported subject are explicit',()=>{
  assert.notEqual(answerContextGuide(buildGuideContext('pluto',nav),'How far from Earth?').evidence[0].value,'Unavailable');
  assert.match(answerContextGuide(buildGuideContext('absent',nav),'Could I live here?').explanation,/Select an object/);
  assert.equal(buildGuideContext('earth',{...nav,positionAU:null}).nearby.length,0);
+});
+test('local presets are useful for the selected object and never spend Live AI quota',()=>{
+ const mars=localGuidePresetsFor('mars'),europa=localGuidePresetsFor('europa'),earth=localGuidePresetsFor('earth');
+ assert.ok(mars.includes('How hot or cold is it?'));assert.ok(mars.includes('What missions explored it?'));
+ assert.ok(europa.includes('Does it have water or ice?'));assert.ok(!europa.includes('What missions explored it?'));assert.ok(!europa.includes('How hot or cold is it?'));
+ assert.ok(!earth.includes('How far is it from Earth?'));
+ for(const id of ['sun','earth','mars','europa','pluto']){
+  const presets=localGuidePresetsFor(id);assert.ok(presets.includes('What is the simulated date and time?'));assert.ok(!presets.some(q=>/Where am I|nearest to me/i.test(q)));
+ }
+});
+test('local preset answers lead with natural user-facing information',()=>{
+ const context=buildGuideContext('mars',nav);
+ const time=answerContextGuide(context,'What is the simulated date and time?');
+ assert.match(time.explanation,/The simulation date and time is 15 September 2026 at 00:00:00 UTC\./);assert.equal(time.evidence[0].id,'simulation-time');
+ const cycle=answerContextGuide(context,'How long are its day and year?');
+ assert.match(cycle.explanation,/One sidereal rotation on Mars/);assert.match(cycle.explanation,/One orbit of Mars/);assert.doesNotMatch(cycle.explanation,/local scientific dataset/);
+ const distance=answerContextGuide(context,'How far is it from Earth?');assert.match(distance.explanation,/modeled center-to-center distance/);assert.match(distance.explanation,/km/);
 });
 test('provider output allows natural prose but refuses unsupported exact values and fabricated citations',()=>{
  const evidence=answerContextGuide(buildGuideContext('earth',nav),'gravity').evidence;

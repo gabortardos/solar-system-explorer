@@ -77,6 +77,7 @@ import {
   type SimulationRate,
 } from "./simulation-clock";
 import type { createScene, SceneOptions } from "./scene";
+import { localGuidePresetsFor } from "./local-guide-presets";
 function Picker({
   value,
   onChange,
@@ -110,17 +111,6 @@ function guideFallbackMessage(reason?:string){
   if(reason?.startsWith('provider_'))return 'The Live AI provider was unavailable, so the Local guide answered safely.';
   return reason?'Live AI was unavailable for this request.':'The deterministic Local guide answered this question.';
 }
-const LOCAL_GUIDE_PRESETS=[
-  "Could humans live here?",
-  "How hot or cold is it?",
-  "What missions explored it?",
-  "Does it have water?",
-  "How long are its day and year?",
-  "How far is it from Earth?",
-  "What objects are nearest to me?",
-  "Where am I?",
-  "What is the simulated date and time?",
-] as const;
 function guideLimitMessage(result:GuideResponse){
   const quota=result.quota?.public;
   if(result.fallbackReason==='viewer_minute'){
@@ -290,6 +280,7 @@ export default function Home() {
   const b = bodies.find((b) => b.id === selected)!,
     detailsBody = bodies.find((body) => body.id === detailsId),
     objectInfo = buildObjectInformation(detailsId)!;
+  const localGuidePresets = localGuidePresetsFor(b.id);
   useEffect(() => {
     let alive = true;
     setTime(Date.now());
@@ -560,37 +551,27 @@ export default function Home() {
         <p>{bodies.length} destinations. Endless perspective.</p>
       </section>
       <div className="view-tools">
-        <button
-          aria-label="System view"
-          onClick={() => {
-            engine.current?.overview();
-            setOptions((o) => ({ ...o, orbits: true }));
-          }}
-        >
-          <Orbit size={17} />
-          <span>System view</span>
-        </button>
-        <div className="small-body-control">
+        <div className="system-view-control">
           <button
-            aria-label="Small-body regions overview"
+            aria-label="System view"
             onClick={() => {
-              setOptions((o) => ({ ...o, populations: true, orbits: true }));
-              engine.current?.populationOverview();
+              engine.current?.overview();
+              setOptions((o) => ({ ...o, orbits: true }));
             }}
           >
             <Orbit size={17} />
-            <span>Small-body regions</span>
+            <span>System view</span>
           </button>
           <details className="population-info">
-            <summary aria-label="About small-body region markers" title="About small-body region markers">
+            <summary aria-label="About visualization scale and small-body markers" title="About visualization scale and small-body markers">
               <Info size={14} />
             </summary>
             <aside className="population-info-card" aria-label="Small-body region information">
-              <strong>SMALL-BODY REGIONS</strong>
+              <strong>VISUALIZATION SCALE</strong>
               <span><i className="asteroid-dot" />Asteroid Belt</span>
               <span><i className="trojan-dot" />Jupiter Trojans (L4 / L5)</span>
               <span><i className="kuiper-dot" />Kuiper Belt</span>
-              <p>Representative markers only. Use Small-body regions view; size and density greatly enhanced.</p>
+              <p>System View compresses spacing and enlarges worlds for visibility. Small-body markers are representative; body size, marker size and density are enhanced. Dots are not object counts or precise positions.</p>
             </aside>
           </details>
         </div>
@@ -654,13 +635,22 @@ export default function Home() {
           Travel to {b.name}
           <ArrowUpRight size={19} />
         </button>
-        <button
-          className="details-button"
-          onClick={() => openInformation(selected)}
-        >
-          Explore this world
-          <ChevronRight size={17} />
-        </button>
+        <div className="target-actions">
+          <button
+            className="details-button"
+            onClick={() => openInformation(selected)}
+          >
+            Explore this world
+            <ChevronRight size={17} />
+          </button>
+          <button
+            className="details-button target-guide-button"
+            onClick={() => setPanel("guide")}
+          >
+            <span><BookOpen size={15} />Astronomy guide</span>
+            <ChevronRight size={17} />
+          </button>
+        </div>
       </aside>}
       <aside className="mobile-target-dock" aria-label="Selected world">
         <span className="mobile-body-marker" style={{ background: b.color }} />
@@ -939,6 +929,11 @@ export default function Home() {
                   <span>Explore this world</span>
                   <ChevronRight size={16} />
                 </button>
+                <button onClick={() => setPanel("guide")}>
+                  <BookOpen size={18} />
+                  <span>Astronomy guide</span>
+                  <ChevronRight size={16} />
+                </button>
                 <button
                   onClick={() => mobileAction(() => setMobileFlight(true))}
                 >
@@ -965,11 +960,6 @@ export default function Home() {
                 >
                   <Compass size={18} />
                   <span>Focus target</span>
-                  <ChevronRight size={16} />
-                </button>
-                <button onClick={() => setPanel("guide")}>
-                  <BookOpen size={18} />
-                  <span>Astronomy guide</span>
                   <ChevronRight size={16} />
                 </button>
                 <button onClick={() => setPanel("settings")}>
@@ -1067,7 +1057,7 @@ export default function Home() {
               {guideAccess==='developer'?<div className="guide-usage"><strong>Developer access · no request-count limit</strong><span>Usage and cost accounting continue; monetary safeguards remain.</span></div>:<><div className="guide-usage"><strong>{guideQuota?.public?`Live AI: ${guideQuota.public.rolling24HoursUsed} / ${guideQuota.public.rolling24HoursLimit} today`:'Live AI usage: checking…'}</strong><span>Rolling 24-hour allowance · up to 10 per minute</span></div><a className="guide-developer-access" href="/signin-with-chatgpt?return_to=%2F" target="_top">Project owner sign-in for development access</a></>}
               <h3>What would you like to know?</h3>
               <div className="suggestions">
-                {LOCAL_GUIDE_PRESETS.map((q) => (
+                {localGuidePresets.map((q) => (
                   <button key={q} disabled={guideBusy} onClick={() => askLocalPreset(q)}>
                     {q}
                     <MoveUpRight size={15} />

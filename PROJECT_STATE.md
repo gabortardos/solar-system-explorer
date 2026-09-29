@@ -1,12 +1,14 @@
 # Solar System Explorer — Current Project State
 
-Last updated: 2026-09-28 UTC
+Last updated: 2026-09-29 UTC
 
-Stable product version: V1.1, production Site version 39. Production URL: `https://solar-system-explorer-gabor.gabortardos.chatgpt.site`.
+Stable product version: V1.1, production Site version 40. Production URL: `https://solar-system-explorer-gabor.gabortardos.chatgpt.site`.
 
 This is the fast handoff for **what exists now**. The repository and deployed application are the source of truth. Read the specialized documents for product direction, architecture, UX, astronomy, roadmap, decisions and issues. Do not rebuild from a starter or replace working architecture merely because a new Work chat begins.
 
 ## Current reality
+
+The unnumbered **Pre-Step-20 UX + Local Guide cleanup** removes the redundant Small-body regions navigation shortcut while preserving the renderer and Settings toggle, moves the shared scale/exaggeration disclosure beside System View, and places Astronomy guide directly with the selected-world actions. Local presets are now selected-object-aware and remain free/deterministic; weak location presets are not promoted, and simulation-time, rotation/orbit and modeled-distance answers lead with natural language. See `docs/PRE_STEP_20_UX_CLEANUP.md`. Step 20 has not started.
 
 The unnumbered **Destination Readiness pass** activates Ceres, Pluto and Charon, so all 32 core catalogue records now support Show/Travel. Ceres/Pluto use versioned JPL Horizons annual source rows and a validated 1800–2050 illustrative fit; Charon uses its Pluto-centered mean ellipse plus the NAIF Pluto pole. Seven priority named small bodies use source-derived close-view shape meshes, every other selected name gets a disclosed restrained approximation, and only one detail mesh is retained. See `docs/DESTINATION_READINESS_PASS.md`. Actual rendered/WebGL acceptance remains for the owner PC session. Step 20 has not started.
 
@@ -27,6 +29,8 @@ Step 16's request-time context/evidence foundation remains the deterministic fal
 Step 15 — **ASTEROID BELT AND KUIPER BELT VISUALIZATION** adds renderer-only representative regions for the main asteroid belt, the Kuiper Belt and Jupiter's leading/trailing Trojan clouds. Step 14's separate on-demand 19-object JPL minor-body sample remains intact. The bounded core scene now contains 32 destinations; population dots are not catalogue objects, destinations, counts or ephemerides.
 
 Latest verification:
+
+- Pre-Step-20 UX + Local Guide cleanup (2026-09-29): production build, lint and all 113 automated tests pass. Published as Site version 40; selected-object preset filtering, natural deterministic answers, Guide-entry placement and removal of the redundant regions shortcut have focused regressions.
 
 - Destination Readiness release (2026-09-28): production build, lint and all 110 automated tests pass. JPL source/fit reproduction and checksums pass; seven measured small-body shape assets total under 2 MiB and only one is retained at runtime. Published as Site version 39. Actual application-rendered/WebGL acceptance remains for the owner PC session.
 
@@ -50,9 +54,9 @@ Latest verification:
 - Exploration Scale and Scientific Scale; displayed scientific measurements always use uncompressed canonical data.
 - Optional planetary and relevant moon-system orbit paths.
 - UTC simulation clock with pause, real time, 10×, 100×, 1,000×, 1 day/second and 30 days/second.
-- Live Astronomy Guide using `gpt-5.6-luna`, natural qualitative/general-knowledge prose, selectively displayed project/retrieved evidence and validated citations, plus deterministic Local guide fallback. Exact and scene-dependent values remain application-owned; current facts use bounded official-source retrieval when required. Public limits are 10/minute and 50/rolling-day with a D1-backed usage/reset display; authenticated owner development calls bypass request counts but not cost controls. Preset buttons are intentionally local/free, while typed questions use Live AI.
+- Live Astronomy Guide using `gpt-5.6-luna`, natural qualitative/general-knowledge prose, selectively displayed project/retrieved evidence and validated citations, plus deterministic Local guide fallback. Exact and scene-dependent values remain application-owned; current facts use bounded official-source retrieval when required. Public limits are 10/minute and 50/rolling-day with a D1-backed usage/reset display; authenticated owner development calls bypass request counts but not cost controls. Preset buttons are selected-object-aware and intentionally local/free, while typed questions use Live AI. Astronomy Guide is available directly in the selected-world actions.
 - Canvas compatibility renderer when WebGL is unavailable.
-- Optional small-body region layer with four bounded point draws, centralized scale projection, camera-relative precision and an accessible on-demand disclosure beside its view control. A dedicated Small-body regions view frames the Asteroid Belt, Jupiter Trojan regions and Kuiper Belt in either scale.
+- Optional small-body region layer with four bounded point draws, centralized scale projection and camera-relative precision. Its accessible scale/exaggeration disclosure sits beside System View; the population layer remains independently switchable in Settings.
 - V1.2 flight smoothing is now implemented: translation accelerates and decelerates with frame-rate-independent response, combined axes are normalized, arrow-key steering eases in and out, collision correction removes inward drift, and brake/focus/overview transitions clear residual motion.
 
 ## Architecture summary
@@ -105,7 +109,7 @@ Latest verification:
 
 ## Current milestone and next task
 
-**Current implementation checkpoint:** the unnumbered Destination Readiness implementation is complete; actual rendered/WebGL acceptance is deferred to the owner PC session. Steps 17–19 remain complete. **Still open:** V1.2 flight/device QA and separate mobile UI maintenance. Do not start Step 20.
+**Current implementation checkpoint:** the Pre-Step-20 UX + Local Guide cleanup and Destination Readiness implementation are complete. Destination Readiness rendered/WebGL acceptance remains deferred to the owner PC session. Steps 17–19 remain complete. **Still open:** V1.2 flight/device QA and separate mobile UI maintenance. Do not start Step 20.
 
 Next action: run the owner PC/WebGL acceptance checklist for Ceres/Pluto/Charon and the seven priority small-body shapes. Step 20 remains out of scope.
 

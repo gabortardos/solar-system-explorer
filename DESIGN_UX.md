@@ -70,7 +70,9 @@ Users must retain two travel modes:
 - Space/Escape or brake stops travel.
 - “Focus target” recovers local orientation.
 - “System view” provides global context.
+- Keep the shared body-size/small-body exaggeration disclosure beside System View. Do not add a second overview action for statistical regions; population visibility remains available in Settings.
 - Search and the primary destination strip choose the same target model. The strip intentionally remains the ten-entry overview; moons and dwarf planets are found through search or their visible parent system so the HUD does not become a 32-item ribbon.
+- Place Astronomy Guide directly after or beside Explore this world in selected-world actions on desktop and mobile.
 - Reduced-motion travel is immediate and understandable.
 
 Current V1.2 implementation eases acceleration/deceleration and steering while retaining direct controls, distance-aware speed and the 8× boost. Combined movement axes are normalized so diagonal input is not faster. Brake remains immediate; physical-device feel and tuning still require validation.
@@ -186,7 +188,7 @@ The Step 16 guide shows selected-object meaning, captured UTC time, explanation 
 ## Minor-body exploration
 
 - Reach the dedicated small-body catalogue from search; keep the existing compact sheet and mobile HUD. Lists scroll independently and details omit absent data.
-- Keep the statistical-region exaggeration disclosure behind the labelled info control beside Small-body regions. It must remain keyboard and touch operable and close on a second activation.
+- Keep the statistical-region and body-scale exaggeration disclosure behind the labelled info control beside System View. It must remain keyboard and touch operable and close on a second activation.
 - Show/Travel closes the sheet to reveal the scene. Only requested markers appear; one selected label states “illustrative orbit”. Neutral stone/ice marker colors are symbolic; no fabricated shape textures or comet tails.
 - Keep NEO/PHA labels factual and understated. Nearby Earth shows its sampled simulation timestamp and whether the bounded sample is complete.
 

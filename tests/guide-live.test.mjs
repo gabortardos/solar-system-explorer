@@ -191,7 +191,7 @@ test('guide UI uses server quota state, clear reset messages, and local-only pre
  assert.match(page,/Developer access · no request-count limit/);
  assert.match(page,/Live AI limit reached.*requests in the last 24 hours/);
  assert.match(page,/temporarily rate-limited.*seconds/);
- assert.match(page,/LOCAL_GUIDE_PRESETS\.map/);
+ assert.match(page,/localGuidePresets\.map/);
  assert.match(page,/onClick=\{\(\) => askLocalPreset\(q\)\}/);
  const localPresetBody=page.slice(page.indexOf('const askLocalPreset'),page.indexOf('const touchMove'));
  assert.match(localPresetBody,/answerContextGuide/);assert.doesNotMatch(localPresetBody,/requestGuide|fetch\(/);

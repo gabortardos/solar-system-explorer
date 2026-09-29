@@ -1,5 +1,9 @@
 # Solar System Explorer — Roadmap
 
+## Unnumbered Pre-Step-20 UX + Local Guide cleanup — 2026-09-29
+
+The redundant Small-body regions navigation shortcut is removed without deleting the population renderer or Settings toggle. Its shared scale/exaggeration disclosure now sits beside System View. Astronomy Guide is attached directly to selected-world actions, and deterministic presets are filtered by selected-object relevance while staying local/free. Natural simulation-time, rotation/orbit and distance answers replace internal-sounding lead text. Build, lint and all 113 tests pass; see `docs/PRE_STEP_20_UX_CLEANUP.md`. Step 20 has not started.
+
 ## Unnumbered visual identity pass — 2026-09-28
 
 Sourced identity maps for 16 additional active moons, restrained Uranus/Neptune
