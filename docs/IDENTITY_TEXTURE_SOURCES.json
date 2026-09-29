@@ -147,6 +147,30 @@
       "sourcePage": "https://www.solarsystemscope.com/textures/",
       "credit": "Solar System Scope / INOVE, CC BY 4.0",
       "caveat": "Existing visualization cloud map; Neptune derivative has an approximate restrained blue-green palette, not a calibrated true-color reconstruction."
+    },
+    {
+      "body": "ceres",
+      "file": "ceres-color-map-pia20354.jpg",
+      "sourcePage": "https://science.nasa.gov/photojournal/colorized-map-of-ceres-mercator-projection/",
+      "downloadUrl": "https://assets.science.nasa.gov/content/dam/science/psd/photojournal/pia/pia20/pia20354/PIA20354.jpg",
+      "credit": "NASA/JPL-Caltech/UCLA/MPS/DLR/IDA",
+      "caveat": "Colorized Dawn spectral mosaic, not literal natural color. Green/yellow high-latitude areas indicate incomplete color coverage."
+    },
+    {
+      "body": "pluto",
+      "file": "pluto-global-color-map.jpg",
+      "sourcePage": "https://science.nasa.gov/resource/pluto-global-color-map/",
+      "downloadUrl": "https://assets.science.nasa.gov/content/dam/science/psd/solar/2023/09/p/l/pluto_color_mapmosaic.jpg",
+      "credit": "NASA/JHUAPL/SwRI",
+      "caveat": "New Horizons MVIC map with strongly nonuniform resolution. Unobserved southern pixels use a featureless neutral fill; no terrain was synthesized."
+    },
+    {
+      "body": "charon",
+      "file": "charon-global-map-pia19866.jpg",
+      "sourcePage": "https://science.nasa.gov/photojournal/global-map-of-plutos-moon-charon/",
+      "downloadUrl": "https://assets.science.nasa.gov/content/dam/science/psd/photojournal/pia/pia19/pia19866/PIA19866.jpg",
+      "credit": "NASA/JHUAPL/SwRI",
+      "caveat": "New Horizons map resolution varies from about 40 km/pixel to 400 m/pixel. Unobserved southern pixels use a featureless neutral fill; no terrain was synthesized."
     }
   ]
 }

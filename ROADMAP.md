@@ -8,6 +8,15 @@ priority treatments remain unchanged. Actual-rendered/WebGL acceptance is still
 pending because the required preview control is unavailable; see
 `docs/VISUAL_IDENTITY.md`. This is not Step 20, which has not started.
 
+## Unnumbered destination readiness pass — 2026-09-28
+
+Ceres, Pluto and Charon are active destinations with explicit illustrative
+position metadata. Seven priority named small bodies have source-derived,
+one-at-a-time close-view shapes; other named records use disclosed restrained
+approximations. Population dots remain lightweight. Automated verification is
+complete; actual rendered/WebGL acceptance remains for the owner PC session.
+See `docs/DESTINATION_READINESS_PASS.md`. Step 20 has not started.
+
 ## Roadmap rules
 
 - Preserve a working, deployable baseline.
@@ -98,7 +107,7 @@ Status: initial data layer completed and published on 2026-09-10 (public Site ve
 - Separate scientific quantities, orbital elements, calculated positions, dynamic observations, editorial content and presentation metadata.
 - JPL/NASA/IAU sources, field-level units/provenance/uncertainty, explicit missing values and source/reliability UI.
 - Existing ten destinations read canonical data; the Moon now has a sourced mean starting ellipse and an explicit illustrative accuracy limit.
-- New-body rendering, precision lunar ephemerides and unimported Ceres/Pluto positions remain future work, not silently completed features.
+- Precision lunar/dwarf-planet ephemerides remain future work; the later Destination Readiness pass activates Ceres/Pluto with a separately named, sampled-error Horizons fit rather than silently treating it as precision data.
 - No runtime astronomy API, paid usage or new dependency.
 - Production build, lint and 23 tests pass. Standalone typecheck issues outside the new modules are recorded as KI-021; prior WebGL/device QA gaps remain open.
 
@@ -231,7 +240,7 @@ flowchart TD
 Provisional; depends on V1.2 quality/performance and validated local position models for the now-catalogued bodies.
 
 - Explicit LOD strategy.
-- Validate/import local Ceres and Pluto positions, then enable Pluto/Charon and Ceres only when their parent/heliocentric models are complete.
+- Replace the current validated illustrative Ceres/Pluto fit with local vector interpolation only if a later feature requires ephemeris-grade accuracy.
 - Add selected high-value moon textures/close-approach detail only where asset provenance and measured performance justify them.
 - Better label crowding and nearby-object discovery.
 

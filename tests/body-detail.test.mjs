@@ -55,7 +55,7 @@ test('identity bodies share bounded streaming, never allocate 2K/4K, and retain 
   assert.ok(h.manager.diagnostics().bodies.filter(b=>b.level||b.loading).length<=1);
  }
  assert.ok(h.requests.every(r=>/-256\.webp$|-1024\.webp$/.test(r.path)));
- assert.ok(h.manager.diagnostics().estimatedTextureBytes<6*1024*1024);
+ assert.ok(h.manager.diagnostics().estimatedTextureBytes<7*1024*1024);
  h.manager.dispose();assert.ok(h.textures.every(t=>t.userData.disposed));
 });
 test('identity and Step 19 compete for the same mobile slot; old detail is disposed',async()=>{

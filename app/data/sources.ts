@@ -1,4 +1,4 @@
-export const DATASET_VERSION = "2026.09.14-1";
+export const DATASET_VERSION = "2026.09.28-1";
 export const SOURCES: Record<
   string,
   { title: string; url: string; retrievedAt: string; reliability: string }
@@ -23,6 +23,13 @@ export const SOURCES: Record<
     retrievedAt: "2026-09-09",
     reliability:
       "Table 1 approximate elements and rates, 1800–2050. Earth row is the Earth–Moon barycenter. Not a precision ephemeris.",
+  },
+  "jpl-horizons-elements": {
+    title: "JPL Horizons osculating-element fit",
+    url: "https://ssd.jpl.nasa.gov/horizons/",
+    retrievedAt: "2026-09-28",
+    reliability:
+      "Local OLS fit to 251 annual geometric heliocentric ecliptic-of-J2000 element rows per body, 1800–2050. Raw responses, query parameters, reproduction code and sampled errors are versioned with the project. This remains illustrative rather than a precision Horizons ephemeris.",
   },
   "jpl-sat-elements": {
     title: "JPL satellite mean orbital elements",

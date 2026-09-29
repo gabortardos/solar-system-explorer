@@ -198,7 +198,7 @@ Future agents should preserve these decisions unless new evidence or a product d
 
 ## D023 — Missing ephemerides remain unavailable (2026-09-10)
 
-Status: partially superseded by D028 after the satellite reference-plane transforms were implemented and tested. Its prohibition on invented/unvalidated positions remains active.
+Status: partially superseded by D028 and D032 after reference-plane transforms and an auditable Horizons fit were implemented. Its prohibition on invented/unvalidated positions remains active.
 
 - **Decision:** Store additional satellite mean elements with their actual parent reference planes; return unavailable for unvalidated propagation and unimported Ceres/Pluto position models. Replace the Moon's arbitrary phase/circle with a sourced fixed mean ellipse while retaining an explicit illustrative quality flag.
 - **Reason:** A complete-looking invented orbit is less trustworthy than an honest unavailable result. A mean-element table alone does not establish a precision ephemeris or a correct coordinate transform. JPL's current Table 1 excludes Pluto.
@@ -230,19 +230,19 @@ Status: partially superseded by D028 after the satellite reference-plane transfo
 
 - **Decision:** Search through an asynchronous provider that returns compact, capped results. Keep canonical names/curated aliases in identity data, and keep the inspected-object ID separate from the active 3D destination. The current adapter indexes only the 32 local records; future large catalogues require a server-side index with paginated/top-k retrieval and detail-on-demand.
 - **Reason:** Exact aliases and context need one deterministic identity source, while hundreds of thousands or millions of records cannot be shipped into browser memory or instantiated in the scene merely to be searchable.
-- **Impact:** All 32 records can be found and inspected. D028 later expanded the bounded scene from ten to 29 destinations; Ceres, Pluto and Charon still communicate unavailable Show/travel rather than receiving invented coordinates.
+- **Impact:** All 32 records can be found and inspected. D028 expanded the bounded scene from ten to 29 destinations; D032 later activated the remaining three with sourced illustrative models.
 - **Preserve:** Do not bulk-import a future catalogue into the client bundle, make search create scene meshes, conflate information selection with travel selection, invent aliases, or enable Show/travel without validated positions and presentation assets.
 
 ## D028 — Major moons use honest mean-orbit models and bounded system rendering (2026-09-14)
 
 - **Decision:** Activate moons only when their parent has a scene position and their JPL mean-element reference plane can be explicitly transformed. Parent-ecliptic, local-Laplace and parent-equatorial frames are handled separately; Uranus's equatorial pole comes from the IAU-based NASA/JPL NAIF PCK. Every moon position remains `illustrative`, not an ephemeris. Exploration Scale applies a centralized monotonic parent-local compression. Only the focused moon system is rendered/raycastable/collidable, using lightweight untextured geometry and local orbit lines.
 - **Reason:** This makes the requested moon systems scientifically meaningful without overstating rounded mean elements, preserves small parent-relative offsets at large heliocentric distance, and prevents catalogue growth from turning into permanent mesh/label/render cost.
-- **Impact:** Nineteen moons join Earth's Moon as scene destinations. Their direction, phase and orbit order are meaningful; visual spacing is compressed. Charon remains information-only because Pluto lacks a heliocentric model. Search and reusable information/distance systems require no architectural replacement.
+- **Impact:** Nineteen moons joined Earth's Moon as scene destinations. Their direction, phase and orbit order are meaningful; visual spacing is compressed. D032 later activated Charon after adding Pluto's heliocentric fit and pole transform. Search and reusable information/distance systems required no architectural replacement.
 - **Preserve:** Do not call these positions precision/current ephemerides, flatten every satellite frame into ecliptic coordinates, infer spin from orbit period, activate a child whose parent position is unavailable, load detailed assets for every catalogue record, or remove focused-system culling without measured performance evidence.
 
 ## D029 — Minor catalogue storage is independent of scene activation (2026-09-14)
 
-- **Decision:** Store JPL snapshots locally and serve bounded summary/detail/index pages. Keep the 29 primary destinations separate from up to 12 explicitly requested minor markers. Use conservative radial filtering plus exact model distances and disclose incomplete neighborhoods.
+- **Decision:** Store JPL snapshots locally and serve bounded summary/detail/index pages. Keep the bounded core destination set separate from up to 12 explicitly requested minor markers. Use conservative radial filtering plus exact model distances and disclose incomplete neighborhoods.
 - **Reason:** Catalogue size must not determine browser heap, mesh count or per-frame propagation work. Static sample pages avoid a new paid/runtime astronomy dependency while preserving a replaceable provider boundary.
 - **Impact:** Prefix/alias search, collections, nearby Earth, information and marker travel work for 19 real objects. Larger ingestion, object-storage hosting and finer spatial indexes are planned extensions, not claims of measured million-object readiness.
 - **Preserve:** Never fetch the entire future catalogue into the browser, treat curated importance as hazard, silently invent missing physics, or call fixed-ellipse propagation an authoritative ephemeris. Maintain page/cache/candidate/render budgets and explicit incompleteness when replacing storage.
@@ -269,3 +269,10 @@ Preserve the imperative Three.js engine and scientific coordinate pipeline. Use 
 ## 2026-09-27 — Shadow maps follow presentation validity
 
 Exploration Scale enlarges moons and compresses their orbit systems, so those meshes must not cast or receive eclipse shadows that look physically authoritative. Keep direct Sun/PBR lighting for every body. Major planets may cast only onto explicit receivers; Saturn's ring receives Saturn's shadow but its simplified transparent sheet does not cast onto the planet. This excludes those shadow-map contributions without flattening day/night lighting. Owner real mobile/WebGL acceptance on production version 35 confirmed the reported Jupiter-moon and Saturn artifacts no longer reproduce. Do not re-enable catalogue-wide shadow participation unless the geometry, scale and shadow budget are appropriate and verified on mobile WebGL.
+
+## D032 — Destination activation uses auditable fits and one selected shape (2026-09-28)
+
+- **Decision:** Activate Ceres and Pluto with a separately named six-element linear fit derived from 251 annual JPL Horizons rows per body across the supported interval, retaining raw responses, exact queries, reproduction code and sampled errors. Activate Charon only with Pluto center target 999 and the NAIF Pluto pole. For named minor bodies, keep lightweight markers and permit exactly one selected close-view shape: source-derived for seven priority objects and explicitly approximate procedural geometry otherwise.
+- **Reason:** Guided destinations need coherent placement and recognizable identity without misrepresenting JPL Table 1, treating a fitted visualization as an ephemeris, or allocating catalogue-wide geometry.
+- **Impact:** All 32 core records support Show/Travel. Bennu, Ryugu, Itokawa, Eros, Vesta, Halley and 67P have bounded source silhouettes; statistical population dots remain unchanged. Source gaps and model uncertainty remain visible in metadata.
+- **Preserve:** Do not call the fit ephemeris-grade, discard its raw validation bundle, add Charon to Pluto barycenter 9, eagerly load shape meshes, turn population dots into destinations, invent undisclosed terrain, or raise detail budgets without device evidence.

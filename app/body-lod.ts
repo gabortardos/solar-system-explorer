@@ -2,7 +2,7 @@
 export type DetailLevel = 0 | 1 | 2;
 export const CLOSE_APPROACH_BODIES = ['earth', 'moon', 'mars', 'jupiter', 'saturn', 'europa', 'titan', 'enceladus'] as const;
 /** Identity maps use the same cache, with small bases and no terrain-level tiers. */
-export const IDENTITY_BODIES = ['uranus', 'neptune', 'io', 'ganymede', 'callisto', 'mimas', 'tethys', 'dione', 'rhea', 'iapetus', 'miranda', 'ariel', 'umbriel', 'titania', 'oberon', 'triton', 'phobos', 'deimos'] as const;
+export const IDENTITY_BODIES = ['uranus', 'neptune', 'io', 'ganymede', 'callisto', 'mimas', 'tethys', 'dione', 'rhea', 'iapetus', 'miranda', 'ariel', 'umbriel', 'titania', 'oberon', 'triton', 'phobos', 'deimos', 'ceres', 'pluto', 'charon'] as const;
 export const DETAIL_BODIES = [...CLOSE_APPROACH_BODIES, ...IDENTITY_BODIES] as const;
 export const isIdentityBody = (id: string) => IDENTITY_BODIES.some(body => body === id);
 export type DetailBody = typeof DETAIL_BODIES[number];

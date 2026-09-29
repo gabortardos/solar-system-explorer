@@ -23,6 +23,7 @@ import {
   stepMotionVelocity,
 } from "./navigation-motion";
 import {minorScenePosition,minorLOD,MINOR_BUDGET,type MinorBody} from './minor-bodies';
+import {loadMinorShape,minorShapeProvenance,minorVisualDescription} from './minor-shapes';
 import { buildPopulationSamples, projectPopulation, type PopulationId } from "./populations";
 import { SATURN_RING_SHADOWS, surfaceShadowParticipation } from "./shadow-policy";
 export type SceneOptions = {
@@ -142,11 +143,15 @@ export function createScene(
     lastFlightStatus = 0,
     frame = 0;
   const clock = new SimulationClock(time, options.rate, last);
-  const minorActive=new Map<string,{body:MinorBody;mesh:THREE.Mesh}>();
+  type MinorEntry={body:MinorBody;mesh:THREE.Mesh;markerGeometry:THREE.BufferGeometry;detailGeometry?:THREE.BufferGeometry};
+  const minorActive=new Map<string,MinorEntry>();
   let minorSelected:string|null=null;
+  let minorDetailController:AbortController|null=null;
   const minorLabel=document.createElement('div');minorLabel.className='world-label';minorLabel.style.pointerEvents='none';minorLabel.style.position='absolute';host.appendChild(minorLabel);
   const minorWorld=(body:MinorBody,at=time)=>{const p=minorScenePosition(body,at);return p?new THREE.Vector3(...projectPosition(p,mode())):null;};
-  function clearMinorBodies(){for(const {mesh} of minorActive.values()){scene.remove(mesh);mesh.geometry.dispose();(mesh.material as THREE.Material).dispose();}minorActive.clear();minorSelected=null;minorLabel.style.display='none';}
+  function disposeMinor(entry:MinorEntry){scene.remove(entry.mesh);entry.detailGeometry?.dispose();entry.markerGeometry.dispose();(entry.mesh.material as THREE.Material).dispose();}
+  function clearMinorBodies(){minorDetailController?.abort();minorDetailController=null;for(const entry of minorActive.values())disposeMinor(entry);minorActive.clear();minorSelected=null;minorLabel.style.display='none';}
+  function releaseMinorDetail(){minorDetailController?.abort();minorDetailController=null;for(const entry of minorActive.values())if(entry.detailGeometry){entry.mesh.geometry=entry.markerGeometry;entry.detailGeometry.dispose();entry.detailGeometry=undefined;}}
   const keys = new Set<string>();
   const manualVelocity = new THREE.Vector3();
   const steeringVelocity = new THREE.Vector2();
@@ -861,7 +866,7 @@ export function createScene(
         viewTransition = null;
         camera.fov = 43;
         camera.updateProjectionMatrix();
-        onStatus(minorSelected ? minorActive.get(minorSelected)!.body.name+' · illustrative orbit · enlarged marker' : (completeStatus ?? "Solar system overview"));
+        onStatus(minorSelected ? minorActive.get(minorSelected)!.body.name+' · '+minorVisualDescription(minorActive.get(minorSelected)!.body).toLowerCase() : (completeStatus ?? "Solar system overview"));
       }
     }
     if (flight) {
@@ -1046,14 +1051,16 @@ export function createScene(
     clearMinorBodies,
     showMinorBody(body:MinorBody,travel=false){
       const p=minorWorld(body);if(!p){onError('No supported position model for this object.');return;}
-      stop();follow=false;minorSelected=body.id;
+      stop();follow=false;releaseMinorDetail();minorSelected=body.id;
       if(!minorActive.has(body.id)){
-        if(minorActive.size>=MINOR_BUDGET.visible){const victim=[...minorActive.values()].sort((a,b)=>a.body.importance-b.body.importance)[0];scene.remove(victim.mesh);victim.mesh.geometry.dispose();(victim.mesh.material as THREE.Material).dispose();minorActive.delete(victim.body.id);}
-        const mesh=new THREE.Mesh(new THREE.SphereGeometry(.12,12,8),new THREE.MeshBasicMaterial({color:body.kind==='comet'?'#bed6d9':'#b1a497'}));mesh.userData.id=body.id;mesh.position.copy(p);scene.add(mesh);minorActive.set(body.id,{body,mesh});
+        if(minorActive.size>=MINOR_BUDGET.visible){const victim=[...minorActive.values()].sort((a,b)=>a.body.importance-b.body.importance)[0];disposeMinor(victim);minorActive.delete(victim.body.id);}
+        const profile=minorShapeProvenance(body),markerGeometry=new THREE.SphereGeometry(.12,12,8),mesh=new THREE.Mesh(markerGeometry,new THREE.MeshStandardMaterial({color:profile.color,roughness:.96,metalness:0}));mesh.userData.id=body.id;mesh.userData.presentationRadius=.12;mesh.position.copy(p);scene.add(mesh);minorActive.set(body.id,{body,mesh,markerGeometry});
       }
+      const entry=minorActive.get(body.id)!,controller=new AbortController();minorDetailController=controller;
+      void loadMinorShape(body,.12,controller.signal).then(geometry=>{if(controller.signal.aborted||minorSelected!==body.id){geometry.dispose();return;}entry.detailGeometry=geometry;entry.mesh.geometry=geometry;}).catch(error=>{if(!controller.signal.aborted)onError(error instanceof Error?error.message:'Shape model unavailable');}).finally(()=>{if(minorDetailController===controller)minorDetailController=null;});
       controls.minDistance=.3;const to=p.clone().add(new THREE.Vector3(1,0.65,1.4));
       if(!travel||options.reduced){camera.position.copy(to);controls.target.copy(p);}else viewTransition={start:performance.now(),from:camera.position.clone(),look:controls.target.clone(),to,target:p,duration:2600};
-      onStatus(body.name+' · illustrative orbit · enlarged marker');
+      onStatus(body.name+' · '+minorVisualDescription(body).toLowerCase());
     },
     focus,
     preload,

@@ -20,8 +20,8 @@ test('reference values preserve sources and missing mass is never invented',()=>
  const a=answerContextGuide(buildGuideContext('phobos',nav),'What are its facts?');
  assert.equal(a.evidence.find(f=>f.id==='mass').value,'Unavailable');assert.ok(a.evidence.find(f=>f.id==='radius').sources.length);
 });
-test('missing position and unsupported subject are explicit',()=>{
- assert.equal(answerContextGuide(buildGuideContext('pluto',nav),'How far from Earth?').evidence[0].value,'Unavailable');
+test('new destination position and unsupported subject are explicit',()=>{
+ assert.notEqual(answerContextGuide(buildGuideContext('pluto',nav),'How far from Earth?').evidence[0].value,'Unavailable');
  assert.match(answerContextGuide(buildGuideContext('absent',nav),'Could I live here?').explanation,/Select an object/);
  assert.equal(buildGuideContext('earth',{...nav,positionAU:null}).nearby.length,0);
 });

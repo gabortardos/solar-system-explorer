@@ -12,7 +12,7 @@ export type Body = {
   id: string;
   name: string;
   kind: string;
-  category: "star" | "planet" | "moon";
+  category: "star" | "planet" | "dwarf-planet" | "moon";
   parentId: string | null;
   radius: number;
   gravity: number;

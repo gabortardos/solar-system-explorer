@@ -322,5 +322,59 @@
     "bytes": 2336,
     "sha256": "b492acc95abef47adabd122544a2fc8ce9382486c0bc6750aa29fbfc7d544f77",
     "sourceSha256": "cb42ea82709741d28b0af44d8b283cbc6dbd0c521a7f0e1e1e010ade00977df6"
+  },
+  {
+    "body": "ceres",
+    "file": "public/textures/detail/ceres-256.webp",
+    "width": 256,
+    "height": 128,
+    "bytes": 8256,
+    "sha256": "e62088992e43024bfdafe6b6bc47ed4b83ce2e2626c1abde1b9b53ba2cfd3161",
+    "sourceSha256": "220d5a9b56136e49cabdefdfbf42ad5d27abdd965f208a5f4de7d37da02ef84b"
+  },
+  {
+    "body": "ceres",
+    "file": "public/textures/detail/ceres-1024.webp",
+    "width": 1024,
+    "height": 512,
+    "bytes": 142710,
+    "sha256": "e675350d46ae963b8ed986e443a639a0707934bc00a6e92942502676a593b95f",
+    "sourceSha256": "220d5a9b56136e49cabdefdfbf42ad5d27abdd965f208a5f4de7d37da02ef84b"
+  },
+  {
+    "body": "pluto",
+    "file": "public/textures/detail/pluto-256.webp",
+    "width": 256,
+    "height": 128,
+    "bytes": 3140,
+    "sha256": "122c5c910b5a530a4591d7455a308f13da9e89d5c5e11ccf5933355db9ead2b5",
+    "sourceSha256": "d63da5ee9eab8d0b98ebef3c0cdc3a92676d7c9b247b2383294fb5da5c67a71a"
+  },
+  {
+    "body": "pluto",
+    "file": "public/textures/detail/pluto-1024.webp",
+    "width": 1024,
+    "height": 512,
+    "bytes": 36764,
+    "sha256": "33fce09bdeb01a04ac0fa4c431f64c50f15911fb6cc36a127945de2179ab9bed",
+    "sourceSha256": "d63da5ee9eab8d0b98ebef3c0cdc3a92676d7c9b247b2383294fb5da5c67a71a"
+  },
+  {
+    "body": "charon",
+    "file": "public/textures/detail/charon-256.webp",
+    "width": 256,
+    "height": 128,
+    "bytes": 2206,
+    "sha256": "25256f3b9b73c5b32f809524fb22d51418c3ce2bcc91b8e173d77636b9b28a51",
+    "sourceSha256": "542f6f76ece2dca82eb0ff5911875e6ed2f239d170dc9b8278e6c1b415437d29"
+  },
+  {
+    "body": "charon",
+    "file": "public/textures/detail/charon-1024.webp",
+    "width": 1024,
+    "height": 512,
+    "bytes": 19010,
+    "sha256": "e156cebd65a6fa0b25c83190abb4655c812c2ae2eed756d962af55501fda1548",
+    "sourceSha256": "542f6f76ece2dca82eb0ff5911875e6ed2f239d170dc9b8278e6c1b415437d29"
   }
 ]

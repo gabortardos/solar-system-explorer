@@ -4,7 +4,7 @@ import { missing, quantity as q, type Quantity } from "./schema";
 
 export type OrbitRecord = {
   parentId: string | null;
-  model: "jpl-table-1" | "satellite-mean-elements" | "not-imported" | "origin";
+  model: "jpl-table-1" | "horizons-linear-fit-1800-2050" | "satellite-mean-elements" | "not-imported" | "origin";
   epoch: { jd: number; timeScale: "TDB" } | null;
   frame:
     | "ecliptic-J2000"
@@ -123,6 +123,49 @@ for (const [id, , , , , , year] of planetPhysicalRows) {
     );
   }
   orbits[id] = orbit;
+}
+
+// JPL Horizons geometric heliocentric osculating elements at J2000 TDB.
+// Storage matches the JPL Table 1 tuple: a(au), e, I, L, varpi, node,
+// followed by per-Julian-century rates. Only mean longitude advances in this
+// deliberately bounded two-body visualization; this is not a live ephemeris.
+const horizonsRows: Record<string, { initial: number[]; fit: number[]; rates: number[]; period: number; reference: string }> = {
+  ceres: {
+    initial: [2.766496019994375, 0.07837562647163041, 10.58336045805628, 160.5938747289855, 154.417220215805, 80.49435747295276],
+    fit: [2.767093330640196, 0.07780958083579775, 10.595362950834687, 160.79660603385, 153.1364636879727, 80.55973024004254],
+    rates: [0.00002740697218683614, -0.00044031266624446394, -0.01657097038089709, 7819.531083123371, 1.7711037809224706, -1.4910977408267387],
+    period: 1680.712776442072,
+    reference: "Horizons target 1; center 500@10; epoch JD 2451545.0 TDB",
+  },
+  pluto: {
+    initial: [39.57126152242962, 0.2494484952274253, 17.23565301572196, 239.36226046650074, 225.218605929714, 110.03993995362],
+    fit: [39.561019386876936, 0.2497730196720672, 17.140965673810655, 238.9365497650023, 224.07066992374308, 110.31143552118756],
+    rates: [0.024787038942038774, 0.0010145711760755694, 0.002405285993980041, 145.22227259521634, -0.04687464122582008, -0.003635126059502941],
+    period: 90921.85108674582,
+    reference: "Horizons target 999; center 500@10; epoch JD 2451545.0 TDB",
+  },
+};
+for (const [id, row] of Object.entries(horizonsRows)) {
+  const [a, e, I, L, P, N] = row.initial;
+  const field = (value: number, unit: Quantity["unit"], column: string, quality: "approximate" | "derived" = "approximate") =>
+    q(value, unit, "jpl-horizons-elements", `${row.reference}; ${column}`, null, quality,
+      "J2000 osculating value; fixed two-body propagation omits perturbations.");
+  orbits[id] = {
+    parentId: "sun",
+    model: "horizons-linear-fit-1800-2050",
+    epoch: { jd: 2451545, timeScale: "TDB" },
+    frame: "ecliptic-J2000",
+    periodDays: field(row.period, "d", "PR"),
+    semimajorAxisKm: field(a * 149597870.7, "km", "A"),
+    eccentricity: field(e, "1", "EC"),
+    inclinationDeg: field(I, "deg", "IN"),
+    argumentPeriapsisDeg: field(P - N, "deg", "W", "derived"),
+    meanAnomalyDeg: field(L - P, "deg", "MA", "derived"),
+    nodeDeg: field(N, "deg", "OM"),
+    sourceIds: ["jpl-horizons-elements"],
+    reference: `${row.reference}; annual Horizons OLS fit 1800–2050`,
+    elements: [row.fit, row.rates],
+  };
 }
 
 // JPL mean-element snapshot at JD2451545 TDB. id,parent,frame,ephemeris,
@@ -499,3 +542,7 @@ for (const id of ["miranda", "ariel", "umbriel", "titania", "oberon"]) {
   orbits[id].referencePoleSourceIds = ["naif-pck"];
   orbits[id].sourceIds.push("naif-pck");
 }
+// Charon's published elements are referred to Pluto's equator.
+orbits.charon.referencePoleDeg = { ra: 132.993, dec: -6.163 };
+orbits.charon.referencePoleSourceIds = ["naif-pck"];
+orbits.charon.sourceIds.push("naif-pck");

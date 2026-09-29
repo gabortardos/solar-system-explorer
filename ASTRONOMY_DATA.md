@@ -2,7 +2,10 @@
 
 ## Scope
 
-The 2026-09-28 unnumbered visual identity pass changes presentation only. NASA
+The 2026-09-28 Destination Readiness pass adds an auditable local JPL Horizons
+fit for Ceres/Pluto, activates Charon with its validated parent transform, and
+adds source-derived close-view shapes for selected named small bodies. The
+earlier unnumbered visual identity pass changed presentation only. NASA
 and USGS/JPL moon mosaics have uneven coverage and baked lighting; missing
 Uranian northern regions use disclosed featureless neutral fill. Neptune's
 blue-green palette is qualitative, not calibrated reflectance. No new surface
@@ -13,7 +16,7 @@ This records the current scientific model, its limitations, and the intended dat
 
 ## Local catalogue and source snapshot
 
-Dataset `2026.09.14-1`, schema version 1; numerical references retrieved 2026-09-09/10 and Uranus orientation constants reviewed 2026-09-14.
+Dataset `2026.09.28-1`, schema version 1; core numerical references were retrieved 2026-09-09/10, orientation constants reviewed 2026-09-14/28, and the Ceres/Pluto Horizons fit snapshot was retrieved and validated 2026-09-28.
 
 | Category | Catalogue records |
 | --- | --- |
@@ -25,7 +28,7 @@ Dataset `2026.09.14-1`, schema version 1; numerical references retrieved 2026-09
 | Uranus moons | Miranda, Ariel, Umbriel, Titania, Oberon |
 | Neptune / Pluto moons | Triton; Charon |
 
-**32 catalogue records, 29 rendered/selectable destinations.** Ceres, Pluto and Charon remain information-only. “Major moons” is this explicit initial scope, not a claim to catalogue every large satellite.
+**32 catalogue records, 32 rendered/selectable destinations.** “Major moons” is this explicit initial scope, not a claim to catalogue every large satellite.
 
 ## Scientific data boundaries
 
@@ -60,6 +63,7 @@ An orbit identifies its parent, model, TDB epoch, plane and sourced quantities. 
 | Solar radius | [IAU 2015 B3](https://iauarchive.eso.org/static/resolutions/IAU2015_English.pdf) | 695,700 km is a nominal conversion constant, not an exact measured radius. |
 | AU, light speed, solar GM | [JPL constants / DE440](https://ssd.jpl.nasa.gov/astro_par.html) | AU and time conversions are definitions. Solar GM is a fitted ephemeris parameter. |
 | Planet positions | [JPL approximate elements](https://ssd.jpl.nasa.gov/planets/approx_pos.html) | Eight planets, Table 1, 1800–2050; Earth row is the Earth–Moon barycenter. |
+| Ceres/Pluto positions | [JPL Horizons](https://ssd.jpl.nasa.gov/horizons/) | Local OLS fit to 251 annual geometric heliocentric osculating-element rows per body, 1800–2050. Raw responses, exact queries, reproduction code, hashes and sampled errors are versioned in `data-source/horizons-pass3/`. Illustrative, not an ephemeris. |
 | Satellite elements | [JPL mean elements](https://ssd.jpl.nasa.gov/sats/elem/) | Rounded epoch elements in different parent reference planes. These are not downloadable precision ephemerides. |
 | Planet orientation | [NASA/JPL NAIF PCK](https://naif.jpl.nasa.gov/pub/naif/generic_kernels/pck/pck00011.tpc) | IAU Working Group orientation models. Used only for Uranus's equatorial reference-plane pole, not as a satellite ephemeris. |
 | Solar rotation / lunar synchronism | [NASA Sun](https://science.nasa.gov/sun/facts/), [NASA Moon](https://science.nasa.gov/moon/facts/) | Educational approximations. Sun rotates differentially; the Moon's mean synchronous spin is explicitly derived using the stored JPL period. |
@@ -82,8 +86,8 @@ Owner-requested timelapse extension (2026-09-15): 86,400× and 2,592,000× are l
 - Sun: origin of the chosen heliocentric frame, not a computed barycentric solar trajectory.
 - Major moons: source J2000 mean ellipses are propagated at their published mean periods and added to the modeled parent position. Parent-ecliptic elements remain ecliptic; local-Laplace and parent-equatorial coordinates are rotated into ICRF using the stored reference-plane pole, then into the J2000 ecliptic. The node convention follows JPL's ascending node of the reference plane on the ICRF equator.
 - These fixed ellipses omit nodal/apsidal precession, perturbations, light time and body orientation. Every result is **illustrative**, with no validated position-error bound; the application interval is not a claimed satellite-accuracy interval.
-- Charon: parent-relative elements and facts are stored, but position remains unavailable because Pluto has no imported heliocentric model. No origin or average-distance fallback is used.
-- Ceres/Pluto: physical properties and reference orbital periods are imported; a positional element set is not yet imported. The current JPL approximate-positions page explicitly excludes Pluto. No remembered or guessed Pluto/Ceres coefficients are used.
+- Ceres/Pluto: the application does not mislabel them as JPL Table 1, which excludes Pluto. It evaluates a separately named 1800–2050 six-element linear fit derived from 251 annual Horizons rows. Annual-checkpoint sampled max/RMS are 0.02561/0.00988 AU and 0.548°/0.197° for Ceres; 0.16804/0.07382 AU and 0.176°/0.077° for Pluto. These sampled maxima are not continuous-time guarantees.
+- Charon: PLU060 Pluto-centered mean elements are transformed using the NAIF Pluto pole and added to target 999 (Pluto center, not barycenter 9). The circular J2000 mean longitude agrees with the independent Horizons check; the result remains illustrative.
 
 `calculateDistance()` uses simultaneous uncompressed model coordinates, converted by the defined AU. Results carry time, sources and approximate/illustrative quality. `dynamicValues()` separates these calculations from `observations`, which is explicitly unavailable. Light time is geometric distance/c, not observed retarded-time astrometry or a spacecraft travel duration.
 

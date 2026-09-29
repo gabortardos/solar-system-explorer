@@ -70,7 +70,7 @@ Users must retain two travel modes:
 - Space/Escape or brake stops travel.
 - “Focus target” recovers local orientation.
 - “System view” provides global context.
-- Search and the primary destination strip choose the same target model. The strip intentionally remains the ten-entry overview; major moons are found through search or their visible parent system so the HUD does not become a 29-item ribbon.
+- Search and the primary destination strip choose the same target model. The strip intentionally remains the ten-entry overview; moons and dwarf planets are found through search or their visible parent system so the HUD does not become a 32-item ribbon.
 - Reduced-motion travel is immediate and understandable.
 
 Current V1.2 implementation eases acceleration/deceleration and steering while retaining direct controls, distance-aware speed and the 8× boost. Combined movement axes are normalized so diagonal input is not faster. Brake remains immediate; physical-device feel and tuning still require validation.

@@ -1,0 +1,53 @@
+{
+  "schema": "pass3-horizons-linear-fit-v1",
+  "generatedFrom": {
+    "rowCadence": "1 calendar year",
+    "rowCountPerBody": 251,
+    "independentVariable": "T=(JDTDB-2451545.0)/36525",
+    "method": "Independent ordinary least-squares fits of a, e, I, unwrapped L, unwrapped longitude of perihelion, and unwrapped longitude of ascending node. Position errors compare two-body Cartesian positions formed from each Horizons osculating row against the fitted elements at the same epoch.",
+    "tupleOrder": ["a_au", "e", "I_deg", "L_deg", "varpi_deg", "Omega_deg"],
+    "rateUnits": ["au/century", "1/century", "deg/century", "deg/century", "deg/century", "deg/century"]
+  },
+  "ceres": {
+    "command": "1;",
+    "sourceSolution": "JPL#48",
+    "firstEpochJdTdb": 2378496.5,
+    "lastEpochJdTdb": 2469807.5,
+    "baseAtJ2000": [2.767093330640196, 0.07780958083579775, 10.595362950834687, 160.79660603385, 153.1364636879727, 80.55973024004254],
+    "ratePerCentury": [0.00002740697218683614, -0.00044031266624446394, -0.01657097038089709, 7819.531083123371, 1.7711037809224706, -1.4910977408267387],
+    "fitValidation": {
+      "maxDistanceAu": 0.02560824134069751,
+      "rmsDistanceAu": 0.00988248010193416,
+      "maxDistanceMillionKm": 3.8309383769400602,
+      "maxAngularDeg": 0.5476989040112764,
+      "rmsAngularDeg": 0.1967363920297063
+    },
+    "fixedJ2000Validation": {
+      "maxDistanceAu": 0.46371365195351555,
+      "rmsDistanceAu": 0.20543743125723976,
+      "maxAngularDeg": 10.437373713197196,
+      "rmsAngularDeg": 4.303851176967346
+    }
+  },
+  "pluto": {
+    "command": "999",
+    "sourceSolution": "plu060_merged",
+    "firstEpochJdTdb": 2378498.5,
+    "lastEpochJdTdb": 2469809.5,
+    "baseAtJ2000": [39.561019386876936, 0.2497730196720672, 17.140965673810655, 238.9365497650023, 224.07066992374308, 110.31143552118756],
+    "ratePerCentury": [0.024787038942038774, 0.0010145711760755694, 0.002405285993980041, 145.22227259521634, -0.04687464122582008, -0.003635126059502941],
+    "fitValidation": {
+      "maxDistanceAu": 0.16804371817013616,
+      "rmsDistanceAu": 0.07382163443593154,
+      "maxDistanceMillionKm": 25.13898242276327,
+      "maxAngularDeg": 0.17602606492345926,
+      "rmsAngularDeg": 0.07704738384120677
+    },
+    "fixedJ2000Validation": {
+      "maxDistanceAu": 1.1970346762938953,
+      "rmsDistanceAu": 0.7509065264838307,
+      "maxAngularDeg": 1.6441312748734924,
+      "rmsAngularDeg": 0.9258771321744709
+    }
+  }
+}

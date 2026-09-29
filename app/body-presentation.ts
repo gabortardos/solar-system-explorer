@@ -61,6 +61,8 @@ export const presentation:Record<string,BodyPresentation> = {
     "color": "#739add",
     "texture": "neptune"
   },
+  "ceres":{"name":"Ceres","kind":"Dwarf planet · asteroid belt","color":"#aaa49c","texture":null},
+  "pluto":{"name":"Pluto","kind":"Dwarf planet · Kuiper Belt","color":"#c8ae99","texture":null},
   "phobos":{"name":"Phobos","kind":"Moon of Mars","color":"#978b7f","texture":null},
   "deimos":{"name":"Deimos","kind":"Moon of Mars","color":"#aaa093","texture":null},
   "io":{"name":"Io","kind":"Moon of Jupiter","color":"#e3c55f","texture":null},
@@ -79,5 +81,6 @@ export const presentation:Record<string,BodyPresentation> = {
   "umbriel":{"name":"Umbriel","kind":"Moon of Uranus","color":"#707576","texture":null},
   "titania":{"name":"Titania","kind":"Moon of Uranus","color":"#9da7a5","texture":null},
   "oberon":{"name":"Oberon","kind":"Moon of Uranus","color":"#817a75","texture":null},
-  "triton":{"name":"Triton","kind":"Moon of Neptune","color":"#c6a9b0","texture":null}
+  "triton":{"name":"Triton","kind":"Moon of Neptune","color":"#c6a9b0","texture":null},
+  "charon":{"name":"Charon","kind":"Moon of Pluto","color":"#9a9692","texture":null}
 };

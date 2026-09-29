@@ -5,6 +5,7 @@ import type { GuideQuotaState, GuideResponse } from './guide-assistant';
 import Link from "next/link";
 import {MinorBodyPanel} from './minor-body-panel';
 import type {MinorBody} from './minor-bodies';
+import {minorVisualDescription} from './minor-shapes';
 import './minor-bodies.css';
 import {
   Orbit,
@@ -612,7 +613,7 @@ export default function Home() {
       {!ready && !error && (
         <div className="loading">Bringing the solar system into view…</div>
       )}
-      {minorView ? <aside className="target-card" aria-label="Selected small body"><span className="eyebrow">SMALL BODY</span><div className="world-title"><h2>{minorView.name}</h2></div><p className="kind">{minorView.context}</p><p className="description">Illustrative orbit · enlarged marker</p><button className="details-button" onClick={()=>setPanel('minor')}>Object information <ChevronRight size={17}/></button></aside> : <aside className="target-card" aria-label="Selected world">
+      {minorView ? <aside className="target-card" aria-label="Selected small body"><span className="eyebrow">SMALL BODY</span><div className="world-title"><h2>{minorView.name}</h2></div><p className="kind">{minorView.context}</p><p className="description">{minorVisualDescription(minorView)}</p><button className="details-button" onClick={()=>setPanel('minor')}>Object information <ChevronRight size={17}/></button></aside> : <aside className="target-card" aria-label="Selected world">
         <div className="target-meta">
           <span className="eyebrow">SELECTED DESTINATION</span>
           <span className="object-index">

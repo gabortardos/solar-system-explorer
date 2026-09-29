@@ -15,7 +15,7 @@ export const catalog:readonly CatalogBody[]=Object.entries(names).map(([id,name]
 const byId=new Map(catalog.map(body=>[body.id,body]));
 export function getBody(id:string):CatalogBody|undefined{return byId.get(id);}
 export const catalogMetadata={schemaVersion:1,datasetVersion:DATASET_VERSION,bodyCount:catalog.length,
- description:'Local reference data; 32 catalogued bodies, 29 scene destinations. Charon, Ceres and Pluto remain information-only. Unavailable fields are explicit. No runtime external API.'};
+ description:'Local reference data; 32 catalogued bodies and 32 scene destinations. Ceres and Pluto use fixed JPL Horizons osculating-element visualizations; Charon uses its Pluto-relative mean ellipse. Unavailable fields are explicit. No runtime external API.'};
 
 // Guard imported snapshots at build/test time. Never coerce null into zero.
 export function validateCatalog(records:readonly CatalogBody[]=catalog):string[]{
@@ -48,7 +48,7 @@ export function validateCatalog(records:readonly CatalogBody[]=catalog):string[]
   if(b.orbit.periodDays.value!==null&&b.orbit.periodDays.value<=0)errors.push(`${b.id}: nonpositive period`);
   if(b.orbit.parentId!==b.parentId)errors.push(`${b.id}: inconsistent orbit parent`);
   if(b.orbit.sourceIds.some(id=>!SOURCES[id]))errors.push(`${b.id}: unresolved orbit source`);
-  if(['jpl-table-1','satellite-mean-elements'].includes(b.orbit.model)&&(!b.orbit.epoch||!Number.isFinite(b.orbit.epoch.jd)||!b.orbit.frame))errors.push(`${b.id}: missing orbit epoch/frame`);
+  if(['jpl-table-1','horizons-linear-fit-1800-2050','satellite-mean-elements'].includes(b.orbit.model)&&(!b.orbit.epoch||!Number.isFinite(b.orbit.epoch.jd)||!b.orbit.frame))errors.push(`${b.id}: missing orbit epoch/frame`);
   if(b.orbit.elements&&b.orbit.elements.some(row=>row.length!==6||row.some(v=>!Number.isFinite(v))))errors.push(`${b.id}: invalid elements`);
  }
  return errors;

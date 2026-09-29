@@ -91,6 +91,24 @@ export const education: Record<string, EducationalEntry> = {
     reviewStatus: "legacy-curated",
     reviewedAt: null,
   },
+  ceres: {
+    description:
+      "The largest object in the main asteroid belt is a round, cratered dwarf planet with water-rich minerals and bright salt deposits.",
+    fact: "NASA’s Dawn mission found evidence that brines helped form the bright deposits in Occator crater.",
+    atmosphere: "An extremely tenuous, transient water-vapor exosphere has been reported.",
+    source: "https://science.nasa.gov/dwarf-planets/ceres/facts/",
+    reviewStatus: "source-reviewed",
+    reviewedAt: "2026-09-28",
+  },
+  pluto: {
+    description:
+      "A complex icy dwarf planet in the Kuiper Belt, with mountains of water ice and the bright nitrogen-ice plain Sputnik Planitia.",
+    fact: "New Horizons revealed active-looking geology despite Pluto’s small size and great distance from the Sun.",
+    atmosphere: "A thin, seasonally changing atmosphere dominated by nitrogen, with methane and carbon monoxide.",
+    source: "https://science.nasa.gov/dwarf-planets/pluto/facts/",
+    reviewStatus: "source-reviewed",
+    reviewedAt: "2026-09-28",
+  },
   phobos: {
     description:
       "Mars’s larger inner moon is an irregular, heavily cratered body that is slowly spiraling inward.",

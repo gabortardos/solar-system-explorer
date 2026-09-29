@@ -42,7 +42,7 @@ test('catalogue search ranks exact names and aliases and always returns bounded 
  assert.ok(jovianMoons.results.every(result=>result.type==='Moon'&&result.context==='Orbits Jupiter'));
  const ceres=await catalogSearchProvider.search('1 Ceres');
  assert.equal(ceres.results[0].id,'ceres');
- assert.equal(ceres.results[0].sceneAvailable,false);
+ assert.equal(ceres.results[0].sceneAvailable,true);
  const bounded=await catalogSearchProvider.search('',{limit:5});
  assert.equal(bounded.results.length,5);
  assert.equal(bounded.total,32);
@@ -63,8 +63,12 @@ test('reference values retain source units, uncertainty and distinct conventions
  assert.equal(getBody('ariel').orbit.frame,'parent-equatorial');
  assert.equal(getBody('triton').orbit.inclinationDeg.value,157.3);
 });
-test('missing positions and out-of-range dates fail explicitly, never as zero coordinates',()=>{
- for(const id of ['ceres','pluto','charon','invented']){
+test('new destinations have sourced positions while unknown and out-of-range queries fail explicitly',()=>{
+ for(const id of ['ceres','pluto','charon']){
+  const p=calculatePosition(id,epoch);assert.equal(p.status,'available');assert.equal(p.quality,'illustrative');assert.ok(p.value.every(Number.isFinite));
+  assert.ok(calculateDistance(id,'earth',epoch).value>0);
+ }
+ for(const id of ['invented']){
   const p=calculatePosition(id,epoch);assert.equal(p.status,'unavailable');assert.equal(p.value,null);assert.ok(p.reason);
   assert.equal(calculateDistance(id,'earth',epoch).value,null);
  }
@@ -98,7 +102,7 @@ test('dynamic results stay local, timestamped, reproducible and distinct from li
  } finally {globalThis.fetch=oldFetch;}
 });
 test('existing scene and guide consume canonical physical values and disclose approximations',()=>{
- assert.equal(bodies.length,29);
+ assert.equal(bodies.length,32);
  for(const b of bodies){assert.equal(b.radius,getBody(b.id).physical.radiusKm.value);assert.equal(b.day,getBody(b.id).physical.rotationHours.value);}
  const sun=bodies.find(b=>b.id==='sun'),moon=bodies.find(b=>b.id==='moon'),venus=bodies.find(b=>b.id==='venus');
  assert.match(answerGuide(sun,'rotation',epoch).answer,/varies with latitude/);
@@ -107,13 +111,13 @@ test('existing scene and guide consume canonical physical values and disclose ap
  assert.match(answerGuide(venus,'distance',MODEL_END).answer,/unavailable/i);
 });
 test('major moons retain parent-relative mean-orbit bounds and explicit illustrative quality',()=>{
- for(const id of ['phobos','deimos','io','europa','ganymede','callisto','mimas','enceladus','tethys','dione','rhea','titan','iapetus','miranda','ariel','umbriel','titania','oberon','triton']){
+ for(const id of ['phobos','deimos','io','europa','ganymede','callisto','mimas','enceladus','tethys','dione','rhea','titan','iapetus','miranda','ariel','umbriel','titania','oberon','triton','charon']){
   const body=getBody(id),moon=calculatePosition(id,epoch),parent=calculatePosition(body.parentId,epoch);
   assert.equal(moon.status,'available');assert.equal(moon.quality,'illustrative');assert.match(moon.accuracyNote,/no validated position-error bound/i);
   const separation=Math.hypot(...moon.value.map((v,i)=>v-parent.value[i]))*149597870.7,a=body.orbit.semimajorAxisKm.value,e=body.orbit.eccentricity.value;
   assert.ok(separation>=a*(1-e)-1e-5&&separation<=a*(1+e)+1e-5,`${id} separation stays on its source ellipse`);
  }
- assert.equal(calculatePosition('charon',epoch).status,'unavailable','Charon waits for a Pluto parent position');
+ assert.equal(calculatePosition('charon',epoch).status,'available','Charon uses the Pluto-center parent position');
 });
 test('object information is type-aware and omits unavailable or meaningless fields',()=>{
  const earth=buildObjectInformation('earth'),moon=buildObjectInformation('moon'),sun=buildObjectInformation('sun'),uranus=buildObjectInformation('uranus');

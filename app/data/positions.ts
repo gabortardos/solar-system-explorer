@@ -158,6 +158,23 @@ export function calculatePosition(
         "JPL 1800–2050 approximation; UTC substituted for TDB. Earth represents the Earth–Moon barycenter. Geometric simultaneous position, no light-time correction.",
     };
   }
+  if (body.orbit.model === "horizons-linear-fit-1800-2050") {
+    const t = (time - J2000_UTC_APPROX) / DAY_MS / 36525;
+    const [initial, rates] = body.orbit.elements!;
+    const [a, e, I, L, P, N] = initial.map((n, j) => n + t * rates[j]);
+    return {
+      ...base,
+      value: keplerCartesian(a, e, I, P - N, N,
+        anomalyRad === undefined ? L - P : (anomalyRad * 180) / Math.PI),
+      model: "horizons-linear-fit-1800-2050",
+      sourceIds: body.orbit.sourceIds,
+      quality: "illustrative",
+      accuracyNote:
+        id === "ceres"
+          ? "Linear six-element fit to 251 annual JPL Horizons geometric heliocentric osculating-element rows (1800–2050); UTC is substituted for TDB. Annual-checkpoint validation: 0.02561 AU / 0.548° maximum and 0.00988 AU / 0.197° RMS. These are sampled results, not continuous error bounds; not for observing or navigation."
+          : "Linear six-element fit to 251 annual JPL Horizons geometric heliocentric osculating-element rows (1800–2050); UTC is substituted for TDB. Annual-checkpoint validation: 0.16804 AU / 0.176° maximum and 0.07382 AU / 0.077° RMS. These are sampled results, not continuous error bounds; not for observing or navigation.",
+    };
+  }
   if (body.orbit.model === "satellite-mean-elements") {
     const parentId = body.parentId;
     if (!parentId)

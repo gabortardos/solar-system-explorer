@@ -2,13 +2,15 @@
 
 Last updated: 2026-09-28 UTC
 
-Stable product version: V1.1. Production URL: `https://solar-system-explorer-gabor.gabortardos.chatgpt.site`.
+Stable product version: V1.1, production Site version 39. Production URL: `https://solar-system-explorer-gabor.gabortardos.chatgpt.site`.
 
 This is the fast handoff for **what exists now**. The repository and deployed application are the source of truth. Read the specialized documents for product direction, architecture, UX, astronomy, roadmap, decisions and issues. Do not rebuild from a starter or replace working architecture merely because a new Work chat begins.
 
 ## Current reality
 
-The unnumbered **Solar System visual identity pass** adds sourced identity maps for all 16 previously flat-color active moons and shared-cache cloud/atmosphere treatment for Uranus and Neptune. Eighteen secondary bodies use 256px bases and one 1024px tier within the existing two-desktop/one-mobile cache. No Step 19 priority assets or shadow policy changed. See `docs/VISUAL_IDENTITY.md` for provenance, coverage limits and the outstanding actual-rendered/WebGL acceptance check. Step 20 has not started.
+The unnumbered **Destination Readiness pass** activates Ceres, Pluto and Charon, so all 32 core catalogue records now support Show/Travel. Ceres/Pluto use versioned JPL Horizons annual source rows and a validated 1800–2050 illustrative fit; Charon uses its Pluto-centered mean ellipse plus the NAIF Pluto pole. Seven priority named small bodies use source-derived close-view shape meshes, every other selected name gets a disclosed restrained approximation, and only one detail mesh is retained. See `docs/DESTINATION_READINESS_PASS.md`. Actual rendered/WebGL acceptance remains for the owner PC session. Step 20 has not started.
+
+The earlier unnumbered **Solar System visual identity pass** adds sourced identity maps for all 16 previously flat-color active moons and shared-cache cloud/atmosphere treatment for Uranus and Neptune. With Ceres, Pluto and Charon, 21 secondary bodies use 256px bases and one 1024px tier within the existing two-desktop/one-mobile cache. No Step 19 priority assets or shadow policy changed. See `docs/VISUAL_IDENTITY.md` for provenance and coverage limits.
 
 **Step 19 — Close-approach planet experience is COMPLETE for all eight priority bodies.** Owner acceptance on 2026-09-27 used production Site version 35 on a real mobile WebGL browser and confirmed that the Jupiter-moon black artifacts and Saturn black/pixelated shadow no longer reproduce. Earth, Moon, Titan and LOD transitions were also rechecked. The shared LOD, sourced assets and bounded cache are preserved. Mobile catalogue search is a separate maintenance item, not a Step 19 gate. Do not begin Step 20 in this closeout.
 
@@ -22,9 +24,11 @@ The earlier work previously called “Step 18 mobile input correction” is recl
 
 Step 16's request-time context/evidence foundation remains the deterministic fallback beneath the completed Step 17 live connection. Step 15 was published as Site version 15; its source/live mismatch was resolved.
 
-Step 15 — **ASTEROID BELT AND KUIPER BELT VISUALIZATION** adds renderer-only representative regions for the main asteroid belt, the Kuiper Belt and Jupiter's leading/trailing Trojan clouds. Step 14's separate on-demand 19-object JPL minor-body sample remains intact. The bounded active scene still contains 29 destinations; population dots are not catalogue objects, destinations, counts or ephemerides.
+Step 15 — **ASTEROID BELT AND KUIPER BELT VISUALIZATION** adds renderer-only representative regions for the main asteroid belt, the Kuiper Belt and Jupiter's leading/trailing Trojan clouds. Step 14's separate on-demand 19-object JPL minor-body sample remains intact. The bounded core scene now contains 32 destinations; population dots are not catalogue objects, destinations, counts or ephemerides.
 
 Latest verification:
+
+- Destination Readiness release (2026-09-28): production build, lint and all 110 automated tests pass. JPL source/fit reproduction and checksums pass; seven measured small-body shape assets total under 2 MiB and only one is retained at runtime. Published as Site version 39. Actual application-rendered/WebGL acceptance remains for the owner PC session.
 
 - Visual identity release (2026-09-28): production build, lint and all 109 automated tests pass, including all 18 identity bodies, source hashes, bounded shared-cache allocation and disposal. Actual application-rendered/WebGL acceptance remains outstanding as recorded in `docs/VISUAL_IDENTITY.md`.
 
@@ -39,7 +43,7 @@ Latest verification:
 - Starts focused near Earth; selection, assisted curved travel, brake/cancel, arrival focus and device-local visit progress.
 - Desktop free flight with W/S, A/D, Q/E, arrow look, Shift boost and Space/Escape brake; mouse/touch orbit and approach.
 - Mobile compact dock, bottom action sheet, optional flight controls and hide/restore HUD.
-- Bounded asynchronous search across all 32 records by name, curated alias, type and parent context. Results expose Show, Travel and Information; scene actions are enabled only for the 29 active destinations.
+- Bounded asynchronous search across all 32 records by name, curated alias, type and parent context. Results expose Show, Travel and Information for all 32 active destinations.
 - A ten-item primary destination strip keeps the desktop HUD compact; major moons are reached through search or contextual selection.
 - Reusable type-aware information panel with parent, applicable physical/orbital facts, sourced education and provenance. Empty/unknown values are omitted.
 - Reusable distance comparison with Earth, Sun, parent, spacecraft or another active destination. Simulated separation and average orbital distance remain distinct.
@@ -63,16 +67,16 @@ Latest verification:
 
 ## Data and position systems
 
-- Dataset version: `2026.09.14-1`; 32 local catalogue records with explicit units, sources, references, uncertainties where available and null/missing reasons.
+- Dataset version: `2026.09.28-1`; 32 local catalogue records with explicit units, sources, references, uncertainties where available and null/missing reasons.
 - Planet positions: JPL approximate Keplerian model for `[1800, 2050)`; Earth is the Earth–Moon barycenter approximation.
 - Major-moon positions: JPL J2000 mean ellipses in parent-ecliptic, local-Laplace or parent-equatorial frames. Laplace poles come from JPL; Uranus's equatorial pole comes from the IAU-based NASA/JPL NAIF PCK.
 - Moon positions are **illustrative**, not ephemerides: fixed mean ellipses omit apsidal/nodal precession, perturbations, light time and body orientation, and have no validated error bounds.
-- Charon's parent-relative elements are stored, but its position is unavailable because Pluto has no imported heliocentric position. No fallback is invented.
+- Ceres/Pluto use the local 251-row-per-body Horizons fit dataset with sampled validation errors; Charon uses Pluto target 999 plus its source mean ellipse and NAIF pole transform. All remain explicitly illustrative, not navigation ephemerides.
 - Major-moon education was reviewed against linked NASA Science pages on 2026-09-14. Legacy planet guide/temperature prose remains labelled separately.
 
 ## Visual and scale systems
 
-- Shared close-approach LOD for Earth, Moon, Mars, Jupiter, Saturn, Europa, Titan and Enceladus: lazy 512/1024/4096px maps (2048px mobile cap), two desktop or one mobile/compatibility detail bundles, focus priority, fades, abort/disposal and sourced moon imagery. Titan remains opaque haze with no invented surface. The visual identity pass extends that same cache to the other 16 active moons plus Uranus/Neptune at 256/1024px; partial coverage is disclosed and missing Uranian northern terrain is not invented.
+- Shared close-approach LOD for Earth, Moon, Mars, Jupiter, Saturn, Europa, Titan and Enceladus: lazy 512/1024/4096px maps (2048px mobile cap), two desktop or one mobile/compatibility detail bundles, focus priority, fades, abort/disposal and sourced moon imagery. Titan remains opaque haze with no invented surface. The identity tier covers the other 16 active moons, Uranus/Neptune, Ceres, Pluto and Charon at 256/1024px; partial coverage is disclosed and missing regions are not filled with invented terrain.
 - Warm Sun light, restrained ambient fill, ACES tone mapping, soft WebGL shadows, Earth clouds/night lights/atmosphere, Saturn rings, Sun corona and deterministic decorative stars.
 - Scientific Scale is linear at 100 units/AU for centers. Bodies remain enlarged for visibility.
 - Exploration Scale compresses heliocentric radius continuously. Moon systems use a centralized monotonic parent-local radial compression preserving phase, direction and orbit ordering.
@@ -90,7 +94,7 @@ Latest verification:
 ## Known limitations
 
 - Moon positions are scientifically meaningful mean-orbit visualizations, not precision ephemerides or eclipse/navigation predictions.
-- Ceres, Pluto and Charon are not scene destinations.
+- Ceres, Pluto and Charon positions are fitted/mean-orbit visualizations with documented sampled errors, not precision ephemerides.
 - Full WebGL/physical-device performance and appearance remain unverified; a production chunk remains over 500 kB.
 - Labels have no overlap/occlusion solver. Manual flight has no acceleration/inertia/sensitivity control.
 - Population regions are deterministic statistical samples with simplified radial/inclination envelopes. They intentionally do not reproduce true density, resonant structure, families or precise object positions; WebGL/physical-device visual sparsity still needs QA.
@@ -101,9 +105,9 @@ Latest verification:
 
 ## Current milestone and next task
 
-**Current implementation checkpoint:** Step 19 close-approach rendering is complete. Steps 17 and 18 remain complete. **Still open:** V1.2 flight/device QA and separate mobile UI maintenance. Do not start Step 20 in this task.
+**Current implementation checkpoint:** the unnumbered Destination Readiness implementation is complete; actual rendered/WebGL acceptance is deferred to the owner PC session. Steps 17–19 remain complete. **Still open:** V1.2 flight/device QA and separate mobile UI maintenance. Do not start Step 20.
 
-Next action: retain the completed Step 19 implementation and address later work only under its own approved scope. Step 20 remains out of scope.
+Next action: run the owner PC/WebGL acceptance checklist for Ceres/Pluto/Charon and the seven priority small-body shapes. Step 20 remains out of scope.
 
 ## Step 14 data and release notes
 
