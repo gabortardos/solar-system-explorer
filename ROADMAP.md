@@ -1,5 +1,9 @@
 # Solar System Explorer — Roadmap
 
+## Unnumbered targeted WebGL visual correction pass — 2026-10-01
+
+Owner PC/WebGL evidence exposed source-coverage silhouettes that read as detached caps on partially mapped Ariel, Miranda, Oberon, Pluto and Charon, plus a broad baked-mosaic illumination band on Triton. The offline texture preparation now uses edge-connected no-data masks, latitude-wide neutral feathering and a low-amplitude non-topographic unknown-region material; Triton's source illumination is normalized without replacing measured local texture. The same root correction covers Umbriel and Titania. Identity LOD/cache/shadow architecture, complete maps and Step 19 bodies are unchanged. See `docs/WEBGL_VISUAL_CORRECTION_PASS.md`. Step 20 has not started.
+
 ## Unnumbered Pre-Step-20 UX + Local Guide cleanup — 2026-09-29
 
 The redundant Small-body regions navigation shortcut is removed without deleting the population renderer or Settings toggle. Its shared scale/exaggeration disclosure now sits beside System View. Astronomy Guide is attached directly to selected-world actions, and deterministic presets are filtered by selected-object relevance while staying local/free. Natural simulation-time, rotation/orbit and distance answers replace internal-sounding lead text. Build, lint and all 113 tests pass; see `docs/PRE_STEP_20_UX_CLEANUP.md`. Step 20 has not started.

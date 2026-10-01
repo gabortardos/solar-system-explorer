@@ -21,6 +21,18 @@ test('identity assets match provenance hashes and stay within the transfer budge
   assert.ok(sources.entries.some(s=>s.body===item.body&&s.credit&&s.sourcePage.startsWith('https://')));
  }
 });
+test('partial observational coverage uses reviewed neutral transitions, not hard no-data caps',async()=>{
+ const manifest=JSON.parse(await readFile('docs/IDENTITY_TEXTURE_MANIFEST.json','utf8'));
+ const neutral=['miranda','ariel','umbriel','titania','oberon','pluto','charon'];
+ for(const id of neutral){
+  const tiers=manifest.filter(item=>item.body===id);
+  assert.equal(tiers.length,2);assert.ok(tiers.every(item=>item.coverageTreatment==='neutral-unknown-feather-v2'));
+ }
+ const triton=manifest.filter(item=>item.body==='triton');
+ assert.equal(triton.length,2);assert.ok(triton.every(item=>item.coverageTreatment==='source-illumination-normalization-v1'));
+ const preparation=await readFile('scripts/prepare-identity-textures.py','utf8');
+ assert.match(preparation,/connected to one polar edge/);assert.match(preparation,/does not extend terrain/);
+});
 function harness(mobile=false,fetcher){
  const textures=[],requests=[],scene=new THREE.Scene();
  const load=fetcher??(async(path,signal)=>{requests.push({path,signal});const width=Number(path.match(/-(\d+)\.webp/)?.[1]??1024);const t=new THREE.Texture({width,height:width/2});t.userData.disposed=false;t.addEventListener('dispose',()=>t.userData.disposed=true);textures.push(t);return t;});

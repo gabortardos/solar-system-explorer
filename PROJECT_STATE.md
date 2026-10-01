@@ -1,12 +1,14 @@
 # Solar System Explorer — Current Project State
 
-Last updated: 2026-09-29 UTC
+Last updated: 2026-10-01 UTC
 
-Stable product version: V1.1, production Site version 40. Production URL: `https://solar-system-explorer-gabor.gabortardos.chatgpt.site`.
+Stable product version: V1.1, production Site version 41. Production URL: `https://solar-system-explorer-gabor.gabortardos.chatgpt.site`.
 
 This is the fast handoff for **what exists now**. The repository and deployed application are the source of truth. Read the specialized documents for product direction, architecture, UX, astronomy, roadmap, decisions and issues. Do not rebuild from a starter or replace working architecture merely because a new Work chat begins.
 
 ## Current reality
+
+The unnumbered **Targeted WebGL visual correction pass** responds to owner PC/WebGL screenshots of false cap/coverage edges on partially mapped moons and dwarf planets. The offline source pipeline now removes edge-connected no-data ringing, fades measured imagery into a disclosed neutral unknown-region material, and normalizes Triton's broad baked-mosaic illumination. It changes only the 256/1024px identity assets for the five Uranian moons, Triton, Pluto and Charon; LOD/cache/shadow architecture and complete-map bodies are unchanged. See `docs/WEBGL_VISUAL_CORRECTION_PASS.md`. A final owner WebGL retest of Site version 41 remains the acceptance item; Step 20 has not started.
 
 The unnumbered **Pre-Step-20 UX + Local Guide cleanup** removes the redundant Small-body regions navigation shortcut while preserving the renderer and Settings toggle, moves the shared scale/exaggeration disclosure beside System View, and places Astronomy guide directly with the selected-world actions. Local presets are now selected-object-aware and remain free/deterministic; weak location presets are not promoted, and simulation-time, rotation/orbit and modeled-distance answers lead with natural language. See `docs/PRE_STEP_20_UX_CLEANUP.md`. Step 20 has not started.
 
@@ -29,6 +31,8 @@ Step 16's request-time context/evidence foundation remains the deterministic fal
 Step 15 — **ASTEROID BELT AND KUIPER BELT VISUALIZATION** adds renderer-only representative regions for the main asteroid belt, the Kuiper Belt and Jupiter's leading/trailing Trojan clouds. Step 14's separate on-demand 19-object JPL minor-body sample remains intact. The bounded core scene now contains 32 destinations; population dots are not catalogue objects, destinations, counts or ephemerides.
 
 Latest verification:
+
+- Targeted WebGL visual correction (2026-10-01): owner screenshots reproduced hard source-coverage silhouettes on Ariel, Miranda, Oberon, Pluto and Charon plus a broad baked-lighting band on Triton. Corrected source assets, deterministic preparation, production build, lint and all 114 tests pass. The publication record is Site version 41; real WebGL retest remains with the owner PC because this environment cannot provide the required WebGL inspection surface.
 
 - Pre-Step-20 UX + Local Guide cleanup (2026-09-29): production build, lint and all 113 automated tests pass. Published as Site version 40; selected-object preset filtering, natural deterministic answers, Guide-entry placement and removal of the redundant regions shortcut have focused regressions.
 

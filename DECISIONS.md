@@ -1,5 +1,12 @@
 # Solar System Explorer — Decision Record
 
+## D039 — Treat observational coverage boundaries as metadata, not terrain (2026-10-01)
+
+- **Decision:** For partial Voyager/New Horizons identity maps, detect only edge-connected no-data pixels, remove compression ringing, fade observed imagery into a neutral unknown-region material across a broad latitude band, and record the treatment in the asset manifest. Use low-amplitude deterministic non-topographic grain so the unknown area does not read as a second mesh. Normalize Triton's broad baked source illumination while retaining local measured texture.
+- **Reason:** Owner WebGL screenshots showed narrow mission-footprint boundaries as false detached spherical caps and Triton's baked mosaic band as a surface feature.
+- **Impact:** The five Uranian moon maps, Pluto, Charon and Triton change at both existing identity tiers. Shared cache budgets, geometry, LOD thresholds, lighting, shadows and complete-map bodies do not change.
+- **Preserve:** Never mirror or synthesize craters/ridges into unobserved regions, label neutral material as measured terrain, or use this asset correction to reopen Step 19 or begin Step 20.
+
 ## D038 — Contextual Guide entry and presets reduce navigation noise (2026-09-29)
 
 - **Decision:** Keep one System View action in the main controls, place the shared body-size/small-body exaggeration disclosure beside it, and preserve population visibility in Settings. Put Astronomy Guide directly with the selected-world actions. Generate Local-guide preset buttons from selected-object data and reviewed topic coverage; do not promote spacecraft-location prompts as defaults.

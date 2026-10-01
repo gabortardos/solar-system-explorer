@@ -36,9 +36,14 @@ the correct Oberon TIFF is used. A partial Dione download failed decoding and
 was replaced by a fully decoded source before integration.
 
 Top-connected black no-data pixels in the five Uranian moon maps are filled
-with the observed map's mean tone. A narrow no-data edge is discarded and
-feathered to prevent false dark coverage boundaries. This is a neutral unknown
-region, not inferred terrain. Mosaics retain baked illumination and source gaps.
+with the observed map's mean tone. Owner PC/WebGL evidence later showed that the
+original narrow feather still read as a detached cap. The 2026-10-01 correction
+discards edge-connected compression ringing, suppresses detail into a broad
+latitude transition and uses low-amplitude deterministic non-topographic grain
+in the neutral unknown material. It does not mirror, extend or infer craters and
+ridges. Triton's broad horizontal source-mosaic illumination is normalized while
+its local observed texture remains. Treatment IDs are retained per tier in the
+asset manifest; see `WEBGL_VISUAL_CORRECTION_PASS.md`.
 
 Neptune's enhanced-blue legacy map is converted to luminance and recolored with
 a low-contrast blue-green palette, preserving existing mapped structures. This
@@ -50,12 +55,12 @@ Surface imagery disclosure includes these limitations and credits.
 
 - Same `BodyDetailManager`, thresholds, 0.8-second fades, culling, abort/disposal
   and shared two-desktop/one-mobile-or-Canvas detail slots.
-- Eighteen identity bodies use lazy 256px bases and one 1024px detail tier.
+- Twenty-one identity bodies use lazy 256px bases and one 1024px detail tier.
   Medium-to-close approach does not re-fetch the image or rebuild geometry.
 - All 18 retained bases total approximately 3 MiB RGBA+mips after every body has
   been seen; one detail map is approximately 2.67 MiB. Identity-only mobile tour
   remains below 6 MiB managed estimate. This is not measured GPU memory.
-- 36 WebP files total 1,290,596 bytes, never downloaded together at startup.
+- 42 WebP files total 1,513,928 bytes, never downloaded together at startup.
 - Detail geometry capped at 64×32 segments. Two atmosphere meshes are the only
   extra scene meshes; no additional surface draw per moon.
 - Uranus/Neptune no longer use the persistent 2K loader: the existing preload
@@ -70,10 +75,9 @@ stability, disposal, shared-slot competition with Earth, and all Step 19 lifetim
 cases. Production build, all 109 automated tests and lint passed on 2026-09-28.
 The pre-existing production bundle warning above 500 kB remains.
 
-**Actual application-rendered/WebGL inspection is not completed for this pass.**
-Managed preview requires a control-browser skill unavailable in this session;
-no alternate browser path was used. Asset inspection and mocked Three.js tests
-are not rendered visual QA. Owner mobile acceptance for version 35 remains
-Step 19 evidence only, not acceptance of these maps. Inspect both hemispheres at
-far/medium/close range, lighting/seams/haze during motion, and memory after a
-repeated tour when a supported browser/device is available. Step 20 has not started.
+Owner PC/WebGL screenshots now provide the first rendered evidence for these
+maps and drove the targeted correction above. Corrected assets were inspected as
+maps and lit spherical projections and pass hash/tier/cache checks, but this Work
+environment still cannot perform the final real-WebGL recheck. Reinspect Site
+version 41 on the owner PC at far/medium/close range, especially the corrected
+coverage transitions, before recording visual acceptance. Step 20 has not started.

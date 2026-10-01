@@ -1,16 +1,17 @@
 # Solar System Explorer — Known Issues and Technical Debt
 
-Last reviewed: 2026-09-14 UTC
+Last reviewed: 2026-10-01 UTC
 
 Severity: **High** blocks a core path/risks serious regression; **Medium** materially affects quality/access/performance; **Low** is contained polish or deferred capability.
 
 ## Active issues
 
-- **Visual identity pass acceptance (2026-09-28):** new sourced moon maps and
-  Uranus/Neptune material treatment pass asset/resource checks, but actual
-  rendered/WebGL inspection is outstanding because the required preview
-  control is unavailable. Source gaps, baked lighting and spherical Phobos/Deimos
-  proxies are disclosed in `docs/VISUAL_IDENTITY.md`. This does not reopen Step 19.
+- **Visual identity pass acceptance (updated 2026-10-01):** owner PC/WebGL
+  inspection exposed false hard coverage caps on partial Voyager/New Horizons
+  maps and a baked-lighting band on Triton. Site version 41 contains targeted
+  corrected assets and source-projection/automated checks; the owner PC still
+  needs to recheck the deployed WebGL result. Spherical Phobos/Deimos proxies
+  remain disclosed in `docs/VISUAL_IDENTITY.md`. This does not reopen Step 19.
 
 UI checkpoint A adds faster timelapse and contrast but does not claim every visual problem resolved. Moon motion is numerically verified; following the Moon masks its movement relative to the camera. High timelapse can alias fast satellites. Reported post-search guide dismissal remains a reproduction task; a sticky Back to space escape route is added. Target-visible travel is still pending. See `docs/UI_GRAPHICS_PLAN.md`.
 

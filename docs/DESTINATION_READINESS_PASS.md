@@ -8,7 +8,7 @@ Status: implementation complete and published as production Site version 39 on 2
 - The positions are explicitly `illustrative`, not ephemerides. Annual-checkpoint sampled validation is Ceres max 0.02561 AU / 0.548° and RMS 0.00988 AU / 0.197°; Pluto max 0.16804 AU / 0.176° and RMS 0.07382 AU / 0.077°. Maxima are not continuous-time guarantees.
 - Charon retains the published Pluto-centered PLU060 mean ellipse. The missing NAIF Pluto pole transform is now stored; its circular mean longitude agrees with the J2000 Horizons check and it is added to Pluto target 999, not the system barycenter.
 - All 32 catalogue records are now selectable scene destinations. Search, Show, Travel, information, distance, guide grounding and parent-relative Charon placement use the existing systems.
-- NASA/New Horizons Pluto and Charon maps and a NASA/Dawn Ceres map use the shared identity-map cache at 256px base / 1024px close tier. Observational gaps on Pluto/Charon receive only a neutral featureless fill; no terrain is synthesized. Ceres is a colorized spectral mosaic, not literal natural color.
+- NASA/New Horizons Pluto and Charon maps and a NASA/Dawn Ceres map use the shared identity-map cache at 256px base / 1024px close tier. After owner WebGL evidence, Pluto/Charon observational gaps use a broad feather into neutral, low-amplitude non-topographic material instead of a hard cap edge; no craters, ridges or geography are synthesized. Ceres is a colorized spectral mosaic, not literal natural color.
 
 ## Named small-body rendering
 
