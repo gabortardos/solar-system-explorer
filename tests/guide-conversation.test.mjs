@@ -91,9 +91,9 @@ test('current mission follow-up keeps retrieval and citation validation on the r
  assert.equal(follow.resolution.subjectId,'mars');assert.equal(follow.resolution.intent,'missions');assert.equal(follow.evidence.length,1);assert.equal(follow.evidence[0].sources[0].url,'https://science.nasa.gov/mars/');
 });
 
-test('minimal UI exposes reset and keeps Local presets outside the signed conversation',async()=>{
+test('chat UI exposes reset and keeps Local presets outside the signed server conversation',async()=>{
  const page=await readFile(new URL('../app/page.tsx',import.meta.url),'utf8');
- assert.match(page,/New conversation/);assert.match(page,/resetGuideConversation/);assert.match(page,/guideConversationToken/);assert.match(page,/guideTranscript\.slice\(0,-1\)/);
+ assert.match(page,/New conversation/);assert.match(page,/resetGuideConversation/);assert.match(page,/guideConversationToken/);assert.match(page,/guideTranscript\.map/);
  const localPresetBody=page.slice(page.indexOf('const askLocalPreset'),page.indexOf('const touchMove'));
- assert.doesNotMatch(localPresetBody,/guideConversationToken|setGuideTranscript|requestGuide|fetch\(/);
+ assert.match(localPresetBody,/setGuideTranscript/);assert.doesNotMatch(localPresetBody,/guideConversationToken|setGuideConversationToken|requestGuide|fetch\(/);
 });

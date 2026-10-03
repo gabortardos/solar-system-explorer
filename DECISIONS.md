@@ -1,5 +1,12 @@
 # Solar System Explorer — Decision Record
 
+## D040 — One visible chat, bounded trusted context (2026-10-03)
+
+- **Decision:** Present the Astronomy Guide as one shared scene-accessible chat panel with a complete browser-visible thread, per-answer provenance, an internally scrolling log and a persistent mobile-safe composer. Keep trusted Live continuity limited to the existing signed three-turn token; visible Local starter turns do not enter it.
+- **Reason:** The bounded intelligence layer already understood follow-ups, but the prior UI hid old answers as clipped summaries, placed the input above the active answer and made mobile access depend on opening a menu.
+- **Impact:** The main scene, selected-world action and mobile menu open the same Guide state. Submit clears only the draft, reset clears both visible and signed state, object changes retain captured old answers and the quota/status treatment becomes compact rather than a large card.
+- **Preserve:** Do not send the full browser transcript to the Worker, route Local presets through paid AI, create a second Guide implementation, hide per-answer Sources & data, start background calls or begin Step 20.
+
 ## D039 — Treat observational coverage boundaries as metadata, not terrain (2026-10-01)
 
 - **Decision:** For partial Voyager/New Horizons identity maps, detect only edge-connected no-data pixels, remove compression ringing, fade observed imagery into a neutral unknown-region material across a broad latitude band, and record the treatment in the asset manifest. Use low-amplitude deterministic non-topographic grain so the unknown area does not read as a second mesh. Normalize Triton's broad baked source illumination while retaining local measured texture.

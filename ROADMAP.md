@@ -1,5 +1,9 @@
 # Solar System Explorer — Roadmap
 
+## Unnumbered Astronomy Guide v2 conversational UI — 2026-10-03
+
+The bounded version 43 conversation foundation now has one shared chat surface. Complete visible user/assistant turns scroll above a persistent composer; submit clears only the input, reset clears visible and signed state, and each answer keeps a compact Sources & data disclosure. Local starters appear as free deterministic turns without entering Live context. A compact scene launcher and both selected-world entry points open the same panel. Desktop/mobile safe-area, scrolling, object-change and reset contracts are covered; build, lint and all 129 tests pass. Published as Site version 44. Step 20 has not started.
+
 ## Unnumbered Astronomy Guide v2 foundation — 2026-10-03
 
 Bounded multi-turn conversation is implemented above the completed Steps 17–18 trust boundary. Typed Live questions use an opaque signed token retaining three compact recent turns for two hours; the Worker validates it, resolves follow-ups and object changes, then rebuilds current evidence. Reset is local, presets remain free/stateless, and D1 quotas, monetary caps, retrieval, citation validation, fallback and one-call/no-retry rules are unchanged. Build, lint and all 123 tests pass. Published as Site version 43. Step 20 has not started.

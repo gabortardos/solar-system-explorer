@@ -98,11 +98,11 @@ Current V1.2 implementation eases acceleration/deceleration and steering while r
 
 ## Information panels
 
-The guide shows selected-object meaning, captured UTC time, explanation and separate sourced evidence. Typed Live questions may continue a compact recent conversation; previous turns remain visibly bounded, and New conversation clears them without a request. Changing the selected world keeps the thread but makes the new selection authoritative for vague references. Local presets stay visibly free/local and do not enter the Live thread. Old answers retain their captured subject rather than changing when a new world is selected. Clearly label Local guide responses and legacy-curated content; never imply selection equals arrival.
+The guide is one shared responsive chat surface reached from the compact scene launcher, selected-world actions or mobile exploration menu. Complete visible user/assistant turns remain in an internally scrolling log while the composer stays anchored at the bottom and clears immediately on submit. Each assistant turn owns a collapsed Sources & data disclosure, a Live AI or Local guide badge and its captured subject/time. New conversation clears the visible thread and signed state without a request. Changing the selected world keeps old turns unchanged but makes the new selection authoritative for vague references and updates the composer context. Local preset starters join the visible transcript while staying free/local and outside signed Live context. Clearly label Local guide responses and legacy-curated content; never imply selection equals arrival.
 
 - Use a right-side sheet so the scene remains visible.
 - Adapt facts to object type; omit meaningless fields.
-- Keep the current desktop sheet at a compact maximum width of 440 px and scroll internally; on mobile it may occupy the viewport width but must remain dismissible over the full-bleed scene.
+- Keep the Guide desktop sheet compact at 480 px maximum. Only its conversation log scrolls; header, reset control and composer remain visible. On mobile it fills the dynamic viewport, respects safe areas, retains a 16 px input to prevent iOS zoom and keeps the composer above the keyboard-responsive viewport.
 - Lead with name, type and parent when applicable. Put the short description and a dense two-column quantitative grid before qualitative sections, distance and source details.
 - Show qualitative sections only when authored content exists. Use short scan-friendly headings and reserve the tinted emphasis treatment for one interesting fact.
 - Distance comparison identifies endpoints, units, AU/light time, and limitations.

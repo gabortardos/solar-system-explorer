@@ -1,6 +1,6 @@
 # Steps 17–18 + Astronomy Guide v2 — Grounded Conversational Guide
 
-Status: **Steps 17 and 18 complete; Astronomy Guide v2 foundation complete and published** on 2026-10-03. Production uses `gpt-5.6-luna` through the OpenAI Responses API, bounded authoritative-source retrieval, signed multi-turn continuity and a deterministic Local guide fallback.
+Status: **Steps 17 and 18 complete; Astronomy Guide v2 foundation and conversational UI complete and published** on 2026-10-03. Production uses `gpt-5.6-luna` through the OpenAI Responses API, bounded authoritative-source retrieval, signed multi-turn continuity and a deterministic Local guide fallback.
 
 ## Bounded conversation architecture
 
@@ -13,6 +13,16 @@ Status: **Steps 17 and 18 complete; Astronomy Guide v2 foundation complete and p
 - Local preset questions remain direct deterministic browser calls. They do not enter the signed conversation, call the API, reserve D1 quota or consume Live allowance.
 
 This design needs no conversation database and stores no unbounded transcript. `GUIDE_CONVERSATION_SECRET` is server-only and separate from `OPENAI_API_KEY`.
+
+## Conversational interface
+
+- One responsive Guide panel is shared by the compact main-scene launcher, selected-world Astronomy guide action and mobile exploration-menu action; there is no duplicate Guide implementation.
+- The browser retains the complete visible thread for the current open conversation. This presentation history is not sent wholesale to the server: typed Live continuity remains the signed three-turn token above.
+- Submit clears the composer immediately, appends the user turn and shows a pending assistant bubble. The input stays mounted at the bottom while the conversation log alone scrolls to the newest turn.
+- Every completed assistant bubble retains its own subject, Live AI/Local guide badge, answer, limit notice when relevant and collapsed Sources & data disclosure.
+- Local preset starters append their deterministic result to the visible transcript but never enter the signed Live token. A later typed question still uses only canonical current context plus verified signed Live turns.
+- New conversation clears the visible transcript, draft and signed token locally. Changing the selected object keeps prior bubbles intact while updating the selected context used by the next request.
+- Desktop uses a compact 480 px panel. Phone layouts use the dynamic viewport, iOS safe-area padding, internal transcript scrolling and a 16 px composer input so the keyboard does not create page zoom or hide the input.
 
 ## Request and trust boundary
 

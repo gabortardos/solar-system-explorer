@@ -187,8 +187,8 @@ test('guide UI keeps the answer primary and grounds details in an expandable sec
 });
 test('guide UI uses server quota state, clear reset messages, and local-only preset routing',async()=>{
  const page=await readFile(new URL('../app/page.tsx',import.meta.url),'utf8');
- assert.match(page,/Live AI:.*rolling24HoursUsed.*rolling24HoursLimit/);
- assert.match(page,/Developer access · no request-count limit/);
+ assert.match(page,/Live AI.*rolling24HoursUsed.*rolling24HoursLimit/);
+ assert.match(page,/Developer access · request-count bypass/);
  assert.match(page,/Live AI limit reached.*requests in the last 24 hours/);
  assert.match(page,/temporarily rate-limited.*seconds/);
  assert.match(page,/localGuidePresets\.map/);

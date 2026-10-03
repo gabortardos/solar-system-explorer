@@ -1,6 +1,6 @@
 # Solar System Explorer — Known Issues and Technical Debt
 
-Last reviewed: 2026-10-01 UTC
+Last reviewed: 2026-10-03 UTC
 
 Severity: **High** blocks a core path/risks serious regression; **Medium** materially affects quality/access/performance; **Low** is contained polish or deferred capability.
 
@@ -15,7 +15,7 @@ Severity: **High** blocks a core path/risks serious regression; **Medium** mater
 
 UI checkpoint A adds faster timelapse and contrast but does not claim every visual problem resolved. Moon motion is numerically verified; following the Moon masks its movement relative to the camera. High timelapse can alias fast satellites. Reported post-search guide dismissal remains a reproduction task; a sticky Back to space escape route is added. Target-visible travel is still pending. See `docs/UI_GRAPHICS_PLAN.md`.
 
-Astronomy Guide v2 now supports bounded multi-turn Live conversation with signed three-turn continuity, while D1 abuse/spend controls remain active. The output validator is a format/citation/numerical-grounding guard, not a scientific truth verifier. Legacy educational prose still needs separate editorial review (`docs/AI_GUIDE.md`).
+Astronomy Guide v2 now supports bounded multi-turn Live conversation with signed three-turn continuity and one responsive conversational panel, while D1 abuse/spend controls remain active. Desktop/mobile viewport, safe-area, scrolling, reset and object-change behavior have automated structure/contract coverage; physical iOS keyboard feel remains part of KI-011 device QA. The output validator is a format/citation/numerical-grounding guard, not a scientific truth verifier. Legacy educational prose still needs separate editorial review (`docs/AI_GUIDE.md`).
 
 | ID | Description | Severity | Status | System | Workaround | Recommended fix |
 | --- | --- | --- | --- | --- | --- | --- |
