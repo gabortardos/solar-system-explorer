@@ -15,7 +15,7 @@ function fallback(context:GuideContext,question:string,reason:string):GuideRespo
   return {...response,fallbackReason:reason,contextNote:`${response.contextNote} Live AI was unavailable, so this answer used the deterministic Local guide.`};
 }
 
-export async function requestGuide(context:GuideContext,question:string,fetchImpl:typeof fetch=fetch):Promise<GuideResponse>{
+export async function requestGuide(context:GuideContext,question:string,conversationToken?:string,fetchImpl:typeof fetch=fetch):Promise<GuideResponse>{
   const controller=new AbortController();
   const timer=setTimeout(()=>controller.abort(),CLIENT_TIMEOUT_MS);
   try{
@@ -27,6 +27,7 @@ export async function requestGuide(context:GuideContext,question:string,fetchImp
         requestId:crypto.randomUUID(),
         question,
         selectedId,
+        conversationToken,
         navigation:{
           atUtcMs:context.navigation.atUtcMs,
           positionAU:context.navigation.positionAU,

@@ -1,12 +1,14 @@
 # Solar System Explorer — Current Project State
 
-Last updated: 2026-10-01 UTC
+Last updated: 2026-10-03 UTC
 
-Stable product version: V1.1, production Site version 42. Production URL: `https://solar-system-explorer-gabor.gabortardos.chatgpt.site`.
+Stable product version: V1.1, production Site version 43. Production URL: `https://solar-system-explorer-gabor.gabortardos.chatgpt.site`.
 
 This is the fast handoff for **what exists now**. The repository and deployed application are the source of truth. Read the specialized documents for product direction, architecture, UX, astronomy, roadmap, decisions and issues. Do not rebuild from a starter or replace working architecture merely because a new Work chat begins.
 
 ## Current reality
+
+The unnumbered **Astronomy Guide v2 foundation** adds bounded multi-turn conversation without replacing Steps 17–18. Typed Live questions carry an opaque HMAC-signed token containing at most three compact recent turns for two hours; the Worker verifies it, re-resolves bodies/intents against canonical data and sends only the bounded verified context to the model. Selection changes override stale pronouns, reset clears the token locally without a server call, and Local presets remain free/stateless. D1 request/budget controls, authoritative retrieval, citation validation, one-call/no-retry behavior and Local fallback are unchanged. Site version 43 passes build, lint and all 123 automated tests. Step 20 has not started.
 
 The unnumbered **Targeted WebGL visual correction pass** is not visually accepted. Site version 41's partial-coverage asset treatment requires body-by-body owner WebGL comparison before further release claims. A separate version 42 Earth hotfix restores the established day-map fallback whenever the streamed Earth base is delayed or unavailable; it preserves the existing shared LOD/cache architecture and higher detail tiers. See `docs/WEBGL_VISUAL_CORRECTION_PASS.md`. Step 20 has not started.
 
@@ -31,6 +33,8 @@ Step 16's request-time context/evidence foundation remains the deterministic fal
 Step 15 — **ASTEROID BELT AND KUIPER BELT VISUALIZATION** adds renderer-only representative regions for the main asteroid belt, the Kuiper Belt and Jupiter's leading/trailing Trojan clouds. Step 14's separate on-demand 19-object JPL minor-body sample remains intact. The bounded core scene now contains 32 destinations; population dots are not catalogue objects, destinations, counts or ephemerides.
 
 Latest verification:
+
+- Astronomy Guide v2 foundation (2026-10-03): signed three-turn/two-hour conversation context resolves follow-ups, comparisons and object changes; tampered/expired/reset state fails closed. Quota and provider failures still return the deterministic Local guide without extra provider calls. Production build, lint and all 123 tests pass. Published as Site version 43.
 
 - Earth fallback hotfix (2026-10-01): Site version 42 restores the conventional 2K Earth day map as the visual fallback for its async detail stream, preventing the cyan catalog-color sphere seen in version 41 when that stream was unavailable. Production build, lint and all 115 tests pass. Real WebGL appearance remains owner-PC QA.
 - Targeted WebGL visual correction (2026-10-01): owner screenshots reproduced hard source-coverage silhouettes on Ariel, Miranda, Oberon, Pluto and Charon plus a broad baked-lighting band on Triton. Asset/source checks passed, but the treatment is not accepted until body-by-body owner WebGL comparison establishes a real visual improvement. Site version 41 remains the prior asset-treatment record.
@@ -59,7 +63,7 @@ Latest verification:
 - Exploration Scale and Scientific Scale; displayed scientific measurements always use uncompressed canonical data.
 - Optional planetary and relevant moon-system orbit paths.
 - UTC simulation clock with pause, real time, 10×, 100×, 1,000×, 1 day/second and 30 days/second.
-- Live Astronomy Guide using `gpt-5.6-luna`, natural qualitative/general-knowledge prose, selectively displayed project/retrieved evidence and validated citations, plus deterministic Local guide fallback. Exact and scene-dependent values remain application-owned; current facts use bounded official-source retrieval when required. Public limits are 10/minute and 50/rolling-day with a D1-backed usage/reset display; authenticated owner development calls bypass request counts but not cost controls. Preset buttons are selected-object-aware and intentionally local/free, while typed questions use Live AI. Astronomy Guide is available directly in the selected-world actions.
+- Live Astronomy Guide using `gpt-5.6-luna`, bounded signed multi-turn context, natural qualitative/general-knowledge prose, selectively displayed project/retrieved evidence and validated citations, plus deterministic Local guide fallback. Exact and scene-dependent values remain application-owned; current facts use bounded official-source retrieval when required. Public limits are 10/minute and 50/rolling-day with a D1-backed usage/reset display; authenticated owner development calls bypass request counts but not cost controls. Preset buttons are selected-object-aware and intentionally local/free, while typed questions use the signed Live conversation. Astronomy Guide is available directly in the selected-world actions.
 - Canvas compatibility renderer when WebGL is unavailable.
 - Optional small-body region layer with four bounded point draws, centralized scale projection and camera-relative precision. Its accessible scale/exaggeration disclosure sits beside System View; the population layer remains independently switchable in Settings.
 - V1.2 flight smoothing is now implemented: translation accelerates and decelerates with frame-rate-independent response, combined axes are normalized, arrow-key steering eases in and out, collision correction removes inward drift, and brake/focus/overview transitions clear residual motion.
@@ -72,7 +76,7 @@ Latest verification:
 - Physical, orbital, calculated position, dynamic result and educational layers remain separate.
 - `app/scale.ts` owns presentation scale. `app/render-space.ts` performs camera-relative Float64-to-Float32 projection only at render time.
 - `app/search.ts`, `app/object-information.tsx` and `app/distance-comparison.tsx` remain reusable provider/presenter boundaries.
-- D1 is used only for atomic Live Guide quota/budget accounting. Bounded server-side reads from allowlisted official science pages support current guide questions. Platform-provided ChatGPT identity is used only to recognize the configured owner for development access; there is no app-owned authentication stack or analytics.
+- D1 is used only for atomic Live Guide quota/budget accounting. Conversation continuity is stateless on the server: a short-lived HMAC-signed token contains only three compact recent turns and trusted resolution metadata. Bounded server-side reads from allowlisted official science pages support current guide questions. Platform-provided ChatGPT identity is used only to recognize the configured owner for development access; there is no app-owned authentication stack or analytics.
 
 ## Data and position systems
 

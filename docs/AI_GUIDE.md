@@ -1,6 +1,18 @@
-# Steps 17–18 — Live Astronomy Guide and Source Verification
+# Steps 17–18 + Astronomy Guide v2 — Grounded Conversational Guide
 
-Status: **Steps 17 and 18 complete and published** on 2026-09-21. Production uses `gpt-5.6-luna` through the OpenAI Responses API, bounded authoritative-source retrieval and a deterministic Local guide fallback.
+Status: **Steps 17 and 18 complete; Astronomy Guide v2 foundation complete and published** on 2026-10-03. Production uses `gpt-5.6-luna` through the OpenAI Responses API, bounded authoritative-source retrieval, signed multi-turn continuity and a deterministic Local guide fallback.
+
+## Bounded conversation architecture
+
+- Typed questions may include one opaque HMAC-signed conversation token issued by the Worker. The browser cannot create or alter trusted context.
+- The token retains at most three compact recent turns: bounded question/answer summaries plus selected, resolved subject, comparison and intent IDs. It expires after two hours and never grows beyond the fixed limit.
+- The Worker verifies the signature, expiry, schema, IDs and intent vocabulary before using any turn. Tampered, malformed or expired state fails closed to a fresh conversation.
+- Current scene selection remains authoritative. If selection changes, vague pronouns resolve to the newly selected object rather than a stale subject. Explicit names and validated recent resolution support follow-ups such as “Why?”, “its moons,” “compare that with Earth,” and “what mission discovered that?”.
+- Recent answer text is conversational continuity only, never scientific evidence. Every new answer rebuilds structured evidence from the canonical server bundle; current information still follows the Step 18 allowlisted retrieval rules.
+- A New conversation action drops the browser token and visible recent thread immediately. It makes no network or AI call.
+- Local preset questions remain direct deterministic browser calls. They do not enter the signed conversation, call the API, reserve D1 quota or consume Live allowance.
+
+This design needs no conversation database and stores no unbounded transcript. `GUIDE_CONVERSATION_SECRET` is server-only and separate from `OPENAI_API_KEY`.
 
 ## Request and trust boundary
 
@@ -56,7 +68,7 @@ The guide shows the public viewer's current rolling count from the same D1 rows 
 
 The displayed preset question buttons are derived from the selected object's available data and reviewed topic coverage, then explicitly routed to the deterministic Local guide in the browser. Weak spacecraft-location defaults are not promoted, and unavailable temperature/mission topics are hidden rather than returning boilerplate. Presets make no `/api/guide` request, reserve no D1 row, consume no public Live AI allowance and perform no external retrieval. User-written questions continue through the Live AI boundary. A future preset that genuinely requires current information must be deliberately configured for the live route rather than inferred from its wording.
 
-- Request body: 6,000 UTF-8 bytes maximum.
+- Request body: 12,000 UTF-8 bytes maximum, including the bounded signed token.
 - Question: 600 characters maximum.
 - Estimated provider input: 2,000 tokens maximum.
 - Provider output: 400 tokens maximum.
@@ -94,6 +106,8 @@ The production database recorded 10 provider requests during implementation and 
 Post-Step-18 diagnosis confirmed that repeated Local-guide responses were caused by the former 10-per-day public viewer ceiling, not an OpenAI or D1 failure. The public policy was raised to 10/minute and 50/rolling-day, authenticated owner development access was added without weakening monetary controls, and the UI now exposes D1-backed usage/reset state. Local presets are the explicit free path and leave that counter unchanged.
 
 Automated checks cover provider failure, timeout, malformed/model-invalid output, oversized requests, rate refusal, application-budget refusal, one-call/no-retry behavior, key non-disclosure, reference resolution and structured two-object evidence.
+
+Astronomy Guide v2 adds tests for signed context, “Why?” intent inheritance, pronouns, moons, comparisons, selection changes, token tampering, expiry, reset, three-turn retention, quota refusal, provider fallback, current-mission retrieval and citation preservation. The full production suite contains 123 tests.
 
 The natural-answer update adds targeted coverage for Earth dogs, Mars color, Europa habitability, Jupiter's moons, jumping on the Moon and the current modeled Mars–Earth distance. Qualitative answers can be AI-composed without irrelevant cards; the distance answer must cite `body-distance`, and unsupported exact numbers still fail validation to the deterministic Local guide. The production UI keeps the answer first and places grounding details under **Sources & data**.
 

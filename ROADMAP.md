@@ -1,5 +1,9 @@
 # Solar System Explorer — Roadmap
 
+## Unnumbered Astronomy Guide v2 foundation — 2026-10-03
+
+Bounded multi-turn conversation is implemented above the completed Steps 17–18 trust boundary. Typed Live questions use an opaque signed token retaining three compact recent turns for two hours; the Worker validates it, resolves follow-ups and object changes, then rebuilds current evidence. Reset is local, presets remain free/stateless, and D1 quotas, monetary caps, retrieval, citation validation, fallback and one-call/no-retry rules are unchanged. Build, lint and all 123 tests pass. Published as Site version 43. Step 20 has not started.
+
 ## Unnumbered targeted WebGL visual correction pass — 2026-10-01
 
 Owner PC/WebGL evidence exposed source-coverage silhouettes that read as detached caps on partially mapped Ariel, Miranda, Oberon, Pluto and Charon, plus a broad baked-mosaic illumination band on Triton. The offline texture preparation now uses edge-connected no-data masks, latitude-wide neutral feathering and a low-amplitude non-topographic unknown-region material; Triton's source illumination is normalized without replacing measured local texture. The same root correction covers Umbriel and Titania. Identity LOD/cache/shadow architecture, complete maps and Step 19 bodies are unchanged. See `docs/WEBGL_VISUAL_CORRECTION_PASS.md`. Step 20 has not started.
@@ -262,12 +266,12 @@ Provisional; depends on generalized data schemas.
 
 ### V2 — Grounded AI astronomy guide
 
-Provisional; depends on trustworthy structured data and approved cost/privacy design.
+Foundation complete through Steps 16–18 and the unnumbered Astronomy Guide v2 conversation pass. Broader productization remains provisional.
 
-- Context-aware conversation using selected body, date, and spacecraft context.
-- Structured/curated retrieval, citations, and uncertainty handling.
-- Server-side API boundary, secrets, rate limits, monitoring, and cost limits.
-- Useful offline/fallback experience.
+- Completed: bounded context-aware conversation using selected body, prior resolved subject/comparison, date and spacecraft context.
+- Completed: structured/curated retrieval, citations, uncertainty handling and deterministic Local fallback.
+- Completed: server-side API boundary, secrets, public/developer request policy and monetary controls.
+- Future: account/subscription policy, richer conversation presentation and broader reviewed editorial coverage only when deliberately scoped.
 
 ### Later systems
 

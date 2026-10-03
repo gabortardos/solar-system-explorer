@@ -8,11 +8,15 @@ import type {GuideContext} from './guide-context';
 
 export type GuideEvidenceClass='project-structured'|'project-curated'|'authoritative-external';
 export type GuideEvidence={id:string;label:string;value:string;quality:string;note:string;sources:{title:string;url:string}[];sourceClass?:GuideEvidenceClass;retrievedAt?:string;claimKey?:string};
-export type GuideResolution={selectedId:string|null;subjectId:string|null;subjectName:string;comparisonId:string|null;interpretation:string};
+export type GuideIntent='overview'|'habitability'|'temperature'|'water'|'missions'|'companions'|'atmosphere'|'physical'|'distance'|'comparison'|'time'|'location'|'nearby';
+export type GuideConversationTurn={question:string;answer:string;selectedId:string|null;subjectId:string|null;comparisonId:string|null;intent:GuideIntent};
+export type GuideConversationContext={turns:GuideConversationTurn[]};
+export type GuideConversationMeta={token:string;turnCount:number;retainedTurns:number;expiresAt:number;reset:boolean};
+export type GuideResolution={selectedId:string|null;subjectId:string|null;subjectName:string;comparisonId:string|null;intent:GuideIntent;usedConversation:boolean;interpretation:string};
 export type GuideExternalStatus='not-needed'|'retrieved'|'unavailable'|'unsupported';
 export type GuideSourceConflict={claimKey:string;projectEvidenceId:string;externalEvidenceId:string;note:string};
 export type GuideQuotaState={developer:boolean;public:{minuteUsed:number;minuteLimit:number;rolling24HoursUsed:number;rolling24HoursLimit:number;minuteResetAt:number|null;rolling24HoursResetAt:number|null}|null};
-export type GuideResponse={subject:string;atUtcMs:number;explanation:string;evidence:GuideEvidence[];contextNote:string;mode:'local'|'live';resolution:GuideResolution;model?:string;fallbackReason?:string;external?:{status:GuideExternalStatus;note:string;retrievedAt?:string};sourceConflicts?:GuideSourceConflict[];quota?:GuideQuotaState};
+export type GuideResponse={subject:string;atUtcMs:number;explanation:string;evidence:GuideEvidence[];contextNote:string;mode:'local'|'live';resolution:GuideResolution;model?:string;fallbackReason?:string;external?:{status:GuideExternalStatus;note:string;retrievedAt?:string};sourceConflicts?:GuideSourceConflict[];quota?:GuideQuotaState;conversation?:GuideConversationMeta};
 export const GUIDE_LIMITS={questionCharacters:600,evidenceItems:12,nearby:5,paidEnabled:true} as const;
 export type ExplanationSegments={segments:({text:string}|{evidenceId:string})[];citationIds:string[]};
 
@@ -61,15 +65,44 @@ function mentionedBodies(question:string):CatalogBody[]{
   });
 }
 
-export function resolveGuideReferences(context:GuideContext,question:string):GuideResolution{
+function guideIntent(question:string,comparison:boolean,previous?:GuideIntent):GuideIntent{
+  const q=question.toLocaleLowerCase();
+  if(comparison||/\b(compare|comparison|versus|vs\.?|differ(?:ent|ence)?|than)\b|how does .* compare/.test(q))return 'comparison';
+  if(/\bnearby|nearest|near me\b/.test(q))return 'nearby';
+  if(/\bwhere am i|spacecraft position|my position|location\b/.test(q)&&!/distance|far/.test(q))return 'location';
+  if(/\bdate|time|when\b/.test(q)&&!/travel/.test(q))return 'time';
+  if(/\bdistance|far\b/.test(q))return 'distance';
+  if(/\blive|life|survive|habit/.test(q))return 'habitability';
+  if(/temperature|hot|cold/.test(q))return 'temperature';
+  if(/water|ice|ocean/.test(q))return 'water';
+  if(/mission|spacecraft|probe|explor|discover/.test(q))return 'missions';
+  if(/moon|ring|companions?/.test(q))return 'companions';
+  if(/atmosphere|air|breath/.test(q))return 'atmosphere';
+  if(/radius|diameter|size|big|gravity|mass|weigh|jump|fall|rotation|spin|day|year|period|orbit|facts?/.test(q))return 'physical';
+  if(/^(?:why|how so|tell me more|go on)[?!.\s]*$/i.test(question.trim())&&previous)return previous;
+  return 'overview';
+}
+
+export function resolveGuideReferences(context:GuideContext,question:string,conversation?:GuideConversationContext):GuideResolution{
   const selected=context.selected&&'id' in context.selected?getBody(context.selected.id)??null:null;
   const q=question.toLocaleLowerCase();
   const named=mentionedBodies(question);
-  const comparisonIntent=/\b(compare|comparison|versus|vs\.?|than)\b|how does .* compare/.test(q);
+  const previous=conversation?.turns.at(-1);
+  const previousSubject=previous?.subjectId?getBody(previous.subjectId)??null:null;
+  const previousComparison=previous?.comparisonId?getBody(previous.comparisonId)??null:null;
+  const sameSelection=Boolean(previous&&previous.selectedId===selected?.id);
+  const conversationalReference=/\b(?:it|its|there|that|those|them|they|both|why|how so|what about|tell me more|go on)\b/.test(q);
+  const comparisonIntent=/\b(compare|comparison|versus|vs\.?|than|differ(?:ent|ence)?)\b|how does .* compare/.test(q)||Boolean(sameSelection&&previousComparison&&/\b(?:they|both|those|them)\b/.test(q));
   const planetReference=/\b(?:this|that) planet\b/.test(q);
   const moonReference=/\b(?:this|that) moon\b/.test(q);
   let subject=selected;
+  let usedConversation=false;
   let unresolved:string|null=null;
+
+  if(sameSelection&&previousSubject&&conversationalReference&&!planetReference&&!moonReference){
+    subject=previousSubject;
+    usedConversation=true;
+  }
 
   if(planetReference&&selected?.category==='moon')subject=getBody(selected.parentId??'')??selected;
   if(moonReference&&selected?.category!=='moon'){
@@ -87,17 +120,21 @@ export function resolveGuideReferences(context:GuideContext,question:string):Gui
   if(comparisonIntent){
     comparison=named.find(body=>body.id!==subject?.id)??null;
     if(!comparison&&subject?.id!=='earth'&&/\bearth\b/.test(q))comparison=getBody('earth')??null;
+    if(!comparison&&sameSelection&&previousComparison&&previousComparison.id!==subject?.id){comparison=previousComparison;usedConversation=true;}
     if(!comparison)unresolved='The comparison object could not be resolved from the question.';
   }
 
+  const intent=guideIntent(question,Boolean(comparison),sameSelection?previous?.intent:undefined);
+
   const subjectName=subject?.name??(context.selected?.name??'No selected object');
   const interpretation=unresolved??(comparison?
-    `The selected scene context resolves the question to ${subjectName}, compared with ${comparison.name}.`:
+    `${usedConversation?'The bounded conversation context':'The selected scene context'} resolves the question to ${subjectName}, compared with ${comparison.name}.`:
     planetReference?`“${/that planet/.test(q)?'That':'This'} planet” resolves to ${subjectName} from the selected scene context.`:
     moonReference?`“${/that moon/.test(q)?'That':'This'} moon” resolves to ${subjectName} from the selected scene context.`:
     /\bhere\b/.test(q)?`“Here” resolves to ${subjectName}, the selected object; it does not claim the spacecraft has arrived.`:
+    usedConversation?`The bounded conversation context resolves the follow-up to ${subjectName}.`:
     `The question resolves to ${subjectName}, the selected object.`);
-  return {selectedId:selected?.id??null,subjectId:subject?.id??null,subjectName,comparisonId:comparison?.id??null,interpretation};
+  return {selectedId:selected?.id??null,subjectId:subject?.id??null,subjectName,comparisonId:comparison?.id??null,intent,usedConversation,interpretation};
 }
 
 function sourceList(ids:string[]){return ids.flatMap(id=>SOURCES[id]?[SOURCES[id]]:[]).map(({title,url})=>({title,url}));}
@@ -131,24 +168,24 @@ function naturalOrbit(body:CatalogBody){
   return `One orbit${parent?` of ${body.name} around ${parent}`:` of ${body.name}`} takes about ${duration}.`;
 }
 
-export function answerContextGuide(context:GuideContext,question:string):GuideResponse{
+export function answerContextGuide(context:GuideContext,question:string,conversation?:GuideConversationContext):GuideResponse{
   if(!question.trim()||question.length>GUIDE_LIMITS.questionCharacters)throw new Error('Please ask a question of up to 600 characters.');
   const q=question.toLocaleLowerCase();
-  const resolution=resolveGuideReferences(context,question);
+  const resolution=resolveGuideReferences(context,question,conversation);
   const subject=resolution.subjectId?getBody(resolution.subjectId):undefined;
   const comparison=resolution.comparisonId?getBody(resolution.comparisonId):undefined;
   const evidence:GuideEvidence[]=[];
   let explanation='This guide can explain habitability, atmosphere, water, missions, physical facts, modeled distances, spacecraft location, nearby objects and simulation time.';
   const contextNote=`${resolution.interpretation} ${context.navigation.note}`;
 
-  if(/nearby|nearest|near me/.test(q)){
+  if(resolution.intent==='nearby'){
     explanation=context.nearbyScope+' Distances are center-to-center and inherit the spacecraft coordinate limitation.';
     context.nearby.forEach(item=>evidence.push({id:`near-${item.id}`,label:item.name,value:`${item.distanceKm.toPrecision(5)} km`,quality:context.navigation.basis==='navigation-estimate'?'navigation-estimate':item.quality,note:'Computed at the captured simulation time.',sources:sourceList(item.sourceIds)}));
     if(!context.nearby.length)explanation+=' Spacecraft position is unavailable.';
-  }else if(/where am i|spacecraft position|my position|location/.test(q)&&!/distance|far/.test(q)){
+  }else if(resolution.intent==='location'){
     explanation=context.navigation.note;
     evidence.push({id:'craft',label:'Spacecraft coordinates [X, Y, Z]',value:context.navigation.positionAU?context.navigation.positionAU.map(v=>v.toPrecision(6)).join(', ')+' AU':'Unavailable',quality:context.navigation.basis,note:'Heliocentric ecliptic J2000; converted camera coordinates, not a spacecraft ephemeris.',sources:[]});
-  }else if(/date|time|when/.test(q)&&!/travel/.test(q)){
+  }else if(resolution.intent==='time'){
     const label=simulationTimeLabel(context.navigation.atUtcMs);
     explanation=label==='unavailable'?'The simulation date and time is unavailable.':`The simulation date and time is ${label}.`;
     evidence.push({id:'simulation-time',label:'Simulation time',value:Number.isFinite(context.navigation.atUtcMs)?new Date(context.navigation.atUtcMs).toISOString():'Unavailable',quality:Number.isFinite(context.navigation.atUtcMs)?'request-time scene state':'unavailable',note:'Captured when the question was asked; this is not an observation timestamp.',sources:[]});
@@ -166,7 +203,7 @@ export function answerContextGuide(context:GuideContext,question:string):GuideRe
     addPhysicalEvidence(evidence,comparison,comparison.id);
     if(subject.education)evidence.push(educationEvidence(`${subject.id}-conditions`,`${subject.name} conditions`,`${subject.education.description} ${subject.education.atmosphere}`,subject));
     if(comparison.education)evidence.push(educationEvidence(`${comparison.id}-conditions`,`${comparison.name} conditions`,`${comparison.education.description} ${comparison.education.atmosphere}`,comparison));
-  }else if(/distance|far/.test(q)){
+  }else if(resolution.intent==='distance'){
     const fromSpacecraft=/\b(am i|me|my spacecraft|spacecraft)\b/.test(q);
     if(fromSpacecraft){
       const position=calculatePosition(subject.id,context.navigation.atUtcMs);
@@ -180,13 +217,13 @@ export function answerContextGuide(context:GuideContext,question:string):GuideRe
       explanation=distance.status==='available'?`At the selected simulation time, the modeled center-to-center distance from ${reference.name} to ${subject.name} is about ${distance.value.toLocaleString('en-US',{maximumSignificantDigits:6})} km.`:`The modeled distance from ${reference.name} to ${subject.name} is unavailable for this simulation time.`;
       evidence.push({id:'body-distance',label:`Distance from ${reference.name}`,value:distance.status==='available'?`${distance.value.toPrecision(6)} km`:'Unavailable',quality:distance.status==='available'?distance.quality:'unavailable',note:distance.status==='unavailable'?distance.reason:'Positions use the local dataset and captured simulation time.',sources:distance.status==='available'?sourceList(distance.sourceIds):[]});
     }
-  }else if(/radius|diameter|size|big|gravity|mass|weigh|jump|fall|rotation|spin|day|year|period|orbit|facts?/.test(q)){
+  }else if(resolution.intent==='physical'){
     const asksRotation=/rotation|spin|day/.test(q),asksOrbit=/year|period|orbit/.test(q);
     const natural=[asksRotation?naturalRotation(subject):null,asksOrbit?naturalOrbit(subject):null].filter(Boolean);
     explanation=natural.length?natural.join(' '):`Here are the available physical facts for ${subject.name}.`;
     addPhysicalEvidence(evidence,subject);
   }else{
-    const topic=/live|life|survive|habit/.test(q)?'habitability':/temperature|hot|cold/.test(q)?'temperature':/water|ice|ocean/.test(q)?'water':/mission|spacecraft|probe|explor/.test(q)?'missions':/moon|ring/.test(q)?'companions':null;
+    const topic=['habitability','temperature','water','missions','companions'].includes(resolution.intent)?resolution.intent as 'habitability'|'temperature'|'water'|'missions'|'companions':null;
     const entry=guide[subject.id];
     if(topic&&entry){
       explanation=entry[topic];
@@ -201,7 +238,7 @@ export function answerContextGuide(context:GuideContext,question:string):GuideRe
     }else if(topic==='missions'){
       explanation=`No reviewed mission summary is stored for ${subject.name} yet, so the Local guide cannot provide a verified mission list.`;
       if(subject.education)evidence.push(educationEvidence('further-reading',`${subject.name} NASA overview`,'Mission-specific evidence unavailable in the local structured dataset.',subject));
-    }else if(/atmosphere|air|breath/.test(q)){
+    }else if(resolution.intent==='atmosphere'){
       explanation=subject.education?.atmosphere??'Atmosphere data unavailable.';
       if(subject.education)evidence.push(educationEvidence('atmosphere',`${subject.name} atmosphere`,subject.education.atmosphere,subject));
     }else{

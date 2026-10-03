@@ -98,7 +98,7 @@ Current V1.2 implementation eases acceleration/deceleration and steering while r
 
 ## Information panels
 
-The Step 16 guide shows selected-object meaning, captured UTC time, explanation and separate sourced evidence. Old answers retain their captured subject rather than changing when a new world is selected. Clearly label free local mode and legacy-curated content; never imply selection equals arrival.
+The guide shows selected-object meaning, captured UTC time, explanation and separate sourced evidence. Typed Live questions may continue a compact recent conversation; previous turns remain visibly bounded, and New conversation clears them without a request. Changing the selected world keeps the thread but makes the new selection authoritative for vague references. Local presets stay visibly free/local and do not enter the Live thread. Old answers retain their captured subject rather than changing when a new world is selected. Clearly label Local guide responses and legacy-curated content; never imply selection equals arrival.
 
 - Use a right-side sheet so the scene remains visible.
 - Adapt facts to object type; omit meaningless fields.

@@ -1,11 +1,12 @@
 import {getBody} from '../../app/data/catalog';
-import {answerContextGuide,renderExplanationSegments,validateExplanation,type ExplanationSegments,type GuideResponse} from '../../app/guide-assistant';
+import {answerContextGuide,renderExplanationSegments,validateExplanation,type ExplanationSegments,type GuideConversationContext,type GuideResponse} from '../../app/guide-assistant';
 import {buildGuideContext,type GuideNavigation} from '../../app/guide-context';
 import {detectSourceConflicts,retrieveAuthoritativeEvidence,type ExternalRetrieval} from './authoritative-sources';
+import {appendConversationTurn,GUIDE_CONVERSATION_LIMITS,issueConversationToken,readConversationToken,type ConversationRead} from './conversation';
 import {finishGuideRequest,hashViewer,LIVE_GUIDE_LIMITS,LIVE_GUIDE_MODEL,readGuideQuotaState,reserveGuideRequest,type GuideQuotaState,type GuideReservationPolicy,type LimitResult} from './limits';
 
-export type GuideEnv={DB?:D1Database;OPENAI_API_KEY?:string;GUIDE_OWNER_EMAIL?:string};
-type GuideRequestBody={requestId:string;question:string;selectedId:string;navigation:{atUtcMs:number;positionAU:[number,number,number]|null;basis:GuideNavigation['basis'];anchorId:string;note?:string}};
+export type GuideEnv={DB?:D1Database;OPENAI_API_KEY?:string;GUIDE_OWNER_EMAIL?:string;GUIDE_CONVERSATION_SECRET?:string};
+type GuideRequestBody={requestId:string;question:string;selectedId:string;conversationToken?:string;navigation:{atUtcMs:number;positionAU:[number,number,number]|null;basis:GuideNavigation['basis'];anchorId:string;note?:string}};
 type ProviderResult={output:unknown;usage:{inputTokens?:number;outputTokens?:number}};
 type EndpointDependencies={fetchImpl?:typeof fetch;externalFetchImpl?:typeof fetch;now?:()=>number;timeoutMs?:number;reserve?:(db:D1Database,requestId:string,viewerHash:string,nowMs:number,policy?:GuideReservationPolicy)=>Promise<LimitResult>;retrieve?:(question:string,local:GuideResponse,fetchImpl:typeof fetch,nowMs:number)=>Promise<ExternalRetrieval>};
 
@@ -51,7 +52,8 @@ function parseBody(raw:string):GuideRequestBody|null{
   if(typeof body.requestId!=='string'||!uuidPattern.test(body.requestId)||typeof body.question!=='string'||typeof body.selectedId!=='string'||!body.navigation)return null;
   const navigation=canonicalNavigation(body.navigation);
   if(!navigation)return null;
-  return {requestId:body.requestId,question:body.question,selectedId:body.selectedId,navigation};
+  if(body.conversationToken!==undefined&&(typeof body.conversationToken!=='string'||body.conversationToken.length>GUIDE_CONVERSATION_LIMITS.tokenCharacters))return null;
+  return {requestId:body.requestId,question:body.question,selectedId:body.selectedId,conversationToken:body.conversationToken,navigation};
 }
 function fallback(local:GuideResponse,reason:string,quota?:GuideQuotaState):GuideResponse{
   return {...local,evidence:local.evidence.filter(item=>item.sourceClass!=='authoritative-external'),mode:'local',fallbackReason:reason,quota,contextNote:`${local.contextNote} Live AI was unavailable, so this answer used the deterministic Local guide.`};
@@ -74,12 +76,12 @@ function providerText(value:unknown):string|null{
   return null;
 }
 
-async function callOpenAI(apiKey:string,question:string,local:GuideResponse,fetchImpl:typeof fetch,timeoutMs:number):Promise<ProviderResult>{
+async function callOpenAI(apiKey:string,question:string,local:GuideResponse,conversation:GuideConversationContext,fetchImpl:typeof fetch,timeoutMs:number):Promise<ProviderResult>{
   const providerEvidence=local.resolution.comparisonId?
     local.evidence.filter(item=>item.sourceClass==='authoritative-external'||/-(radius|gravity|rotation)$/.test(item.id)):
     local.evidence;
   const evidence=providerEvidence.map(({id,label,value,quality,note,sourceClass,retrievedAt})=>({id,label,value,quality,note,sourceClass,retrievedAt}));
-  const input=JSON.stringify({question,resolution:local.resolution,simulationTime:new Date(local.atUtcMs).toISOString(),sourceHierarchy:['project-structured','authoritative-external','model-general-knowledge'],projectCuratedContext:'Supporting qualitative context; not current authoritative data.',externalRetrieval:local.external,sourceConflicts:local.sourceConflicts??[],evidence});
+  const input=JSON.stringify({question,resolution:local.resolution,simulationTime:new Date(local.atUtcMs).toISOString(),recentConversation:conversation.turns,conversationPolicy:'Signed server-verified continuity only. It helps interpret follow-ups but is not scientific evidence.',sourceHierarchy:['project-structured','authoritative-external','model-general-knowledge'],projectCuratedContext:'Supporting qualitative context; not current authoritative data.',externalRetrieval:local.external,sourceConflicts:local.sourceConflicts??[],evidence});
   if(Math.ceil(input.length/4)>LIVE_GUIDE_LIMITS.estimatedInputTokens)throw new Error('input_budget');
   const controller=new AbortController();
   const timer=setTimeout(()=>controller.abort(),timeoutMs);
@@ -91,7 +93,7 @@ async function callOpenAI(apiKey:string,question:string,local:GuideResponse,fetc
         model:LIVE_GUIDE_MODEL,
         store:false,
         max_output_tokens:LIVE_GUIDE_LIMITS.outputTokens,
-        instructions:'You are the Solar System Explorer Astronomy Guide. Answer directly, naturally, and conversationally. Apply this hierarchy: project-structured evidence is authoritative for application measurements, calculations, scene state, simulation time, orbital and physical values; authoritative-external evidence is a bounded current snapshot from an actual allowlisted scientific source; model general knowledge is only for qualitative explanation. Project-curated evidence is supporting editorial context, not current authoritative status. Never silently replace or contradict project-structured evidence. If sourceConflicts is non-empty, explain the discrepancy and preserve the project value. Use an evidenceId segment whenever an exact numerical or application-owned value is stated. Use citationIds to cite only supplied evidence that materially supports prose claims; citationIds create the source cards and must never be invented. Never write a URL. When externalRetrieval says unavailable or unsupported, do not guess current mission status, discoveries, or classifications from memory—state that current information could not be verified. Clearly communicate meaningful uncertainty, approximations, illustrative positions, incomplete evidence, or scientific disagreement without turning the answer into a technical report. You may freely compose concise qualitative explanations and ordinary general scientific knowledge. Do not include numbers in text segments. Keep the answer relevant to the solar system and safe. Return only the required JSON object.',
+        instructions:'You are the Solar System Explorer Astronomy Guide. Answer directly, naturally, and conversationally. recentConversation is signed, bounded continuity for interpreting follow-ups, but it is not scientific evidence and must never override the current resolution or evidence. Apply this hierarchy: project-structured evidence is authoritative for application measurements, calculations, scene state, simulation time, orbital and physical values; authoritative-external evidence is a bounded current snapshot from an actual allowlisted scientific source; model general knowledge is only for qualitative explanation. Project-curated evidence is supporting editorial context, not current authoritative status. Never silently replace or contradict project-structured evidence. If sourceConflicts is non-empty, explain the discrepancy and preserve the project value. Use an evidenceId segment whenever an exact numerical or application-owned value is stated. Use citationIds to cite only supplied evidence that materially supports prose claims; citationIds create the source cards and must never be invented. Never write a URL. When externalRetrieval says unavailable or unsupported, do not guess current mission status, discoveries, or classifications from memory—state that current information could not be verified. Clearly communicate meaningful uncertainty, approximations, illustrative positions, incomplete evidence, or scientific disagreement without turning the answer into a technical report. You may freely compose concise qualitative explanations and ordinary general scientific knowledge. Do not include numbers in text segments. Keep the answer relevant to the solar system and safe. Return only the required JSON object.',
         input:[{role:'user',content:[{type:'input_text',text:input}]}],
         text:{format:{type:'json_schema',name:'astronomy_guide_answer',strict:true,schema:explanationSchema}},
       }),
@@ -126,7 +128,13 @@ export async function guideHealth(request:Request,env:GuideEnv):Promise<Response
   if(env.DB&&tables){
     try{quota=await readGuideQuotaState(env.DB,developer?await developerViewerHash(request):await hashViewer(request),Date.now(),developer);}catch{/* Keep health safe and useful if quota telemetry is temporarily unavailable. */}
   }
-  return json({service:'astronomy-guide',status:env.OPENAI_API_KEY&&tables&&trigger?'ready':'local-only',model:LIVE_GUIDE_MODEL,providerConfigured:Boolean(env.OPENAI_API_KEY),database:{binding:'DB',tables,trigger},access:{authenticated,developer},quota,limits:{public:{perMinute:LIVE_GUIDE_LIMITS.viewerPerMinute,rolling24Hours:LIVE_GUIDE_LIMITS.viewerPerDay},developerRequestCountBypass:true},externalRetrieval:{mode:'allowlisted-authoritative-only',maxSourcesPerQuestion:1}});
+  return json({service:'astronomy-guide',status:env.OPENAI_API_KEY&&tables&&trigger?'ready':'local-only',model:LIVE_GUIDE_MODEL,providerConfigured:Boolean(env.OPENAI_API_KEY),database:{binding:'DB',tables,trigger},access:{authenticated,developer},quota,limits:{public:{perMinute:LIVE_GUIDE_LIMITS.viewerPerMinute,rolling24Hours:LIVE_GUIDE_LIMITS.viewerPerDay},developerRequestCountBypass:true},conversation:{enabled:Boolean(env.GUIDE_CONVERSATION_SECRET&&env.GUIDE_CONVERSATION_SECRET.length>=16),retainedTurns:GUIDE_CONVERSATION_LIMITS.retainedTurns,ttlMs:GUIDE_CONVERSATION_LIMITS.ttlMs},externalRetrieval:{mode:'allowlisted-authoritative-only',maxSourcesPerQuestion:1}});
+}
+
+async function withConversation(response:GuideResponse,current:ConversationRead,question:string,env:GuideEnv,nowMs:number):Promise<GuideResponse>{
+  const next=appendConversationTurn(current,question,response.explanation,response.resolution);
+  const conversation=await issueConversationToken(next,env.GUIDE_CONVERSATION_SECRET,nowMs);
+  return conversation?{...response,conversation}:response;
 }
 
 export async function handleGuideRequest(request:Request,env:GuideEnv,deps:EndpointDependencies={}):Promise<Response>{
@@ -140,40 +148,41 @@ export async function handleGuideRequest(request:Request,env:GuideEnv,deps:Endpo
   if(!question||question.length>LIVE_GUIDE_LIMITS.questionCharacters)return requestError('Please ask a question of up to 600 characters.',413);
   if(!getBody(body.selectedId))return requestError('The selected object is not available to the Live guide.',422);
 
+  const nowMs=(deps.now??Date.now)();
+  const conversation=await readConversationToken(body.conversationToken,env.GUIDE_CONVERSATION_SECRET,nowMs);
   const context=buildGuideContext(body.selectedId,body.navigation);
-  const local=answerContextGuide(context,question);
-  if(!local.evidence.length)return json(fallback(local,'insufficient_structured_evidence'));
-  if(!env.OPENAI_API_KEY)return json(fallback(local,'provider_not_configured'));
-  if(!env.DB)return json(fallback(local,'database_unavailable'));
+  const local=answerContextGuide(context,question,conversation.context);
+  if(!local.evidence.length)return json(await withConversation(fallback(local,'insufficient_structured_evidence'),conversation,question,env,nowMs));
+  if(!env.OPENAI_API_KEY)return json(await withConversation(fallback(local,'provider_not_configured'),conversation,question,env,nowMs));
+  if(!env.DB)return json(await withConversation(fallback(local,'database_unavailable'),conversation,question,env,nowMs));
 
   const developer=isGuideDeveloper(request,env);
   const viewerHash=developer?await developerViewerHash(request):await hashViewer(request);
   const reserve=deps.reserve??reserveGuideRequest;
-  const limit=await reserve(env.DB,body.requestId,viewerHash,(deps.now??Date.now)(),{bypassRequestCounts:developer});
-  if(!limit.allowed)return json(fallback(local,limit.reason,limit.quota));
+  const limit=await reserve(env.DB,body.requestId,viewerHash,nowMs,{bypassRequestCounts:developer});
+  if(!limit.allowed)return json(await withConversation(fallback(local,limit.reason,limit.quota),conversation,question,env,nowMs));
 
   try{
-    const nowMs=(deps.now??Date.now)();
     const retrieval=await (deps.retrieve??retrieveAuthoritativeEvidence)(question,local,deps.externalFetchImpl??fetch,nowMs);
     const sourceConflicts=detectSourceConflicts(local.evidence,retrieval.evidence);
     const grounded:GuideResponse={...local,evidence:[...local.evidence,...retrieval.evidence],external:{status:retrieval.status,note:retrieval.note,retrievedAt:retrieval.retrievedAt},sourceConflicts};
-    const provider=await callOpenAI(env.OPENAI_API_KEY,question,grounded,deps.fetchImpl??fetch,deps.timeoutMs??LIVE_GUIDE_LIMITS.timeoutMs);
+    const provider=await callOpenAI(env.OPENAI_API_KEY,question,grounded,conversation.context,deps.fetchImpl??fetch,deps.timeoutMs??LIVE_GUIDE_LIMITS.timeoutMs);
     if(!validateExplanation(provider.output,grounded.evidence)){
       await finishGuideRequest(env.DB,body.requestId,'invalid_output',provider.usage,'invalid_output');
-      return json(fallback(grounded,'invalid_model_output',limit.quota));
+      return json(await withConversation(fallback(grounded,'invalid_model_output',limit.quota),conversation,question,env,nowMs));
     }
     const validated=provider.output as ExplanationSegments;
     const explanation=renderExplanationSegments(validated,grounded.evidence);
     if(!explanation){
       await finishGuideRequest(env.DB,body.requestId,'invalid_output',provider.usage,'empty_output');
-      return json(fallback(grounded,'invalid_model_output',limit.quota));
+      return json(await withConversation(fallback(grounded,'invalid_model_output',limit.quota),conversation,question,env,nowMs));
     }
     const usedEvidenceIds=new Set([...validated.citationIds,...validated.segments.flatMap(segment=>'evidenceId' in segment?[segment.evidenceId]:[])]);
     await finishGuideRequest(env.DB,body.requestId,'succeeded',provider.usage);
-    return json({...grounded,explanation,evidence:grounded.evidence.filter(item=>usedEvidenceIds.has(item.id)),mode:'live',model:LIVE_GUIDE_MODEL,quota:limit.quota});
+    return json(await withConversation({...grounded,explanation,evidence:grounded.evidence.filter(item=>usedEvidenceIds.has(item.id)),mode:'live',model:LIVE_GUIDE_MODEL,quota:limit.quota},conversation,question,env,nowMs));
   }catch(error){
     const code=error instanceof Error?error.message:'provider_error';
     await finishGuideRequest(env.DB,body.requestId,code==='provider_timeout'?'timeout':'provider_error',undefined,code.slice(0,80));
-    return json(fallback(local,code,limit.quota));
+    return json(await withConversation(fallback(local,code,limit.quota),conversation,question,env,nowMs));
   }
 }

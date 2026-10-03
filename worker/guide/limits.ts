@@ -1,6 +1,6 @@
 export const LIVE_GUIDE_MODEL='gpt-5.6-luna';
 export const LIVE_GUIDE_LIMITS={
-  requestBytes:6_000,
+  requestBytes:12_000,
   questionCharacters:600,
   estimatedInputTokens:2_000,
   outputTokens:400,

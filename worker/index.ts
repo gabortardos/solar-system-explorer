@@ -8,6 +8,7 @@ interface Env {
   DB?: D1Database;
   OPENAI_API_KEY?: string;
   GUIDE_OWNER_EMAIL?: string;
+  GUIDE_CONVERSATION_SECRET?: string;
   IMAGES: {
     input(stream: ReadableStream): {
       transform(options: Record<string, unknown>): {

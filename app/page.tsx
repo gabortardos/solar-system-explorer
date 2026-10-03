@@ -123,6 +123,7 @@ function guideLimitMessage(result:GuideResponse){
   }
   return null;
 }
+type GuideTranscriptTurn={question:string;result:GuideResponse};
 const rateLabel = (rate: SimulationRate) =>
   rate === 0
     ? "Paused"
@@ -274,6 +275,8 @@ export default function Home() {
   });
   const [question, setQuestion] = useState(""),
     [guideResult, setGuideResult] = useState<GuideResponse|null>(null),
+    [guideTranscript,setGuideTranscript]=useState<GuideTranscriptTurn[]>([]),
+    [guideConversationToken,setGuideConversationToken]=useState<string|undefined>(),
     [guideBusy, setGuideBusy] = useState(false),
     [guideAccess, setGuideAccess] = useState<'checking'|'developer'|'public'>('checking'),
     [guideQuota,setGuideQuota]=useState<GuideQuotaState|null>(null);
@@ -436,11 +439,14 @@ export default function Home() {
       const [{requestGuide},{buildGuideContext}]=await Promise.all([import('./guide-client'),import('./guide-context')]);
       if(!navigation)throw new Error('The scene is not ready. Please try again.');
       const context=buildGuideContext(selectedId,navigation);
-      const result=await requestGuide(context,q);
+      const result=await requestGuide(context,q,guideConversationToken);
       setGuideResult(result);
+      setGuideTranscript(previous=>[...previous,{question:q,result}].slice(-4));
+      if(result.conversation?.token)setGuideConversationToken(result.conversation.token);
       if(result.quota)setGuideQuota(result.quota);
+      setQuestion("");
     } catch(error) {
-      setGuideResult({subject:'Guide unavailable',atUtcMs:time,explanation:error instanceof Error?error.message:'Please retry.',evidence:[],contextNote:'No answer was generated.',mode:'local',resolution:{selectedId,subjectId:selectedId,subjectName:b.name,comparisonId:null,interpretation:'The guide request could not be interpreted.'}});
+      setGuideResult({subject:'Guide unavailable',atUtcMs:time,explanation:error instanceof Error?error.message:'Please retry.',evidence:[],contextNote:'No answer was generated.',mode:'local',resolution:{selectedId,subjectId:selectedId,subjectName:b.name,comparisonId:null,intent:'overview',usedConversation:false,interpretation:'The guide request could not be interpreted.'}});
     } finally {
       setGuideBusy(false);
     }
@@ -455,12 +461,19 @@ export default function Home() {
       if(!navigation)throw new Error('The scene is not ready. Please try again.');
       const [{answerContextGuide},{buildGuideContext}]=await Promise.all([import('./guide-assistant'),import('./guide-context')]);
       setGuideResult(answerContextGuide(buildGuideContext(selectedId,navigation),q));
+      setQuestion("");
     }catch(error){
-      setGuideResult({subject:'Guide unavailable',atUtcMs:time,explanation:error instanceof Error?error.message:'Please retry.',evidence:[],contextNote:'No answer was generated.',mode:'local',resolution:{selectedId,subjectId:selectedId,subjectName:b.name,comparisonId:null,interpretation:'The guide request could not be interpreted.'}});
+      setGuideResult({subject:'Guide unavailable',atUtcMs:time,explanation:error instanceof Error?error.message:'Please retry.',evidence:[],contextNote:'No answer was generated.',mode:'local',resolution:{selectedId,subjectId:selectedId,subjectName:b.name,comparisonId:null,intent:'overview',usedConversation:false,interpretation:'The guide request could not be interpreted.'}});
     }finally{setGuideBusy(false);}
   };
   const touchMove = (code: string, active: boolean) =>
     engine.current?.setMovement(code, active);
+  const resetGuideConversation=()=>{
+    setGuideConversationToken(undefined);
+    setGuideTranscript([]);
+    setGuideResult(null);
+    setQuestion("");
+  };
   const comparison = buildDistanceComparison(
     detailsId,
     compare,
@@ -1048,14 +1061,15 @@ export default function Home() {
           {panel === "guide" && (
             <>
               <div className="guide-note">
-                Live AI can answer naturally using general astronomy knowledge.
+                Live AI can answer naturally and understand typed follow-up questions.
                 Exact measurements, calculated distances and scene state still
                 come from the app’s trusted data. If Live AI is unavailable, the
                 deterministic Local guide answers instead. “Here” means the
-                selected object, not your spacecraft location.
+                selected object, not your spacecraft location. Preset questions
+                stay free and local and do not join the Live conversation.
               </div>
               {guideAccess==='developer'?<div className="guide-usage"><strong>Developer access · no request-count limit</strong><span>Usage and cost accounting continue; monetary safeguards remain.</span></div>:<><div className="guide-usage"><strong>{guideQuota?.public?`Live AI: ${guideQuota.public.rolling24HoursUsed} / ${guideQuota.public.rolling24HoursLimit} today`:'Live AI usage: checking…'}</strong><span>Rolling 24-hour allowance · up to 10 per minute</span></div><a className="guide-developer-access" href="/signin-with-chatgpt?return_to=%2F" target="_top">Project owner sign-in for development access</a></>}
-              <h3>What would you like to know?</h3>
+              <div className="guide-conversation-heading"><h3>What would you like to know?</h3><button type="button" onClick={resetGuideConversation} disabled={guideBusy||(!guideConversationToken&&!guideTranscript.length&&!guideResult)}><RotateCcw size={14}/>New conversation</button></div>
               <div className="suggestions">
                 {localGuidePresets.map((q) => (
                   <button key={q} disabled={guideBusy} onClick={() => askLocalPreset(q)}>
@@ -1089,6 +1103,7 @@ export default function Home() {
                   )}
                 </button>
               </form>
+              {guideTranscript.length>1&&<div className="guide-transcript" aria-label="Recent conversation">{guideTranscript.slice(0,-1).map((turn,index)=><div className="guide-transcript-turn" key={`${index}-${turn.question}`}><strong>You · {turn.question}</strong><p>{turn.result.explanation}</p></div>)}</div>}
               {guideResult && (
                 <div className="guide-answer" aria-live="polite">
                   <div className="guide-answer-heading"><span className="eyebrow">ABOUT {guideResult.subject.toUpperCase()}</span><span className={`guide-mode guide-mode-${guideResult.mode}`}>{guideResult.mode==='live'?'Live AI':'Local guide'}</span></div>

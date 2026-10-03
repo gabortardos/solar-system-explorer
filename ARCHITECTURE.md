@@ -176,7 +176,9 @@ Step 17: `app/guide-client.ts` submits the captured snapshot to `POST /api/guide
 
 Step 18: `worker/guide/authoritative-sources.ts` detects freshness-sensitive mission/current questions and selects a canonical URL from a fixed official-source registry. Only after D1 reservation, the Worker may retrieve one NASA/ESA/JPL/USGS page under fixed timeout/byte/excerpt limits. Retrieved evidence is typed separately, includes the actual URL and retrieval time, and never modifies canonical data. The model can return only supplied citation IDs; URL text is rejected. Typed source conflicts are disclosed while the project value remains authoritative.
 
-The Worker still delegates application rendering to Vinext and supports framework image optimization. D1 binding `DB` stores only guide request/budget accounting through `0000_guide_limits.sql`; R2 remains disabled. `OPENAI_API_KEY` is a server-only Sites secret. No authentication, analytics or runtime astronomy API is active. See `docs/AI_GUIDE.md` for the exact limits and trust boundary.
+Astronomy Guide v2: `worker/guide/conversation.ts` signs and verifies a stateless, two-hour conversation token with a server-only secret. It retains at most three compact turns and only validated catalogue IDs/intents. `guide-assistant.ts` uses that verified continuity for follow-up reference/intent resolution while current selection overrides stale pronouns. `endpoint.ts` still rebuilds current structured evidence and treats prior answers as conversation only, never as factual authority. Reset is a client-side token discard and causes no request.
+
+The Worker still delegates application rendering to Vinext and supports framework image optimization. D1 binding `DB` stores only guide request/budget accounting through `0000_guide_limits.sql`; conversation state is not persisted there. R2 remains disabled. `OPENAI_API_KEY` and `GUIDE_CONVERSATION_SECRET` are server-only Sites secrets. No product authentication, analytics or runtime astronomy API is active. See `docs/AI_GUIDE.md` for the exact limits and trust boundary.
 
 ## Build and deployment
 

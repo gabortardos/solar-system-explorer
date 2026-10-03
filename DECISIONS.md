@@ -290,3 +290,10 @@ Exploration Scale enlarges moons and compresses their orbit systems, so those me
 - **Reason:** Guided destinations need coherent placement and recognizable identity without misrepresenting JPL Table 1, treating a fitted visualization as an ephemeris, or allocating catalogue-wide geometry.
 - **Impact:** All 32 core records support Show/Travel. Bennu, Ryugu, Itokawa, Eros, Vesta, Halley and 67P have bounded source silhouettes; statistical population dots remain unchanged. Source gaps and model uncertainty remain visible in metadata.
 - **Preserve:** Do not call the fit ephemeris-grade, discard its raw validation bundle, add Charon to Pluto barycenter 9, eagerly load shape meshes, turn population dots into destinations, invent undisclosed terrain, or raise detail budgets without device evidence.
+
+## D033 — Conversation continuity is signed, compact and non-authoritative (2026-10-03)
+
+- **Decision:** Carry at most three recent Astronomy Guide turns in a two-hour HMAC-signed token. The Worker validates catalogue IDs and finite intents, makes current selection authoritative when it changes, and rebuilds all scientific evidence for every request. Prior answers supply conversational continuity only.
+- **Reason:** Natural follow-ups need short memory, but an unbounded browser transcript, trusted client facts or a durable conversation database would expand prompt-injection, privacy, storage and cost risk without improving the core guide.
+- **Impact:** Typed questions can resolve “Why?”, pronouns, moons, comparisons and mission follow-ups. Reset discards the token without a server call. D1 remains only quota/budget accounting; each submitted turn still reserves independently and causes at most one provider call.
+- **Preserve:** Never treat token answer text as evidence, accept unsigned body IDs/history, grow the token beyond the fixed window, trigger automatic/background turns, route Local presets into paid conversation implicitly, or weaken Steps 17–18 grounding/citation/cost controls.
