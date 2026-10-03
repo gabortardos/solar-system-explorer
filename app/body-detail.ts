@@ -74,6 +74,22 @@ export class BodyDetailManager {
     this.entries.push(entry);
   }
 
+  /**
+   * Keeps a conventional surface map visible while the bounded local-detail
+   * stream is unavailable. The streamer may still replace this fallback with
+   * its compact base tier once it has decoded successfully.
+   */
+  setBaseFallback(id: string, texture: THREE.Texture) {
+    const entry = this.entries.find(candidate => candidate.id === id);
+    if (!entry || entry.baseReady || this.disposed) return false;
+    const old = entry.base;
+    entry.base = texture;
+    entry.mesh.material.map = texture;
+    entry.map.value = texture;
+    old.dispose();
+    return true;
+  }
+
   private base(entry: Entry) {
     if (entry.baseReady || entry.basePending || this.disposed) return;
     entry.basePending = true;

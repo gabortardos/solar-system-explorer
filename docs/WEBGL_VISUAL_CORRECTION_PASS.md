@@ -1,6 +1,6 @@
 # Targeted WebGL visual correction pass — 2026-10-01
 
-Status: implementation and release checks complete for production Site version 41. Owner PC/WebGL reinspection of the deployed correction remains the final visual-acceptance item. Step 20 has not started.
+Status: automated/source checks complete for the Site version 41 asset treatment, but it is **not visually accepted**. The subsequent Site version 42 Earth hotfix restores Earth’s established day-map fallback; owner PC/WebGL comparison remains required before accepting any partial-map appearance correction. Step 20 has not started.
 
 ## Reproduced evidence and root cause
 
@@ -14,11 +14,11 @@ The sphere meshes, shared LOD transitions and texture cache were operating corre
 - Neutral unknown regions receive low-amplitude deterministic material grain only. It contains no copied, mirrored or generated crater/ridge geography and is explicitly presentation rather than observation.
 - Triton's broad row-wise baked illumination is normalized and its featureless northern source area is faded into a neutral tone; local measured texture remains.
 - Both existing 256px base and 1024px identity tiers were regenerated. `coverageTreatment` identifiers and new hashes are stored in `IDENTITY_TEXTURE_MANIFEST.json`.
-- No runtime code, geometry, slot count, threshold, cache, atmosphere, shadow or Step 19 asset changed.
+- The version 41 asset treatment did not intentionally change runtime code, geometry, slot count, threshold, cache, atmosphere, shadow or Step 19 assets. Version 42 adds a narrow Earth fallback only: the existing Earth day map remains visible if the asynchronously streamed base map has not decoded.
 
 ## Verification
 
-- Corrected maps and lit spherical projections were inspected against the supplied failure views.
+- Asset projections and source checks were inspected against the supplied failure views; this is not equivalent to owner WebGL acceptance and must not be reported as a verified visual improvement.
 - Focused tests validate both treatment tiers, provenance hashes, transfer budget and shared-cache lifetime behavior.
-- Production build, lint and all 114 tests pass; the full release record is in `PROJECT_STATE.md`.
-- This Work environment cannot provide real WebGL inspection. The owner PC should recheck Ariel/Miranda/Oberon, Pluto/Charon and Triton at close view; Umbriel/Titania are immediate shared-pipeline regressions. Until then, do not claim post-fix WebGL visual acceptance.
+- Production build, lint and all 115 tests pass; the full release record is in `PROJECT_STATE.md`.
+- This Work environment cannot provide real WebGL inspection. The owner PC should compare Ariel/Miranda/Oberon, Pluto/Charon and Triton at close view against the known-good baseline; Umbriel/Titania are immediate shared-pipeline regression candidates. Until then, do not claim post-fix WebGL visual acceptance.

@@ -6,12 +6,12 @@ Severity: **High** blocks a core path/risks serious regression; **Medium** mater
 
 ## Active issues
 
-- **Visual identity pass acceptance (updated 2026-10-01):** owner PC/WebGL
-  inspection exposed false hard coverage caps on partial Voyager/New Horizons
-  maps and a baked-lighting band on Triton. Site version 41 contains targeted
-  corrected assets and source-projection/automated checks; the owner PC still
-  needs to recheck the deployed WebGL result. Spherical Phobos/Deimos proxies
-  remain disclosed in `docs/VISUAL_IDENTITY.md`. This does not reopen Step 19.
+- **Visual identity pass acceptance (updated 2026-10-01):** Site version 41's
+  partial-map treatment is not accepted without a direct owner PC/WebGL
+  comparison of Ariel, Miranda, Oberon, Pluto, Charon and Triton. Site version
+  42 separately restores the established Earth day-map fallback if the detail
+  stream is delayed or unavailable. Spherical Phobos/Deimos proxies remain
+  disclosed in `docs/VISUAL_IDENTITY.md`. This does not reopen Step 19.
 
 UI checkpoint A adds faster timelapse and contrast but does not claim every visual problem resolved. Moon motion is numerically verified; following the Moon masks its movement relative to the camera. High timelapse can alias fast satellites. Reported post-search guide dismissal remains a reproduction task; a sticky Back to space escape route is added. Target-visible travel is still pending. See `docs/UI_GRAPHICS_PLAN.md`.
 

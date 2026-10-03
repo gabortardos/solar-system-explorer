@@ -463,8 +463,15 @@ export function createScene(
     const material = surfaceMaterials.get(id);
     if (!body || !material) return;
     loadedSurfaces.add(id);
-    if (body.texture && !DETAIL_BODIES.some(detailId => detailId === id))
+    // Earth retains its established day map as a resilient visible fallback.
+    // Its bounded detail stream will replace it only after a local detail map
+    // has decoded, so a failed or delayed stream cannot expose catalog color.
+    if (body.texture && (!DETAIL_BODIES.some(detailId => detailId === id) || id === "earth"))
       loadTexture(body.texture + ".jpg", (texture) => {
+        if (id === "earth") {
+          bodyDetails.setBaseFallback(id, texture);
+          return;
+        }
         material.map = texture;
         material.color.set("#ffffff");
         material.needsUpdate = true;

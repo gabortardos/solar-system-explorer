@@ -99,6 +99,15 @@ test('failed map keeps base and does not retry each animation frame',async()=>{
  let calls=0;const h=harness(false,async(path)=>{calls++;if(path.includes('-512'))return new THREE.Texture({width:512,height:256});throw new Error('fixture unavailable');});
  h.view(0,3);await h.frames(30);assert.equal(calls,2);assert.equal(h.manager.diagnostics().bodies[0].failed,true);h.manager.dispose();
 });
+test('a conventional Earth map remains visible if its streamed base tier is unavailable',async()=>{
+ const h=harness(false,async(path)=>{if(path.includes('earth-512'))throw new Error('fixture unavailable');return new THREE.Texture({width:512,height:256});});
+ const fallback=new THREE.Texture({width:2048,height:1024});fallback.userData.disposed=false;fallback.addEventListener('dispose',()=>fallback.userData.disposed=true);
+ assert.equal(h.manager.setBaseFallback('earth',fallback),true);
+ h.view(0,3);await h.frames(12);
+ assert.equal(h.meshes[0].material.map,fallback);
+ assert.equal(h.manager.diagnostics().bodies[0].failed,true);
+ h.manager.dispose();assert.equal(fallback.userData.disposed,true);
+});
 test('mobile caps detailed bundles at one, including concurrent visible candidates',async()=>{
  const h=harness(true);h.meshes[1].parent.position.set(1,0,0);h.view(0,3);await h.frames();
  assert.equal(h.manager.diagnostics().bodies.filter(b=>b.level>0||b.loading).length,1);
